@@ -19,6 +19,7 @@
 #define SPAULY_VCCORE_CORRECTION_CONTEXT_H_
 
 #include <array>
+#include <exception>
 #include <condition_variable>
 #include <cstddef>
 #include <mutex>
@@ -32,8 +33,9 @@ using CoefficientArray = std::array<CoefficientType, CoCount>;
 
 class CorrectionContext {
  public:
-  /// Retrieves the necessary data from a specified file and sets the
-  /// initialized flag.
+  /// This only sets the initialization flag to false. Initialize() must be
+  /// called to initialize the context properly and retrieve the data from the
+  /// file.
   CorrectionContext();
   ~CorrectionContext() = default;
 
@@ -42,19 +44,31 @@ class CorrectionContext {
   /// normal constructor.
   CorrectionContext(const CorrectionContext&);
   /// Copies the retrieved data from the original if it is initialized.
-  /// Otherwise it constructs the object itself using the normal constructor.
+  /// Otherwise it constructs the object itself using the normal constructor. If
+  /// this is already set to initialzed nothing happens.
   const CorrectionContext& operator=(const CorrectionContext&);
 
   /// TODO: Add a move constructor and move assignment operator.
 
-  /// Returns true if the context has been initialized properly. If false the
-  /// context should not be used.
-  bool IsInitialized() const;
+  /// Initializes the context with the data from the specified file. Returns
+  /// true if the context was initialized properly. Returns false if an error
+  /// occurred during initialization.
+  bool Initialize();
 
   /// Waits for the context to be initialized. Returns true if the context is
   /// properly initialized.Returns false if an error occurred during
   /// initialization.
   bool WaitInitialization() const;
+
+  /// Returns true if the context has been initialized properly. If false the
+  /// context should not be used.
+  inline const bool IsInitialized() const { return is_initialized_; };
+
+  /// Returns true if an error occurred during initialization.
+  inline const bool ErrorFlag() const { return error_flag_; };
+
+  /// Returns the error thrown by fast-cpp-csv-parser
+  inline const std::exception& GetCsvError() const { return csv_error_; };
 
   /// Returns the coefficients for the Q correction.
   const CoefficientArray<6>& Q_GetCoefficients() const;
@@ -65,16 +79,28 @@ class CorrectionContext {
   const std::array<CoefficientArray<6>, 4>& H_GetCoefficients() const;
 
  protected:
-  /// Initializes the context with the data from the specified file. Returns
-  /// true if the context was initialized properly. Returns false if an error
-  /// occurred during initialization.
-  bool Initialize();
+  /// Initializes the context by copying th given data from the other context.
+  bool Initialize(const CorrectionContext& other);
+
+ private:
+  /// A helper struct that ensures that a new mutex is created for each copy of
+  /// a CorrectionContext object.
+  struct MutexHolder {
+    mutable std::mutex mux;
+    MutexHolder() : mux() {}
+    MutexHolder(const MutexHolder& other) : mux() {}
+  };
 
  private:
   /// Initialization flag.
-  bool is_initialized_;
+  bool is_initialized_ = false;
+  bool error_flag_ = false;
+
+  // this stores the error thrown by fast-cpp-csv-parser
+  std::exception csv_error_;
+
   // The data must be locked by this mutex during the initialization process
-  std::mutex initialized_mutex_;
+  MutexHolder mux_;
   // Used by WaitInitialization to wait for the initialization process to
   // finish.
   std::condition_variable initialized_condition_;
