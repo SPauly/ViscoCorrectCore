@@ -62,21 +62,27 @@ class CorrectionContext {
 
   /// Returns true if the context has been initialized properly. If false the
   /// context should not be used.
-  inline const bool IsInitialized() const { return is_initialized_; };
+  inline const bool IsInitialized() const { return is_initialized_; }
 
   /// Returns true if an error occurred during initialization.
-  inline const bool ErrorFlag() const { return error_flag_; };
+  inline const bool ErrorFlag() const { return error_flag_; }
 
   /// Returns the error thrown by fast-cpp-csv-parser
-  inline const std::exception& GetCsvError() const { return csv_error_; };
+  inline const std::exception& GetCsvError() const { return csv_error_; }
 
   /// Returns the coefficients for the Q correction.
-  const CoefficientArray<6>& Q_GetCoefficients() const;
+  inline const CoefficientArray<6>& Q_GetCoefficients() const {
+    return q_coefficients_;
+  }
   /// Returns the coefficients for the Eta correction.
-  const CoefficientArray<6>& Eta_GetCoefficients() const;
+  inline const CoefficientArray<6>& Eta_GetCoefficients() const {
+    return eta_coefficients_;
+  }
   /// Returns the an array of the coefficients for each proportional H
   /// correction. Where 0 = 0.6, 1 = 0.8, 2 = 1.0, 3 = 1.2.
-  const std::array<CoefficientArray<6>, 4>& H_GetCoefficients() const;
+  inline const std::array<CoefficientArray<6>, 4>& H_GetCoefficients() const {
+    return h_coefficients_;
+  }
 
  protected:
   /// Initializes the context by copying th given data from the other context.
