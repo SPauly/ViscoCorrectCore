@@ -23,6 +23,8 @@
 #include <condition_variable>
 #include <cstddef>
 #include <mutex>
+#include <string>
+#include <thread>
 
 namespace spauly {
 namespace vccore {
@@ -80,15 +82,29 @@ class CorrectionContext {
   }
   /// Returns the an array of the coefficients for each proportional H
   /// correction. Where 0 = 0.6, 1 = 0.8, 2 = 1.0, 3 = 1.2.
-  inline const std::array<CoefficientArray<6>, 4>& H_GetCoefficients() const {
+  inline const std::array<CoefficientArray<3>, 4>& H_GetCoefficients() const {
     return h_coefficients_;
   }
 
+  // Configuration constants
+  /// The number of headers in the CSV file. This is equal to 7 since we use ID
+  /// and 6 coefficients.
+  static constexpr int kHeadersCountCoef = 7;
+
  protected:
+  // Helper types for handling the CSV file
+  using CSVReaderType =
+      io::CSVReader<kHeadersCountCoef, io::trim_chars<' '>,
+                    io::no_quote_escape<','>, io::throw_on_overflow,
+                    io::single_and_empty_line_comment<'#'>>;
   /// Initializes the context by copying th given data from the other context.
   bool Initialize(const CorrectionContext& other);
 
- private:
+  // helper functions for the initialization process
+  /// This function assumes that reader is already initialized and the header
+  /// has been read without error.
+  void ReadCoefficients(CSVReaderType* const reader);
+
   /// A helper struct that ensures that a new mutex is created for each copy of
   /// a CorrectionContext object.
   struct MutexHolder {
@@ -111,11 +127,17 @@ class CorrectionContext {
   // finish.
   std::condition_variable initialized_condition_;
 
+  // Here is where all the config values are located
+  const std::string kCoefPath = "utils/coefficients.csv";
+
+  // Threads used for the initialization process
+  std::thread coef_thread_;
+
   CoefficientArray<6> q_coefficients_;
   CoefficientArray<6> eta_coefficients_;
   /// Stores the coefficients for each proportional H correction using these
   /// indices: 0 = 0.6, 1 = 0.8, 2 = 1.0, 3 = 1.2.
-  std::array<CoefficientArray<6>, 4> h_coefficients_;
+  std::array<CoefficientArray<3>, 4> h_coefficients_;
 };
 }  // namespace vccore
 
