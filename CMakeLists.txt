@@ -19,4 +19,7 @@ ${CMAKE_SOURCE_DIR}/include
 ${CMAKE_SOURCE_DIR}/
 )
 
-
+# fast-cpp-csv-parser needs to be linked against lpthread
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+target_link_libraries(ViscoCorrectCore PRIVATE Threads::Threads)

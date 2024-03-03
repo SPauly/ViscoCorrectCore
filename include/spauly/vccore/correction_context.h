@@ -20,11 +20,11 @@
 
 #include <array>
 #include <exception>
+#include <future>
 #include <condition_variable>
 #include <cstddef>
 #include <mutex>
 #include <string>
-#include <thread>
 
 namespace spauly {
 namespace vccore {
@@ -55,12 +55,12 @@ class CorrectionContext {
   /// Initializes the context with the data from the specified file. Returns
   /// true if the context was initialized properly. Returns false if an error
   /// occurred during initialization.
-  bool Initialize();
+  bool Initialize() noexcept;
 
   /// Waits for the context to be initialized. Returns true if the context is
   /// properly initialized.Returns false if an error occurred during
   /// initialization.
-  bool WaitInitialization() const;
+  bool WaitInitialization() const noexcept;
 
   /// Returns true if the context has been initialized properly. If false the
   /// context should not be used.
@@ -97,13 +97,15 @@ class CorrectionContext {
       io::CSVReader<kHeadersCountCoef, io::trim_chars<' '>,
                     io::no_quote_escape<','>, io::throw_on_overflow,
                     io::single_and_empty_line_comment<'#'>>;
+
   /// Initializes the context by copying th given data from the other context.
-  bool Initialize(const CorrectionContext& other);
+  bool Initialize(const CorrectionContext& other) noexcept;
 
   // helper functions for the initialization process
   /// This function assumes that reader is already initialized and the header
-  /// has been read without error.
-  void ReadCoefficients(CSVReaderType* const reader);
+  /// has been read without error. This will propagate errors thrown by
+  /// CSVReader.
+  bool ReadCoefficients();
 
   /// A helper struct that ensures that a new mutex is created for each copy of
   /// a CorrectionContext object.
@@ -118,7 +120,7 @@ class CorrectionContext {
   bool is_initialized_ = false;
   bool error_flag_ = false;
 
-  // this stores the error thrown by fast-cpp-csv-parser
+  // this stores the first exception encountered by fast-cpp-csv-parser
   std::exception csv_error_;
 
   // The data must be locked by this mutex during the initialization process
@@ -127,11 +129,11 @@ class CorrectionContext {
   // finish.
   std::condition_variable initialized_condition_;
 
+  // Store the results of the async data retrieval
+  std::future<bool> coef_future_;
+
   // Here is where all the config values are located
   const std::string kCoefPath = "utils/coefficients.csv";
-
-  // Threads used for the initialization process
-  std::thread coef_thread_;
 
   CoefficientArray<6> q_coefficients_;
   CoefficientArray<6> eta_coefficients_;
