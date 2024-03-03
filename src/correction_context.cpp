@@ -1,3 +1,20 @@
+// ViscoCorrectCore - Correction factors for centrifugal pumps
+// Copyright (C) 2024  Simon Pauly
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+//(at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+//
+// Contact via <https://github.com/SPauly/ViscoCorrectCore>
 #include <spauly/vccore/correction_context.h>
 
 #include "third_party/fast-cpp-csv-parser/csv.h"
@@ -57,7 +74,7 @@ bool CorrectionContext::ReadCoefficients() {
     unsigned int id;
     CoefficientArray<6> c;
 
-    while (reader->read_row(id, c[0], c[1], c[2], c[3], c[4], c[5])) {
+    while (reader.read_row(id, c[0], c[1], c[2], c[3], c[4], c[5])) {
       switch (id) {
         case 0:
           q_coefficients_ = c;
