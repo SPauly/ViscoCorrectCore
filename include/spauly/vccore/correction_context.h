@@ -72,7 +72,7 @@ class CorrectionContext {
   inline const bool has_error() const { return error_flag_; }
 
   /// Returns the error thrown by fast-cpp-csv-parser
-  inline const std::exception& GetCsvError() const { return csv_error_; }
+  inline const std::exception& GetCSVError() const { return csv_error_; }
 
   /// Returns the coefficients for the Q correction.
   inline const CoefficientArray<6>& Q_GetCoefficients() const {

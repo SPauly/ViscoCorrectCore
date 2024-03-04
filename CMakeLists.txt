@@ -56,6 +56,21 @@ if(VCC_BUILD_TESTS)
     add_subdirectory(${CMAKE_SOURCE_DIR}/third_party/googletest)
 
     enable_testing()
-    
-    add_subdirectory(test)
+
+    option(VCC_BUILD_ALL_TESTS "Build all tests" ON)
+    option(VCC_BUILD_CORE_TESTS "Build core tests" OFF)
+    option(VCC_BUILD_TOOL_TESTS "Build tool tests" OFF)
+
+    # Add test files
+    set(VCC_TEST_CORCTX ${CMAKE_SOURCE_DIR}/test/correction_context_test_.cpp)
+
+    if(VCC_BUILD_ALL_TESTS OR VCC_BUILD_CORE_TESTS)
+        add_executable(ViscoCorrectCoreTests ${VCC_TEST_CORCTX})
+        target_link_libraries(ViscoCorrectCoreTests GTest::gtest_main ViscoCorrectCore)
+        target_include_directories(ViscoCorrectCoreTests PRIVATE ${CMAKE_SOURCE_DIR}/include)
+        add_dependencies(ViscoCorrectCoreTests ViscoCorrectCore)
+    endif()
+
+    include(GoogleTest)
+    gtest_discover_tests(ViscoCorrectCoreTests) # Automatically discover and run all tests
 endif()
