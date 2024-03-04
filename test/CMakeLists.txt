@@ -26,22 +26,14 @@ option(VCC_BUILD_ALL_TESTS "Build all tests" ON)
 option(VCC_BUILD_CORE_TESTS "Build core tests" OFF)
 option(VCC_BUILD_TOOL_TESTS "Build tool tests" OFF)
 
-# Add GoogleTest
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE) # Required for Windows to prevent overriding compiler/linker flags
-set(BUILD_GMOCK OFF CACHE BOOL "" FORCE) # Disable building GoogleMock
-set(INSTALL_GTEST OFF CACHE BOOL "" FORCE) # Disable installing GoogleTest
-
-add_subdirectory(${CMAKE_SOURCE_DIR}/third_party/googletest)
-
-enable_testing()
-
 # Add test files
-set(VCC_TEST_CORCTX)
+set(VCC_TEST_CORCTX ${CMAKE_SOURCE_DIR}/test/correction_context_test_.cpp)
 
 if(VCC_BUILD_ALL_TESTS OR VCC_BUILD_CORE_TESTS)
     add_executable(ViscoCorrectCoreTests ${VCC_TEST_CORCTX})
     target_link_libraries(ViscoCorrectCoreTests GTest::gtest_main ViscoCorrectCore)
     target_include_directories(ViscoCorrectCoreTests PRIVATE ${CMAKE_SOURCE_DIR}/include)
+    add_dependencies(ViscoCorrectCoreTests ViscoCorrectCore)
 endif()
 
 include(GoogleTest)

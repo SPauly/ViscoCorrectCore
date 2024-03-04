@@ -26,6 +26,8 @@
 #include <mutex>
 #include <string>
 
+#include "third_party/fast-cpp-csv-parser/csv.h"
+
 namespace spauly {
 namespace vccore {
 
@@ -60,14 +62,14 @@ class CorrectionContext {
   /// Waits for the context to be initialized. Returns true if the context is
   /// properly initialized.Returns false if an error occurred during
   /// initialization.
-  bool WaitInitialization() const noexcept;
+  bool WaitInitialization() const noexcept { return false; };
 
   /// Returns true if the context has been initialized properly. If false the
   /// context should not be used.
-  inline const bool IsInitialized() const { return is_initialized_; }
+  inline const bool is_initialized() const { return is_initialized_; }
 
   /// Returns true if an error occurred during initialization.
-  inline const bool ErrorFlag() const { return error_flag_; }
+  inline const bool has_error() const { return error_flag_; }
 
   /// Returns the error thrown by fast-cpp-csv-parser
   inline const std::exception& GetCsvError() const { return csv_error_; }
@@ -99,7 +101,7 @@ class CorrectionContext {
                     io::single_and_empty_line_comment<'#'>>;
 
   /// Initializes the context by copying th given data from the other context.
-  bool Initialize(const CorrectionContext& other) noexcept;
+  bool Initialize(const CorrectionContext& other) noexcept { return false; };
 
   // helper functions for the initialization process
   /// This function assumes that reader is already initialized and the header

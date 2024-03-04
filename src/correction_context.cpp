@@ -42,7 +42,7 @@ const CorrectionContext& CorrectionContext::operator=(
   return *this;
 }
 
-bool CorrectionContext::Initialize() {
+bool CorrectionContext::Initialize() noexcept {
   std::lock_guard<std::mutex> lock(mux_.mux);
   if (is_initialized_) return true;
 

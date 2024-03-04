@@ -23,7 +23,7 @@ set(CMAKE_CXX_STANDARD 20) # to use the c++20 async implementations
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Configuration options for the build
-option(VCC_BUILD_TESTS "Build tests for ViscoCorrecCore" OFF)
+option(VCC_BUILD_TESTS "Build tests for ViscoCorrecCore" ON)
 option(VCC_BUILD_EXAMPLES "Build examples for ViscoCorrectCore" OFF)
 
 # Set the output directory for the build
@@ -48,5 +48,14 @@ target_link_libraries(ViscoCorrectCore PRIVATE Threads::Threads)
 
 # Build the tests
 if(VCC_BUILD_TESTS)
+    # Add GoogleTest
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE) # Required for Windows to prevent overriding compiler/linker flags
+    set(BUILD_GMOCK OFF CACHE BOOL "" FORCE) # Disable building GoogleMock
+    set(INSTALL_GTEST OFF CACHE BOOL "" FORCE) # Disable installing GoogleTest
+
+    add_subdirectory(${CMAKE_SOURCE_DIR}/third_party/googletest)
+
+    enable_testing()
+    
     add_subdirectory(test)
 endif()
