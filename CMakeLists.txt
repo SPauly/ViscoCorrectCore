@@ -48,6 +48,5 @@ target_link_libraries(ViscoCorrectCore PRIVATE Threads::Threads)
 
 # Build the tests
 if(VCC_BUILD_TESTS)
-    enable_testing()
     add_subdirectory(test)
 endif()
