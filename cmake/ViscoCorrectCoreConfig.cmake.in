@@ -1,0 +1,14 @@
+include(CMakeFindDependencyMacro)
+
+set_and_check(vcc_INCLUDE_DIR ${PACKAGE_PREFIX_DIR}/@CMAKE_INSTALL_INCLUDEDIR@)
+
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_dependency(Threads REQUIRED)
+
+check_required_components(ViscoCorrectCore)
+
+if(TARGET ViscoCorrectCore::ViscoCorrectCore)
+  return()
+endif()
+
+include(${CMAKE_CURRENT_LIST_DIR}/ViscoCorrectCoreTargets.cmake)
