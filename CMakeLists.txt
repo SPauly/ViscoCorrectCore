@@ -27,8 +27,12 @@ set(vcc_SOVERSION 0)
 set(vcc_INSTALL_BINDIR "bin" CACHE STRING "Installation directory for executables") # Not used in Release mode
 set(vcc_INSTALL_LIBDIR "lib" CACHE STRING "Installation directory for libraries")
 set(vcc_INSTALL_INCLUDEDIR "include" CACHE STRING "Installation directory for headers")
-set(vcc_INSTALL_CMAKEDIR "lib/cmake/" CACHE STRING "Installation directory for cmake config files")
+set(vcc_INSTALL_CMAKEDIR "lib/cmake/ViscoCorrectCore" CACHE STRING "Installation directory for cmake config files")
 set(vcc_INSTALL_SHAREDIR "share/ViscoCorrectCore" CACHE STRING "Installation directory for root certificates")
+
+# Install ViscosityCorrectCore into the build directory by default
+set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "Installation directory" FORCE)
+
 
 # Set the build options
 option(vcc_BUILD_TESTS "Build tests for ViscoCorrectCore" ON)
@@ -57,7 +61,7 @@ set(vcc_SOURCES
 
 # Header files for ViscosityCorrectCore
 set(vcc_HEADERS
-    include/visco_correct_core/correction_context.hpp
+    include/spauly/vccore/correction_context.h
 )
 
 # Build the library
