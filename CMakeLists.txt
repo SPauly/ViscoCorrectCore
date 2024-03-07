@@ -50,19 +50,9 @@ set(vcc_INSTALL ${vcc_INSTALL_default} CACHE BOOL
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
-# Source files for ViscosityCorrectCore
-set(vcc_SOURCES 
-    src/correction_context.cpp
-)
-
-# Header files for ViscosityCorrectCore
-set(vcc_HEADERS
-    include/spauly/vccore/correction_context.h
-)
-
 # Build the library
 add_library(ViscoCorrectCore
-    ${vcc_SOURCES}
+    src/correction_context.cpp
 )
 
 # Set library definitions
@@ -72,6 +62,16 @@ set_target_properties(ViscoCorrectCore PROPERTIES
     SOVERSION ${vcc_SOVERSION} 
     VERSION ${vcc_VERSION}
 )
+
+ # Set the output directory for build artifacts.
+ set_target_properties(ViscoCorrectCore
+    PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    PDB_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    COMPILE_PDB_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+ )
 
 # Additionaly handle pdb name for windows and MSVC
 if(WIN32 AND MSVC)
@@ -105,7 +105,9 @@ add_library(ViscoCorrectCore::ViscoCorrectCore ALIAS ViscoCorrectCore)
 include(GNUInstallDirs)
 
 # Install the headers into the installation directory
-foreach(header ${vcc_HEADERS})
+foreach(header 
+    include/spauly/vccore/correction_context.h
+)
     string(REPLACE "include/" "" _path ${header})
     get_filename_component(_path ${_path} PATH)
     install(FILES ${header} 
@@ -119,7 +121,6 @@ install(FILES third_party/fast-cpp-csv-parser/csv.h
 )
 
 # Install the utilities to into the library directory
-
 
 # Install the library
 if(vcc_INSTALL)
