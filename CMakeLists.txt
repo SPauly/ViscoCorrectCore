@@ -46,7 +46,6 @@ endif()
 set(vcc_INSTALL ${vcc_INSTALL_default} CACHE BOOL
     "Generate installation target")
 
-# fast-cpp-csv-parser needs to be linked against lpthread
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
@@ -114,13 +113,6 @@ foreach(header
         DESTINATION "${vcc_INSTALL_INCLUDEDIR}/${_path}"
     )        
 endforeach()
-
-# Install fast-cpp-csv-parser
-install(FILES third_party/fast-cpp-csv-parser/csv.h
-    DESTINATION ${vcc_INSTALL_INCLUDEDIR}/third_party/fast-cpp-csv-parser
-)
-
-# Install the utilities to into the library directory
 
 # Install the library
 if(vcc_INSTALL)

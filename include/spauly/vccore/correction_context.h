@@ -26,8 +26,6 @@
 #include <mutex>
 #include <string>
 
-#include "third_party/fast-cpp-csv-parser/csv.h"
-
 namespace spauly {
 namespace vccore {
 
@@ -71,9 +69,6 @@ class CorrectionContext {
   /// Returns true if an error occurred during initialization.
   inline const bool has_error() const { return error_flag_; }
 
-  /// Returns the error thrown by fast-cpp-csv-parser
-  inline const std::exception& GetCSVError() const { return csv_error_; }
-
   /// Returns the coefficients for the Q correction.
   inline const CoefficientArray<6>& Q_GetCoefficients() const {
     return q_coefficients_;
@@ -88,26 +83,9 @@ class CorrectionContext {
     return h_coefficients_;
   }
 
-  // Configuration constants
-  /// The number of headers in the CSV file. This is equal to 7 since we use ID
-  /// and 6 coefficients.
-  static constexpr int kHeadersCountCoef = 7;
-
  protected:
-  // Helper types for handling the CSV file
-  using CSVReaderType =
-      io::CSVReader<kHeadersCountCoef, io::trim_chars<' '>,
-                    io::no_quote_escape<','>, io::throw_on_overflow,
-                    io::single_and_empty_line_comment<'#'>>;
-
   /// Initializes the context by copying th given data from the other context.
   bool Initialize(const CorrectionContext& other) noexcept { return false; };
-
-  // helper functions for the initialization process
-  /// This function assumes that reader is already initialized and the header
-  /// has been read without error. This will propagate errors thrown by
-  /// CSVReader.
-  bool ReadCoefficients();
 
   /// A helper struct that ensures that a new mutex is created for each copy of
   /// a CorrectionContext object.
@@ -122,20 +100,11 @@ class CorrectionContext {
   bool is_initialized_ = false;
   bool error_flag_ = false;
 
-  // this stores the first exception encountered by fast-cpp-csv-parser
-  std::exception csv_error_;
-
   // The data must be locked by this mutex during the initialization process
   MutexHolder mux_;
   // Used by WaitInitialization to wait for the initialization process to
   // finish.
   std::condition_variable initialized_condition_;
-
-  // Store the results of the async data retrieval
-  std::future<bool> coef_future_;
-
-  // Here is where all the config values are located
-  const std::string kCoefPath = "utils/coefficients.csv";
 
   CoefficientArray<6> q_coefficients_;
   CoefficientArray<6> eta_coefficients_;

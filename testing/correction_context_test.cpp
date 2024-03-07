@@ -47,8 +47,3 @@ TEST_F(CorrectionContextTest, Initialization) {
 }  // namespace vccore
 
 }  // namespace spauly
-
-int main(int argc, char** argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
