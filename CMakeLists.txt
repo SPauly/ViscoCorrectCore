@@ -17,7 +17,7 @@
 # Contact via <https://github.com/SPauly/ViscoCorrectCore>
 cmake_minimum_required(VERSION 3.14) # 3.14 is required by GoogleTest
 
-project(ViscoCorrectCore VERSION 0.0.1)
+project(ViscoCorrectCore VERSION 1.0.0)
 
 # Set the Version and SONAME 
 set(vcc_VERSION ${PROJECT_VERSION})
