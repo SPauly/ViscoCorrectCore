@@ -1,0 +1,9 @@
+libdir=@CMAKE_INSTALL_FULL_LIBDIR@
+includedir=@CMAKE_INSTALL_FULL_INCLUDEDIR@
+
+Name: ViscoCorrectCore
+Description: Core library of ViscoCorrect
+Version: @PROJECT_VERSION@
+URL: https://github.com/SPauly/ViscoCorrectCore
+Libs: -L${libdir} -lViscoCorrectCore @CMAKE_THREAD_LIBS_INIT@
+Cflags: -I${includedir}
