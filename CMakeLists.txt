@@ -33,7 +33,6 @@ set(vcc_INSTALL_SHAREDIR "share/ViscoCorrectCore" CACHE STRING "Installation dir
 # Install ViscosityCorrectCore into the build directory by default
 set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "Installation directory" FORCE)
 
-
 # Set the build options
 option(vcc_BUILD_TESTS "Build tests for ViscoCorrectCore" ON)
 option(vcc_BUILD_EXAMPLES "Build examples for ViscoCorrectCore" OFF)
@@ -46,9 +45,6 @@ if(NOT CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
 endif()
 set(vcc_INSTALL ${vcc_INSTALL_default} CACHE BOOL
     "Generate installation target")
-
-include(GoogleTest)
-include(GNUInstallDirs)
 
 # fast-cpp-csv-parser needs to be linked against lpthread
 set(THREADS_PREFER_PTHREAD_FLAG ON)
@@ -90,8 +86,13 @@ if(WIN32 AND MSVC)
 endif()
 
 target_include_directories(ViscoCorrectCore PUBLIC 
+$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>  
+$<INSTALL_INTERFACE:${vcc_INSTALL_INCLUDEDIR}>
+)
+
+target_include_directories(ViscoCorrectCore PRIVATE 
 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> 
-$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/> 
+$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>
 $<INSTALL_INTERFACE:${vcc_INSTALL_INCLUDEDIR}>
 )
 
@@ -101,14 +102,24 @@ target_link_libraries(ViscoCorrectCore PRIVATE
 
 add_library(ViscoCorrectCore::ViscoCorrectCore ALIAS ViscoCorrectCore)
 
+include(GNUInstallDirs)
+
+# Install the headers into the installation directory
 foreach(header ${vcc_HEADERS})
     string(REPLACE "include/" "" _path ${header})
     get_filename_component(_path ${_path} PATH)
-    message(STATUS "Installing header ${header} to ${vcc_INSTALL_INCLUDEDIR}/${_path}")
     install(FILES ${header} 
         DESTINATION "${vcc_INSTALL_INCLUDEDIR}/${_path}"
     )        
 endforeach()
+
+# Install fast-cpp-csv-parser
+install(FILES third_party/fast-cpp-csv-parser/csv.h
+    DESTINATION ${vcc_INSTALL_INCLUDEDIR}/third_party/fast-cpp-csv-parser
+)
+
+# Install the utilities to into the library directory
+
 
 # Install the library
 if(vcc_INSTALL)
@@ -128,42 +139,62 @@ endif()
 
 # Build the tests
 if(vcc_BUILD_TESTS)
+
+    include(GoogleTest)
+    
     # Add GoogleTest
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE) # Required for Windows to prevent overriding compiler/linker flags
     set(BUILD_GMOCK OFF CACHE BOOL "" FORCE) # Disable building GoogleMock
     set(INSTALL_GTEST ON CACHE BOOL "" FORCE) # Disable installing GoogleTest
 
-    add_subdirectory(${CMAKE_SOURCE_DIR}/third_party/googletest)
+    # Only add GTest if it was not already added
+    if(NOT TARGET GTest::gtest_)
+        add_subdirectory(third_party/googletest)
+    endif()
 
     enable_testing()
 
-    option(vcc_BUILD_ALL_TESTS "Build all tests" ON)
-    option(vcc_BUILD_CORE_TESTS "Build core tests" OFF)
-    option(vcc_BUILD_TOOL_TESTS "Build tool tests" OFF)
+    # Build the tests
+    set(TEST_TARGETS
+        correction_context_test
+    )
 
-    # Add test files
-    set(vcc_TEST_CORCTX ${CMAKE_SOURCE_DIR}/test/correction_context_test_.cpp)
-
-    if(vcc_BUILD_ALL_TESTS OR vcc_BUILD_CORE_TESTS)
-        add_executable(ViscoCorrectCoreTests ${vcc_TEST_CORCTX})
-        target_link_libraries(ViscoCorrectCoreTests GTest::gtest_main ViscoCorrectCore)
-        target_include_directories(ViscoCorrectCoreTests PRIVATE ${CMAKE_SOURCE_DIR}/include)
-        add_dependencies(ViscoCorrectCoreTests ViscoCorrectCore)
-    endif()
-
-    gtest_discover_tests(ViscoCorrectCoreTests) # Automatically discover and run all tests
+    foreach(target ${TEST_TARGETS})
+        add_executable(${target} ${CMAKE_CURRENT_SOURCE_DIR}/testing/${target}.cpp)
+        target_compile_features(${target} PUBLIC cxx_std_20)
+        target_include_directories(${target} PRIVATE 
+        ${PROJECT_SOURCE_DIR}/include
+        ${PROJECT_SOURCE_DIR}/
+        )
+        target_link_libraries(${target} GTest::gtest_main ViscoCorrectCore)
+        add_dependencies(${target} ViscoCorrectCore)
+        gtest_discover_tests(${target})
+    endforeach()
 endif()
 
 # Create config files for the library
 include(CMakePackageConfigHelpers)
 
+set(generated_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
+
 configure_file(cmake/ViscoCorrectCoreConfig.cmake.in
-    ViscoCorrectCoreConfig.cmake @ONLY)
-write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/ViscoCorrectCoreConfigVersion.cmake
+    ${generated_dir}/ViscoCorrectCoreConfig.cmake @ONLY)
+
+write_basic_package_version_file(${generated_dir}/ViscoCorrectCoreConfigVersion.cmake
   VERSION ${vcc_VERSION}
   COMPATIBILITY AnyNewerVersion)
+
 install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/ViscoCorrectCoreConfig.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/ViscoCorrectCoreConfigVersion.cmake
+    ${generated_dir}/ViscoCorrectCoreConfig.cmake
+    ${generated_dir}/ViscoCorrectCoreConfigVersion.cmake
   DESTINATION ${vcc_INSTALL_CMAKEDIR}
+)
+
+# Generate pkg-config file
+set(configured_pc "${generated_dir}/ViscoCorrectCore.pc")
+configure_file("${PROJECT_SOURCE_DIR}/cmake/ViscoCorrectCore.pc.in"
+    "${configured_pc}" @ONLY)
+install(FILES "${configured_pc}"
+    COMPONENT "${PROJECT_NAME}"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig"
 )
