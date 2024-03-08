@@ -141,7 +141,11 @@ if(vcc_BUILD_TESTS)
     # Add GoogleTest
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE) # Required for Windows to prevent overriding compiler/linker flags
     set(BUILD_GMOCK OFF CACHE BOOL "" FORCE) # Disable building GoogleMock
-    set(INSTALL_GTEST ON CACHE BOOL "" FORCE) # Disable installing GoogleTest
+    if(vcc_INSTALL)
+        set(INSTALL_GTEST ON CACHE BOOL "" FORCE) # Enable installing GoogleTest
+    else()
+        set(INSTALL_GTEST OFF CACHE BOOL "" FORCE) # Disable installing GoogleTest
+    endif()
 
     # Only add GTest if it was not already added
     if(NOT TARGET GTest::gtest_)
