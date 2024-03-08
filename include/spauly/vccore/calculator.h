@@ -55,7 +55,52 @@ class Calculator {
   Calculator() = default;
   ~Calculator() = default;
 
+  /// Calculates the correction factors for the given input parameters. The
+  /// parameters are copied to ensure threadsafety. The error flag in
+  /// CorrectionFactors is set when the input parameters are invalid.
+  const CorrectionFactors Calculate(const InputParameters input) const noexcept;
+
+  /// Calculates the correction factors for the given input parameters. The
+  /// parameters are copied to ensure threadsafety. The error flag in
+  /// CorrectionFactors is set when the input parameters are invalid.
+  const CorrectionFactors Calculate(
+      P_type _flowrate, P_type _head, P_type _viscosity,
+      FlowrateUnit _f_unit = FlowrateUnit::kCubicMetersPerHour,
+      HeadUnit _h_unit = HeadUnit::kMeters,
+      ViscosityUnit _v_unit =
+          ViscosityUnit::kSquareMilPerSecond) const noexcept;
+
+  /// Calculates the correction factors for the given input parameters. The
+  /// parameters are copied to ensure threadsafety. The error flag in
+  /// CorrectionFactors is set when the input parameters are invalid.
+  const CorrectionFactors Calculate(
+      P_type _flowrate, P_type _head, P_type _viscosity,
+      DensityInputType _density = 0,
+      FlowrateUnit _f_unit = FlowrateUnit::kCubicMetersPerHour,
+      HeadUnit _h_unit = HeadUnit::kMeters,
+      ViscosityUnit _v_unit = ViscosityUnit::kSquareMilPerSecond,
+      DensityUnit _d_unit = DensityUnit::kGramPerLiter) const noexcept;
+
+  /// Converts the given value from one unit to another. _Unit must be set
+  /// to either FlowrateUnit, HeadUnit, ViscosityUnit or DensityUnit.
+  /// Returns 0 on error.
+  template <typename _Unit>
+  const P_type ConvertFromTo(const P_type value, const _Unit from,
+                             const _Unit to) const noexcept;
+
+  /// Converts the given input parameters to the internal representation. This
+  /// can be used to validate on which bases the correction factors were
+  /// calculated.
+  const InputParameters ConvertInput(
+      const InputParameters& input) const noexcept;
+
  private:
+  const CorrectionFactors CalcImpl(const InputParameters& input) const noexcept;
+
+ private:
+  // The provided values here were calculated in the original code and must
+  // be updated. Please refer to the original code for how the were
+  // obtained: <https://github.com/SPauly/ViscoCorrect>
   const std::array<const double, 6> kQ = {
       4.3286373442021278e-09, -6.5935466655309209e-06, 0.0039704102541411324,
       -1.1870337647376101,    176.52190832690891,      -10276.558815133236};

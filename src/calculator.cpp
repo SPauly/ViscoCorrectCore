@@ -16,3 +16,42 @@
 //
 // Contact via <https://github.com/SPauly/ViscoCorrectCore>
 #include "spauly/vccore/calculator.h"
+
+namespace spauly {
+namespace vccore {
+const CorrectionFactors Calculator::Calculate(
+    const InputParameters input) const noexcept {
+  return std::move(CalcImpl(input));
+}
+
+const CorrectionFactors Calculator::Calculate(
+    P_type _flowrate, P_type _head, P_type _viscosity,
+    FlowrateUnit _f_unit = FlowrateUnit::kCubicMetersPerHour,
+    HeadUnit _h_unit = HeadUnit::kMeters,
+    ViscosityUnit _v_unit = ViscosityUnit::kSquareMilPerSecond) const noexcept {
+  // Work with an InputParameters object internaly.
+  InputParameters input{
+      std::move(_flowrate), std::move(_head),   std::move(_viscosity), 0,
+      std::move(_f_unit),   std::move(_h_unit), std::move(_v_unit)};
+
+  return std::move(CalcImpl(input));
+}
+
+const CorrectionFactors Calculator::Calculate(
+    P_type _flowrate, P_type _head, P_type _viscosity,
+    DensityInputType _density = 0,
+    FlowrateUnit _f_unit = FlowrateUnit::kCubicMetersPerHour,
+    HeadUnit _h_unit = HeadUnit::kMeters,
+    ViscosityUnit _v_unit = ViscosityUnit::kSquareMilPerSecond,
+    DensityUnit _d_unit = DensityUnit::kGramPerLiter) const noexcept {
+  // Work with an InputParameters object internaly.
+  InputParameters input{std::move(_flowrate),  std::move(_head),
+                        std::move(_viscosity), std::move(_density),
+                        std::move(_f_unit),    std::move(_h_unit),
+                        std::move(_v_unit),    std::move(_d_unit)};
+  return std::move(CalcImpl(input));
+}
+
+}  // namespace vccore
+
+}  // namespace spauly

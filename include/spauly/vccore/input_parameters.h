@@ -80,6 +80,23 @@ struct InputParameters {
         viscosity_unit(_v_unit),
         density_unit(_d_unit) {}
   ~InputParameters() = default;
+
+  // Sets the input parameters. Behaves like the constructor.
+  void set(P_type _flowrate, P_type _head, P_type _viscosity,
+           DensityInputType _density = 0,
+           FlowrateUnit _f_unit = FlowrateUnit::kCubicMetersPerHour,
+           HeadUnit _h_unit = HeadUnit::kMeters,
+           ViscosityUnit _v_unit = ViscosityUnit::kSquareMilPerSecond,
+           DensityUnit _d_unit = DensityUnit::kGramPerLiter) {
+    flowrate_q = _flowrate;
+    total_head = _head;
+    viscosity_v = _viscosity;
+    density_cp = _density;
+    flowrate_unit = _f_unit;
+    head_unit = _h_unit;
+    viscosity_unit = _v_unit;
+    density_unit = _d_unit;
+  }
 };
 
 }  // namespace vccore
