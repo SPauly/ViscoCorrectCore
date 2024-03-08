@@ -21,8 +21,8 @@
 namespace spauly {
 namespace vccore {
 
-// ParamInputType determines the accuracy of the input parameters.
-using ParamInputType = float;
+// P_type determines the accuracy of the input parameters.
+using P_type = float;
 // DensityInputType is only used when the viscosity is given in centipoise.
 using DensityInputType = float;
 
@@ -53,9 +53,9 @@ enum class DensityUnit : int { kGramPerLiter, kKilogramsPerCubicMeter };
 /// InputParameters contains all input parameters for the calculation. It is a
 /// DTO used for the communication with the Calculator.
 struct InputParameters {
-  ParamInputType flowrate_q = 0;
-  ParamInputType total_head = 0;
-  ParamInputType viscosity_v = 0;
+  P_type flowrate_q = 0;
+  P_type total_head = 0;
+  P_type viscosity_v = 0;
   /// Must be provided when the viscosity is given in centipoise.
   DensityInputType density_cp = 0;
 
@@ -63,6 +63,23 @@ struct InputParameters {
   HeadUnit head_unit = HeadUnit::kMeters;
   ViscosityUnit viscosity_unit = ViscosityUnit::kSquareMilPerSecond;
   DensityUnit density_unit = DensityUnit::kGramPerLiter;
+
+  InputParameters() = default;
+  InputParameters(P_type _flowrate, P_type _head, P_type _viscosity,
+                  DensityInputType _density = 0,
+                  FlowrateUnit _f_unit = FlowrateUnit::kCubicMetersPerHour,
+                  HeadUnit _h_unit = HeadUnit::kMeters,
+                  ViscosityUnit _v_unit = ViscosityUnit::kSquareMilPerSecond,
+                  DensityUnit _d_unit = DensityUnit::kGramPerLiter)
+      : flowrate_q(_flowrate),
+        total_head(_head),
+        viscosity_v(_viscosity),
+        density_cp(_density),
+        flowrate_unit(_f_unit),
+        head_unit(_h_unit),
+        viscosity_unit(_v_unit),
+        density_unit(_d_unit) {}
+  ~InputParameters() = default;
 };
 
 }  // namespace vccore
