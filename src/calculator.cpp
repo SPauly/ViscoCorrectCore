@@ -15,8 +15,4 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 // Contact via <https://github.com/SPauly/ViscoCorrectCore>
-#include <spauly/vccore/impl/correction_context.h>
-
-namespace spauly {
-namespace vccore {}  // namespace vccore
-}  // namespace spauly
+#include "spauly/vccore/calculator.h"

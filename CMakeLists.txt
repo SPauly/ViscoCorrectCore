@@ -50,7 +50,8 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 # Build the library
-add_library(ViscoCorrectCore
+add_library(ViscoCorrectCore STATIC
+    src/calculator.cpp
     src/correction_context.cpp
 )
 
@@ -105,7 +106,9 @@ include(GNUInstallDirs)
 
 # Install the headers into the installation directory
 foreach(header 
-    include/spauly/vccore/correction_context.h
+    include/spauly/vccore/calculator.h
+    include/spauly/vccore/input_parameters.h
+    include/spauly/vccore/impl/correction_context.h
 )
     string(REPLACE "include/" "" _path ${header})
     get_filename_component(_path ${_path} PATH)

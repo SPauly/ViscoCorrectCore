@@ -15,11 +15,12 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 // Contact via <https://github.com/SPauly/ViscoCorrectCore>
-#ifndef SPAULY_VCCORE_CORRECTION_CONTEXT_H_
-#define SPAULY_VCCORE_CORRECTION_CONTEXT_H_
+#ifndef SPAULY_VCCORE_IMPL_CORRECTION_CONTEXT_H_
+#define SPAULY_VCCORE_IMPL_CORRECTION_CONTEXT_H_
 
 namespace spauly {
 namespace vccore {
+namespace impl {
 class CorrectionContext {
  public:
   /// This only sets the initialization flag to false. Initialize() must be
@@ -38,7 +39,8 @@ class CorrectionContext {
 
  private:
 };
+}  // namespace impl
 }  // namespace vccore
 }  // namespace spauly
 
-#endif  // SPAULY_VCCORE_CORRECTION_CONTEXT_H_
+#endif  // SPAULY_VCCORE_IMPL_CORRECTION_CONTEXT_H_

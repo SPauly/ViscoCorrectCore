@@ -17,10 +17,11 @@
 // Contact via <https://github.com/SPauly/ViscoCorrectCore>
 #include <gtest/gtest.h>
 
-#include "spauly/vccore/correction_context.h"
+#include "spauly/vccore/impl/correction_context.h"
 
 namespace spauly {
 namespace vccore {
+namespace impl {
 namespace vccore_testing {
 namespace {
 
@@ -38,7 +39,6 @@ TEST_F(CorrectionContextTest, Initialization) {}
 }  // namespace
 
 }  // namespace vccore_testing
-
+}  // namespace impl
 }  // namespace vccore
-
 }  // namespace spauly
