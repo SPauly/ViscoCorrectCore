@@ -20,12 +20,35 @@
 
 #include <array>
 
+#include "spauly/vccore/input_parameters.h"
+
 namespace spauly {
 namespace vccore {
+
+/// FactorType is the type used for the correction factors. Determines the
+/// accuracy of the calculation.
+using FactorType = double;
 
 /// HFaktor depicts the coefficient for the head correction. 0.6 = kH06, 0.8 =
 /// kH08, 1.0 = kH10, 1.2 = kH12.
 enum class HFaktor : int { kH06 = 0, kH08 = 1, kH10 = 2, kH12 = 3 };
+
+/// CorrectionFactors is a DTO used for the communication with the client. It is
+/// mainly used for the output of the calculation.
+struct CorrectionFactors {
+  const FactorType q;
+  const FactorType eta;
+  // The order of the factors is the same as the HFaktor enum.
+  const std::array<const FactorType, 4> h;
+
+  const int error_flag = 0;
+
+  CorrectionFactors(FactorType _q, FactorType _eta,
+                    std::array<const FactorType, 4> _h)
+      : q(q), eta(eta), h(_h) {}
+  CorrectionFactors(int _error)
+      : q(0), eta(0), h({0, 0, 0, 0}), error_flag(_error) {}
+};
 
 class Calculator {
  public:
