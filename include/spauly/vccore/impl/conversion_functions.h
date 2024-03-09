@@ -44,29 +44,45 @@ const std::map<DensityUnit, const float> kDensityToGPL{
     {DensityUnit::kGramPerLiter, 1.0f},
     {DensityUnit::kKilogramsPerCubicMeter, 0.001f}};
 
+/// Converts value to the specified base unit for _Unit. This function can be
+/// used to convert to: -> CubicMPH, -> Meters, -> GramPerLiter.
 template <typename _Unit>
-P_type ConvertToBaseUnits(const P_type value, const _Unit from) {
+P_type ConvertToBaseUnits(const P_type& value, const _Unit from) noexcept {
   static_assert(std::is_same<FlowrateUnit, _Unit>::value ||
                     std::is_same<HeadUnit, _Unit>::value ||
-                    std::is_same<ViscosityUnit, _Unit>::value ||
                     std::is_same<DensityUnit, _Unit>::value,
-                "Invalid unit type. Must be either FlowrateUnit, HeadUnit, "
-                "ViscosityUnit or DensityUnit.");
+                "Invalid unit type. Must be either FlowrateUnit, HeadUnit, or "
+                "DensityUnit.");
 
   if constexpr (std::is_same<FlowrateUnit, _Unit>::value)
     return value * kFlowrateToCubicMPH.at(from);
   else if constexpr (std::is_same<HeadUnit, _Unit>::value)
     return value * kHeadToMeters.at(from);
   else if constexpr (std::is_same<DensityUnit, _Unit>::value)
-    return value * kDensityToKgM3.at(from);
-  else
-    return value;
+    return value * kDensityToGPL.at(from);
 }
 
-}  // namespace vccore
-}  // namespace spauly
+/// Converts the input value to the base viscosity unit of mm2/s
+P_type ConvertViscosityTomm2s(
+    const P_type& value, const ViscosityUnit from,
+    const DensityInputType& density = 0,
+    const DensityUnit d_unit = DensityUnit::kGramPerLiter) noexcept {
+  P_type out = 0;
 
-}  // namespace spauly
+  /// TODO: check the validity of this
+  switch (from) {
+    case ViscosityUnit::kcP:
+    case ViscosityUnit::kmPas:
+      if (density) {
+        out = value / (density * kDensityToGPL.at(d_unit));
+      }
+      break;
+    default:  // kcSt is the same as mm^2/s
+      out = value;
+      break;
+  }
+  return out;
+}
 
 }  // namespace impl
 
