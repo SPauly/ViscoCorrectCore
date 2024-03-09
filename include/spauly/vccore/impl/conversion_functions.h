@@ -47,7 +47,7 @@ const std::map<DensityUnit, const float> kDensityToGPL{
 /// Converts value to the specified base unit for _Unit. This function can be
 /// used to convert to: -> CubicMPH, -> Meters, -> GramPerLiter.
 template <typename _Unit>
-P_type ConvertToBaseUnits(const P_type& value, const _Unit from) noexcept {
+P_type ConvertToBaseUnit(const P_type& value, const _Unit from) noexcept {
   static_assert(std::is_same<FlowrateUnit, _Unit>::value ||
                     std::is_same<HeadUnit, _Unit>::value ||
                     std::is_same<DensityUnit, _Unit>::value,

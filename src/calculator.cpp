@@ -17,6 +17,8 @@
 // Contact via <https://github.com/SPauly/ViscoCorrectCore>
 #include "spauly/vccore/calculator.h"
 
+#include "spauly/vccore/impl/conversion_functions.h"
+
 namespace spauly {
 namespace vccore {
 const CorrectionFactors Calculator::Calculate(
@@ -50,6 +52,25 @@ const CorrectionFactors Calculator::Calculate(
                         std::move(_f_unit),    std::move(_h_unit),
                         std::move(_v_unit),    std::move(_d_unit)};
   return std::move(CalcImpl(input));
+}
+
+// Implementations
+const InputParameters Calculator::ConvertInput(
+    const InputParameters& input) const noexcept {
+  InputParameters out;
+
+  // Set all converted values, the units can be left standard initialized.
+  out.flowrate_q = impl::ConvertToBaseUnit<FlowrateUnit>(input.flowrate_q,
+                                                         input.flowrate_unit);
+  out.total_head =
+      impl::ConvertToBaseUnit<HeadUnit>(input.total_head, input.head_unit);
+  out.viscosity_v =
+      impl::ConvertViscosityTomm2s(input.viscosity_v, input.viscosity_unit,
+                                   input.density_cp, input.density_unit);
+  out.density_cp = impl::ConvertToBaseUnit<DensityUnit>(input.density_cp,
+                                                        input.density_unit);
+
+  return std::move(out);
 }
 
 }  // namespace vccore

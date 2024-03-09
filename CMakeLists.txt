@@ -109,6 +109,7 @@ foreach(header
     include/spauly/vccore/calculator.h
     include/spauly/vccore/input_parameters.h
     include/spauly/vccore/impl/correction_context.h
+    include/spauly/vccore/impl/conversion_functions.h
 )
     string(REPLACE "include/" "" _path ${header})
     get_filename_component(_path ${_path} PATH)
