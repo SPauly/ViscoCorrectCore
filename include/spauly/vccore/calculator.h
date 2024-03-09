@@ -21,6 +21,7 @@
 #include <array>
 
 #include "spauly/vccore/input_parameters.h"
+#include "spauly/vccore/impl/conversion_functions.h"
 
 namespace spauly {
 namespace vccore {
@@ -81,12 +82,13 @@ class Calculator {
       ViscosityUnit _v_unit = ViscosityUnit::kSquareMilPerSecond,
       DensityUnit _d_unit = DensityUnit::kGramPerLiter) const noexcept;
 
-  /// Converts the given value from one unit to another. _Unit must be set
-  /// to either FlowrateUnit, HeadUnit, ViscosityUnit or DensityUnit.
-  /// Returns 0 on error.
+  /// Converts the given value from _Unit to the given internal representation.
+  /// _Unit must be set to either FlowrateUnit, HeadUnit, ViscosityUnit or
+  /// DensityUnit. Returns 0 on error.
   template <typename _Unit>
-  const P_type ConvertFromTo(const P_type value, const _Unit from,
-                             const _Unit to) const noexcept;
+  const P_type ConvertValueToBase(
+      const P_type value, const _Unit from, const DensityInputType& density = 0,
+      const DensityUnit d_unit = DensityUnit::kGramPerLiter) const noexcept;
 
   /// Converts the given input parameters to the internal representation. This
   /// can be used to validate on which bases the correction factors were
@@ -114,6 +116,23 @@ class Calculator {
       {285.91175890816675, -0.015057232233799856, 436.03377039579027}   // 1.2
   }};
 };
+
+// Template definitions
+template <typename _Unit>
+const P_type Calculator::ConvertValueToBase(
+    const P_type value, const _Unit from, const DensityInputType& density = 0,
+    const DensityUnit d_unit = DensityUnit::kGramPerLiter) const noexcept {
+  if constexpr (!std::is_same<ViscosityUnit, _Unit>::value) {
+    return impl::ConvertToBaseUnit<_Unit>(value, from);
+  } else
+    constexpr {
+      static_assert(
+          std::is_same<ViscosityUnit, _Unit>::value,
+          "Invalid unit type. Must be either FlowrateUnit, HeadUnit, or "
+          "DensityUnit, or ViscosityUnit");
+      return impl::ConvertViscosityTomm2s(value, from, density, d_unit);
+    }
+}
 
 }  // namespace vccore
 }  // namespace spauly

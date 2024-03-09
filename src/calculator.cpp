@@ -17,8 +17,6 @@
 // Contact via <https://github.com/SPauly/ViscoCorrectCore>
 #include "spauly/vccore/calculator.h"
 
-#include "spauly/vccore/impl/conversion_functions.h"
-
 namespace spauly {
 namespace vccore {
 const CorrectionFactors Calculator::Calculate(
