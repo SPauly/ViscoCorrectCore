@@ -45,22 +45,62 @@ TestCasesMap cpmpasTomm2s{};  // Centipoise and Millipascal Seconds to mm^2/s
 // Test utilities for Density
 TestCasesMap kpcmToGPL{};  // KilogramsPerCubicMeter To GramPerLiter
 
-TEST(ConversionFunctions, LitersPerMinute) {
-  // collect all failing cases as string so that they will be provided for the
-  // testcase
+// Helper function to create a string with the differences in the calculated and
+// the expected conversions. _Unit must fullfill the same requirements as
+// ConvertToBaseUnit.
+template <typename _Unit>
+std::string ConversionHelper(TestCasesMap& cases, _Unit from) {
+  static_assert(std::is_same<ViscosityUnit, _Unit>::value,
+                "Use ConvertViscoHelper instead");
+
   std::string errors = "";
 
-  for (const auto& elem : lpmToCubicMPH) {
-    P_type res = ConvertToBaseUnit<FlowrateUnit>(
-        elem.first, FlowrateUnit::kLitersPerMinute);
+  for (const auto& elem : cases) {
+    P_type res = ConvertToBaseUnit<_Unit>(elem.first, from);
 
-    // If the result is not what expected we create a string with the expected
-    // and resulting conversion.
+    // If the result is not what expected we create a string with the
+    // expected and resulting conversion.
     if (res != elem.second) {
       errors += std::to_string(elem.first) + " -> " + std::to_string(res) +
                 " != " + std::to_string(elem.second) + '\n';
     }
   }
+
+  return std::move(errors);
+}
+
+TEST(ConversionFunctions, liters_per_minute) {
+  // collect all failing cases as string so that they will be provided for the
+  // testcase
+  std::string errors = ConversionHelper<FlowrateUnit>(
+      lpmToCubicMPH, FlowrateUnit::kLitersPerMinute);
+
+  EXPECT_STREQ(errors.c_str(), "");
+}
+
+TEST(ConversionFunctions, gallons_per_minute) {
+  // collect all failing cases as string so that they will be provided for the
+  // testcase
+  std::string errors = ConversionHelper<FlowrateUnit>(
+      lpmToCubicMPH, FlowrateUnit::kGallonsPerMinute);
+
+  EXPECT_STREQ(errors.c_str(), "");
+}
+
+TEST(ConversionFunctions, feet_to_meters) {
+  // collect all failing cases as string so that they will be provided for the
+  // testcase
+  std::string errors =
+      ConversionHelper<HeadUnit>(lpmToCubicMPH, HeadUnit::kFeet);
+
+  EXPECT_STREQ(errors.c_str(), "");
+}
+
+TEST(ConversionFunctions, kilogram_per_cubic_meter_to_gpl) {
+  // collect all failing cases as string so that they will be provided for the
+  // testcase
+  std::string errors = ConversionHelper<DensityUnit>(
+      lpmToCubicMPH, DensityUnit::kKilogramsPerCubicMeter);
 
   EXPECT_STREQ(errors.c_str(), "");
 }
