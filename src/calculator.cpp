@@ -71,6 +71,16 @@ const InputParameters Calculator::ConvertInput(
   return std::move(out);
 }
 
+const CorrectionFactors Calculator::CalcImpl(
+    const InputParameters& input) const noexcept {
+  // Convert the given Inputs to the internally used units
+  // Verify that the input values are in the provided range by the standard
+  // Create Linear Functions for Viscosity and TotalHead
+  // Fit Flowrate Input to Flowrate scale
+  // Determine resulting X coordinate
+  // Calculate CorrectionFactors based on that
+}
+
 }  // namespace vccore
 
 }  // namespace spauly
