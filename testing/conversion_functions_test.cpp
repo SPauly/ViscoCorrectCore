@@ -39,11 +39,13 @@ TestCasesMap gpmToCubicMPH{};  // Gallons per Minute to m^3/h
 // Test utilities for Head
 TestCasesMap feetToMeters{};
 
-// Test utilities for Viscosity
-TestCasesMap cpmpasTomm2s{};  // Centipoise and Millipascal Seconds to mm^2/s
-
 // Test utilities for Density
 TestCasesMap kpcmToGPL{};  // KilogramsPerCubicMeter To GramPerLiter
+
+// Test utilities for Viscosity
+// The pair holds the following args: 1. Viscosity in cp/mpas, 2. Density in gPl
+std::unordered_map<std::pair<P_type, P_type>, P_type>
+    cpmpasTomm2s{};  // Centipoise and Millipascal Seconds to mm^2/s
 
 // Helper function to create a string with the differences in the calculated and
 // the expected conversions. _Unit must fullfill the same requirements as
@@ -101,6 +103,32 @@ TEST(ConversionFunctions, kilogram_per_cubic_meter_to_gpl) {
   // testcase
   std::string errors = ConversionHelper<DensityUnit>(
       lpmToCubicMPH, DensityUnit::kKilogramsPerCubicMeter);
+
+  EXPECT_STREQ(errors.c_str(), "");
+}
+
+TEST(ConversionFunctions, viscosity_conversion) {
+  // For this test to pass Density must be converted properly
+  ASSERT_STREQ(ConversionHelper<DensityUnit>(
+                   lpmToCubicMPH, DensityUnit::kKilogramsPerCubicMeter)
+                   .c_str(),
+               "");
+
+  std::string errors = "";
+
+  for (const auto& elem : cpmpasTomm2s) {
+    P_type res =
+        ConvertViscosityTomm2s(elem.first.first, ViscosityUnit::kcP,
+                               elem.first.second, DensityUnit::kGramPerLiter);
+
+    // If the result is not what expected we create a string with the
+    // expected and resulting conversion.
+    if (res != elem.second) {
+      errors += std::to_string(elem.first.first) + " -> " +
+                std::to_string(res) + " != " + std::to_string(elem.second) +
+                '\n';
+    }
+  }
 
   EXPECT_STREQ(errors.c_str(), "");
 }
