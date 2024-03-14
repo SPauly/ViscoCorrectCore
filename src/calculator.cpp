@@ -25,10 +25,8 @@ const CorrectionFactors Calculator::Calculate(
 }
 
 const CorrectionFactors Calculator::Calculate(
-    P_type _flowrate, P_type _head, P_type _viscosity,
-    FlowrateUnit _f_unit = FlowrateUnit::kCubicMetersPerHour,
-    HeadUnit _h_unit = HeadUnit::kMeters,
-    ViscosityUnit _v_unit = ViscosityUnit::kSquareMilPerSecond) const noexcept {
+    P_type _flowrate, P_type _head, P_type _viscosity, FlowrateUnit _f_unit,
+    HeadUnit _h_unit, ViscosityUnit _v_unit) const noexcept {
   // Work with an InputParameters object internaly.
   InputParameters input{
       std::move(_flowrate), std::move(_head),   std::move(_viscosity), 0,
@@ -39,11 +37,8 @@ const CorrectionFactors Calculator::Calculate(
 
 const CorrectionFactors Calculator::Calculate(
     P_type _flowrate, P_type _head, P_type _viscosity,
-    DensityInputType _density = 0,
-    FlowrateUnit _f_unit = FlowrateUnit::kCubicMetersPerHour,
-    HeadUnit _h_unit = HeadUnit::kMeters,
-    ViscosityUnit _v_unit = ViscosityUnit::kSquareMilPerSecond,
-    DensityUnit _d_unit = DensityUnit::kGramPerLiter) const noexcept {
+    DensityInputType _density, FlowrateUnit _f_unit, HeadUnit _h_unit,
+    ViscosityUnit _v_unit, DensityUnit _d_unit) const noexcept {
   // Work with an InputParameters object internaly.
   InputParameters input{std::move(_flowrate),  std::move(_head),
                         std::move(_viscosity), std::move(_density),
@@ -79,6 +74,7 @@ const CorrectionFactors Calculator::CalcImpl(
   // Fit Flowrate Input to Flowrate scale
   // Determine resulting X coordinate
   // Calculate CorrectionFactors based on that
+  return CorrectionFactors(1);
 }
 
 }  // namespace vccore

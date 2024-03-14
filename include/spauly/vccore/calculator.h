@@ -120,18 +120,16 @@ class Calculator {
 // Template definitions
 template <typename _Unit>
 const P_type Calculator::ConvertValueToBase(
-    const P_type value, const _Unit from, const DensityInputType& density = 0,
-    const DensityUnit d_unit = DensityUnit::kGramPerLiter) const noexcept {
-  if constexpr (!std::is_same<ViscosityUnit, _Unit>::value) {
+    const P_type value, const _Unit from, const DensityInputType& density,
+    const DensityUnit d_unit) const noexcept {
+  static_assert(std::is_same<ViscosityUnit, _Unit>::value,
+                "Invalid unit type. Must be either FlowrateUnit, HeadUnit, or "
+                "DensityUnit, or ViscosityUnit");
+
+  if (!std::is_same<ViscosityUnit, _Unit>::value)
     return impl::ConvertToBaseUnit<_Unit>(value, from);
-  } else
-    constexpr {
-      static_assert(
-          std::is_same<ViscosityUnit, _Unit>::value,
-          "Invalid unit type. Must be either FlowrateUnit, HeadUnit, or "
-          "DensityUnit, or ViscosityUnit");
-      return impl::ConvertViscosityTomm2s(value, from, density, d_unit);
-    }
+  else
+    return impl::ConvertViscosityTomm2s(value, from, density, d_unit);
 }
 
 }  // namespace vccore
