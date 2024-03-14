@@ -22,9 +22,9 @@ namespace spauly {
 namespace vccore {
 
 // P_type determines the accuracy of the input parameters.
-using P_type = float;
+using P_type = double;
 // DensityInputType is only used when the viscosity is given in centipoise.
-using DensityInputType = float;
+using DensityInputType = double;
 
 /// FlowrateUnit determines the unit of the flowrate. Available units are: m³/h,
 /// l/min, gpm.
