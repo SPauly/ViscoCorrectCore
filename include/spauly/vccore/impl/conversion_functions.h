@@ -29,14 +29,15 @@ namespace impl {
 /// Holds the factors by which to multiply the input parameters to convert them
 /// to m³/h.
 const std::map<FlowrateUnit, const double> kFlowrateToCubicMPH{
-    {FlowrateUnit::kLitersPerMinute, 0.06},
+    {FlowrateUnit::kLitersPerMinute, 0.06},  // not percise enough
     {FlowrateUnit::kGallonsPerMinute, 0.227125},
     {FlowrateUnit::kCubicMetersPerHour, 1.0}};
 
 /// Holds the factors by which to multiply the input parameters to convert them
 /// to m.
-const std::map<HeadUnit, const double> kHeadToMeters{{HeadUnit::kFeet, 0.3048},
-                                                     {HeadUnit::kMeters, 1.0}};
+const std::map<HeadUnit, const double> kHeadToMeters{
+    {HeadUnit::kFeet, 0.3048},  // not percise enough
+    {HeadUnit::kMeters, 1.0}};
 
 /// Holds the factors by which to multiply the input parameters to convert them
 /// to g/l.
