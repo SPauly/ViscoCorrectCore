@@ -18,7 +18,7 @@
 #include "spauly/vccore/impl/conversion_functions.h"
 
 #include <string>
-#include <unordered_map>
+#include <map>
 
 #include "spauly/vccore/input_parameters.h"
 
@@ -30,29 +30,54 @@ namespace impl {
 namespace vccore_testing {
 namespace {
 // First param represents the test value the second one the expected conversion.
-using TestCasesMap = std::unordered_map<P_type, P_type>;
+using TestCasesMap = std::map<P_type, P_type>;
 
 // Test utilities for Flowrate:
-TestCasesMap lpmToCubicMPH{};  // Liters per Minute to m^3/h
-TestCasesMap gpmToCubicMPH{};  // Gallons per Minute to m^3/h
+TestCasesMap lpmToCubicMPH{
+    {1, 0.06f},       {10, 0.6f},         {100, 6},        {1000, 60},
+    {10000, 600},     {0.5f, 0.03f},      {5.5f, 0.33f},   {11.1f, 0.666f},
+    {111.1f, 6.666f}, {1111.1f, 66.666f}, {0.11f, 0.0066f}};  // Liters per
+                                                              // Minute to m^3/h
+TestCasesMap gpmToCubicMPH{
+    {1, 0.2271f},        {10, 2.271f},      {100, 22.71f},
+    {1000, 227.1f},      {10000, 2271},     {0.5f, 0.11355f},
+    {5.5f, 1.24905f},    {11.1f, 2.52281f}, {111.1f, 25.2711f},
+    {1111.1f, 252.281f}, {0.11f, 0.02498f}};  // Gallons per
+                                              // Minute to m^3/h
 
 // Test utilities for Head
-TestCasesMap feetToMeters{};
+TestCasesMap feetToMeters{
+    {1, 0.3048f},  {10, 3.048f},    {100, 30.48f},     {1000, 304.8f},
+    {10000, 3048}, {5.5f, 1.6764f}, {11.1f, 3.38328f},
+};  // Feet to Meters
 
 // Test utilities for Density
-TestCasesMap kpcmToGPL{};  // KilogramsPerCubicMeter To GramPerLiter
+TestCasesMap
+    kpcmToGPL{{1, 0.001f},       {10, 0.01f},      {100, 0.1f},
+              {1000, 1},         {10000, 10},      {0.5f, 0.0005f},
+              {5.5f, 0.0055f},   {11.1f, 0.0111f}, {111.1f, 0.111f},
+              {1111.1f, 1.111f}, {0.11f, 0.00011f}};  // KilogramsPerCubicMeter
+                                                      // To GramPerLiter
 
 // Test utilities for Viscosity
 // The pair holds the following args: 1. Viscosity in cp/mpas, 2. Density in gPl
-std::unordered_map<std::pair<P_type, P_type>, P_type>
-    cpmpasTomm2s{};  // Centipoise and Millipascal Seconds to mm^2/s
+std::map<std::pair<P_type, P_type>, P_type> cpmpasTomm2s{
+    {{1, 1}, 1},    {{1, 2}, 0.5f},      {{1, 3}, 0.333333f},
+    {{1, 4}, 0.25}, {{1, 5}, 0.2f},      {{2, 1}, 2},
+    {{2, 2}, 1},    {{2, 3}, 0.666667f}, {{2, 4}, 0.5f},
+    {{2, 5}, 0.4f}, {{3, 1}, 3},         {{3, 2}, 1.5f},
+    {{3, 3}, 1},    {{3, 4}, 0.75f},     {{3, 5}, 0.6f},
+    {{4, 1}, 4},    {{4, 2}, 2},         {{4, 3}, 1.333333f},
+    {{4, 4}, 1},    {{4, 5}, 0.8f},      {{5, 1}, 5},
+    {{5, 2}, 2.5f}, {{5, 3}, 1.666667f}, {{5, 4}, 1.25f},
+    {{5, 5}, 1}};  // Centipoise and Millipascal Seconds to mm^2/s
 
 // Helper function to create a string with the differences in the calculated and
 // the expected conversions. _Unit must fullfill the same requirements as
 // ConvertToBaseUnit.
 template <typename _Unit>
 std::string ConversionHelper(TestCasesMap& cases, _Unit from) {
-  static_assert(std::is_same<ViscosityUnit, _Unit>::value,
+  static_assert(!std::is_same<ViscosityUnit, _Unit>::value,
                 "Use ConvertViscoHelper instead");
 
   std::string errors = "";

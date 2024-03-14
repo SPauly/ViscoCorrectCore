@@ -158,6 +158,7 @@ if(vcc_BUILD_TESTS)
     # Build the tests
     set(TEST_TARGETS
         correction_context_test
+        conversion_functions_test
     )
 
     foreach(target ${TEST_TARGETS})
