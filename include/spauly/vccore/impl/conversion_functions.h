@@ -28,21 +28,21 @@ namespace impl {
 
 /// Holds the factors by which to multiply the input parameters to convert them
 /// to m³/h.
-const std::map<FlowrateUnit, const float> kFlowrateToCubicMPH{
-    {FlowrateUnit::kLitersPerMinute, 0.06f},
-    {FlowrateUnit::kGallonsPerMinute, 0.2271f},
-    {FlowrateUnit::kCubicMetersPerHour, 1.0f}};
+const std::map<FlowrateUnit, const double> kFlowrateToCubicMPH{
+    {FlowrateUnit::kLitersPerMinute, 0.06},
+    {FlowrateUnit::kGallonsPerMinute, 0.227125},
+    {FlowrateUnit::kCubicMetersPerHour, 1.0}};
 
 /// Holds the factors by which to multiply the input parameters to convert them
 /// to m.
-const std::map<HeadUnit, const float> kHeadToMeters{{HeadUnit::kFeet, 0.3048f},
-                                                    {HeadUnit::kMeters, 1.0f}};
+const std::map<HeadUnit, const double> kHeadToMeters{{HeadUnit::kFeet, 0.3048},
+                                                     {HeadUnit::kMeters, 1.0}};
 
 /// Holds the factors by which to multiply the input parameters to convert them
 /// to g/l.
-const std::map<DensityUnit, const float> kDensityToGPL{
-    {DensityUnit::kGramPerLiter, 1.0f},
-    {DensityUnit::kKilogramsPerCubicMeter, 0.001f}};
+const std::map<DensityUnit, const double> kDensityToGPL{
+    {DensityUnit::kGramPerLiter, 1.0},
+    {DensityUnit::kKilogramsPerCubicMeter, 0.001}};
 
 /// Converts value to the specified base unit for _Unit. This function can be
 /// used to convert to: -> CubicMPH, -> Meters, -> GramPerLiter.
