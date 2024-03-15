@@ -29,20 +29,30 @@ AccuracyType::AccuracyType(const unsigned long long& value,
                            const uint32_t& exp) {
   // If the resulting number is too large to be represented as double we neglect
   // this input.
-  if (value * std::pow(10, exp + 1) > std::numeric_limits<double>::max()) {
-    normalized_ = INFINITY;
+  if (value / std::pow(10, exp + 1) > std::numeric_limits<double>::max()) {
+    Invalidate(INFINITY);
     exp_ = 0;
     neg_ = false;
   } else {
-    normalized_ = value;
+    int_value_ = value;
     exp_ = exp;
   }
 }
 
 AccuracyType::AccuracyType(std::string str) { CreateFromString(str); }
 
-BoolStruct AccuracyType::CreateFromString(std::string& str) {
+void AccuracyType::Invalidate(NormType reason) {
+  int_value_ = reason;
+  exp_ = 0;
+  neg_ = false;
+
+  is_valid = false;
+}
+
+bool AccuracyType::CreateFromString(std::string& str) {
   static const std::string kDigits = "0123456789";
+
+  is_valid = true;
 
   // Retrieve the sign of the number
   neg_ = false;
@@ -72,7 +82,7 @@ BoolStruct AccuracyType::CreateFromString(std::string& str) {
   if (pos == std::string::npos) {
     if (str.find_first_not_of(kDigits) != std::string::npos) {
       // This means we have a non-digit character in the string
-      normalized_ = NAN, exp_ = NAN, neg_ = false;
+      Invalidate(NAN);
       return false;
     }
 
@@ -83,13 +93,13 @@ BoolStruct AccuracyType::CreateFromString(std::string& str) {
     if (str.find_first_not_of(kDigits) != pos ||
         str.find_first_not_of(kDigits, pos + 1) != std::string::npos) {
       // This means we have a non-digit character in the string
-      normalized_ = NAN, exp_ = NAN, neg_ = false;
+      Invalidate(NAN);
       return false;
     }
 
     // Check if the input is identically zero.
     if (str == std::string(".")) {
-      normalized_ = 0;
+      int_value_ = 0;
       exp_ = 0;
       return true;
     }
@@ -104,15 +114,15 @@ BoolStruct AccuracyType::CreateFromString(std::string& str) {
   // Now we should have a string of digits
   // Check for underflow and overflow
   if (str.size() > kMaxDigits) {
-    normalized_ = INFINITY;
+    Invalidate(INFINITY);
     return false;
   } else if (str.empty()) {
-    normalized_ = 0;
+    int_value_ = 0;
     return true;
   }
 
   // Convert the string to a number
-  normalized_ = std::stoull(str);
+  int_value_ = std::stoull(str);
 
   return true;
 }

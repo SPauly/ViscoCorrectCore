@@ -19,7 +19,7 @@
 #define SPAULY_VCCORE_IMPL_ACCURACY_TYPE_H_
 
 #include <cstddef>
-#include <numeric_limits>
+#include <limits>
 #include <string>
 
 namespace spauly {
@@ -39,33 +39,67 @@ class AccuracyType {
   static constexpr size_t kMaxDigits = std::numeric_limits<NormType>::digits;
 
   AccuracyType() = default;
+
+  /// This constructor has the overhead of determining the decimals of the input
+  /// number. It also can produce a larger overhead since not all real numbers
+  /// can be represented as double. E.g. 0.06 could be represented as
+  /// 0.059999999999999997. Use std::string input for better accuracy.
   AccuracyType(const double& value);
+
+  /// This constructor exposes the internal representation of the number. The
+  /// resulting value is computed as: value * 10^exp and must fit into a double.
+  /// Otherwise int_value is set to INFINITY.
   AccuracyType(const unsigned long long& value, const uint32_t& exp = 0);
+
+  /// Parses the input string and stores the number as int_value and exp. If
+  /// the input is not in the format +/-[0-9]*(.[0-9]*)* it is considered
+  /// invalid and int_value is set to NAN. If the number is too large to be
+  /// converted to a double int_value is set to INFINITY.
   AccuracyType(std::string str);
+
   ~AccuracyType() = default;
 
-  AccuracyType(const AccuracyType& other);
-  AccuracyType(AccuracyType&& other) noexcept;
-  AccuracyType& operator=(const AccuracyType& other);
-  AccuracyType& operator=(AccuracyType&& other) noexcept;
+  // Getters
 
-  const double& get_double();
-  const unsigned long long& get_normalized() const;
-  const size_t& get_exp() const;
+  /// The valid flag is set to false if the input was not representable in the
+  /// given format.
+  inline const bool& is_valid() const { return is_valid; }
 
-  AccuracyType operator=(const double& value);
-  AccuracyType operator=(const std::string& str);
-  AccuracyType operator+(const AccuracyType& other) const;
-  AccuracyType operator-(const AccuracyType& other) const;
-  AccuracyType operator*(const AccuracyType& other) const;
-  AccuracyType operator/(const AccuracyType& other) const;
+  /// Returns the value stored as integer. Which needs to be devided by 10^exp
+  /// to retrieve the original value. Note however that this may introduce
+  /// inaccuracies.
+  inline const unsigned long long& get_int_value() const { return int_value_; }
+
+  /// Returns the exponent to the base 10 by which the int_value value needs to
+  /// be devided.
+  inline const uint32_t& get_exp() const { return exp_; }
+
+  /// Returns the sign of the stored number.
+  inline const bool& get_neg() const { return neg_; }
+
+  /// Calculates the double representation: int_value / 10^exp. This may
+  /// introduce inaccuracies caused by the double representation.
+  double get_double() const;
+
+  AccuracyType& operator=(const double& value);
+  AccuracyType& operator=(const std::string& str);
+  AccuracyType& operator+(const AccuracyType& other) const;
+  AccuracyType& operator-(const AccuracyType& other) const;
+  AccuracyType& operator*(const AccuracyType& other) const;
+  AccuracyType& operator/(const AccuracyType& other) const;
 
  protected:
+  /// Invalidates the AccuracyType and sets int_value to INFINITX if the input
+  /// was to large or to NAN if the input could not be parsed.
+  void Invalidate(NormType reason);
+
   bool CreateFromString(std::string& str);
   bool CreateFromDouble(const double& value);
 
  private:
-  NormType normalized_ = 0;
+  bool is_valid = true;
+
+  NormType int_value_ = 0;
   uint32_t exp_ = 0;
   bool neg_ = false;
 };
