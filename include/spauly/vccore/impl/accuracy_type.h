@@ -37,14 +37,10 @@ class AccuracyType {
 
   // static const locals
   static constexpr size_t kMaxDigits = std::numeric_limits<NormType>::digits;
-  static constexpr int32_t kMaxExp =
-      std::numeric_limits<double>::max_exponent10;
-  static constexpr int32_t kMinExp =
-      std::numeric_limits<double>::min_exponent10;
 
-  AccuracyType() = delete;
+  AccuracyType() = default;
   AccuracyType(const double& value);
-  AccuracyType(const unsigned long long& value, const size_t& exp = 1);
+  AccuracyType(const unsigned long long& value, const uint32_t& exp = 0);
   AccuracyType(std::string str);
   ~AccuracyType() = default;
 
@@ -58,18 +54,20 @@ class AccuracyType {
   const size_t& get_exp() const;
 
   AccuracyType operator=(const double& value);
+  AccuracyType operator=(const std::string& str);
   AccuracyType operator+(const AccuracyType& other) const;
   AccuracyType operator-(const AccuracyType& other) const;
   AccuracyType operator*(const AccuracyType& other) const;
   AccuracyType operator/(const AccuracyType& other) const;
 
  protected:
-  void CreateFromString(std::string& str);
+  bool CreateFromString(std::string& str);
+  bool CreateFromDouble(const double& value);
 
  private:
-  NormType normalized_;
-  int32_t exp_;
-  bool neg_;
+  NormType normalized_ = 0;
+  uint32_t exp_ = 0;
+  bool neg_ = false;
 };
 
 }  // namespace impl

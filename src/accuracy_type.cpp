@@ -17,9 +17,29 @@
 // Contact via <https://github.com/SPauly/ViscoCorrectCore>
 #include "spauly/vccore/impl/accuracy_type.h"
 
+#include <cmath>  //used for std::modf to retrieve the fractional part of a number
+
 namespace spauly {
 namespace vccore {
 namespace impl {
+
+AccuracyType::AccuracyType(const double& value) { CreateFromDouble(value); }
+
+AccuracyType::AccuracyType(const unsigned long long& value,
+                           const uint32_t& exp) {
+  // If the resulting number is too large to be represented as double we neglect
+  // this input.
+  if (value * std::pow(10, exp + 1) > std::numeric_limits<double>::max()) {
+    normalized_ = INFINITY;
+    exp_ = 0;
+    neg_ = false;
+  } else {
+    normalized_ = value;
+    exp_ = exp;
+  }
+}
+
+AccuracyType::AccuracyType(std::string str) { CreateFromString(str); }
 
 BoolStruct AccuracyType::CreateFromString(std::string& str) {
   static const std::string kDigits = "0123456789";
@@ -83,16 +103,10 @@ BoolStruct AccuracyType::CreateFromString(std::string& str) {
 
   // Now we should have a string of digits
   // Check for underflow and overflow
-  if (exp_ > kMaxExp || str.size() > kMaxDigits) {
+  if (str.size() > kMaxDigits) {
     normalized_ = INFINITY;
     return false;
-  } else if (exp_ < kMinExp) {
-    normalized_ = 0;
-    return false;
-  }
-
-  if (str.empty()) {
-    // This means the input was identically zero
+  } else if (str.empty()) {
     normalized_ = 0;
     return true;
   }
