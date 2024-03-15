@@ -19,15 +19,33 @@
 #define SPAULY_VCCORE_IMPL_ACCURACY_TYPE_H_
 
 #include <cstddef>
+#include <numeric_limits>
+#include <string>
 
 namespace spauly {
 namespace vccore {
 namespace impl {
+
+/// AccuracyType stores floating point number as their integer representation
+/// together with an exponent to the base 10. This allows for more accurate
+/// arithmetic. When get_double() is called this representation is converted
+/// back to a double which may introduce rounding errors.
 class AccuracyType {
  public:
+  // used types
+  using NormType = unsigned long long;
+
+  // static const locals
+  static constexpr size_t kMaxDigits = std::numeric_limits<NormType>::digits;
+  static constexpr int32_t kMaxExp =
+      std::numeric_limits<double>::max_exponent10;
+  static constexpr int32_t kMinExp =
+      std::numeric_limits<double>::min_exponent10;
+
   AccuracyType() = delete;
   AccuracyType(const double& value);
-  AccuracyType(const long long& value, const size_t& exp = 1);
+  AccuracyType(const unsigned long long& value, const size_t& exp = 1);
+  AccuracyType(std::string str);
   ~AccuracyType() = default;
 
   AccuracyType(const AccuracyType& other);
@@ -35,8 +53,8 @@ class AccuracyType {
   AccuracyType& operator=(const AccuracyType& other);
   AccuracyType& operator=(AccuracyType&& other) noexcept;
 
-  const double& get_double() const;
-  const long long& get_long_long() const;
+  const double& get_double();
+  const unsigned long long& get_normalized() const;
   const size_t& get_exp() const;
 
   AccuracyType operator=(const double& value);
@@ -45,10 +63,13 @@ class AccuracyType {
   AccuracyType operator*(const AccuracyType& other) const;
   AccuracyType operator/(const AccuracyType& other) const;
 
+ protected:
+  void CreateFromString(std::string& str);
+
  private:
-  double value_;
-  long long int_value_;
-  size_t exp_;
+  NormType normalized_;
+  int32_t exp_;
+  bool neg_;
 };
 
 }  // namespace impl
