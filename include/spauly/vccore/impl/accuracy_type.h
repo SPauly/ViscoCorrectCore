@@ -104,15 +104,19 @@ class AccuracyType {
   friend AccuracyType operator/(AccuracyType& acc_t, T& num) {}
 
  protected:
+  // Error_state is used to store the type of error
+  enum class ErrorState { kNone, kNAN, kINFINITY };
+
   /// Invalidates the AccuracyType and sets int_value to INFINITX if the input
   /// was to large or to NAN if the input could not be parsed.
-  void Invalidate(NormType reason);
+  void Invalidate(ErrorState error_state);
 
   bool FromString(const std::string& value);
   bool FromDouble(const double& value) { return true; }
 
  private:
   bool is_valid_ = true;
+  ErrorState error_state_ = ErrorState::kNone;
 
   NormType int_value_ = 0;
   uint32_t exp_ = 0;

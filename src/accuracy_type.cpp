@@ -29,8 +29,8 @@ AccuracyType::AccuracyType(const unsigned long long& value,
                            const uint32_t& exp) {
   // If the resulting number is too large to be represented as double we neglect
   // this input.
-  if (value / std::pow(10, exp + 1) > std::numeric_limits<double>::max()) {
-    Invalidate(INFINITY);
+  if (value / std::pow(10, exp - 1) > std::numeric_limits<double>::max()) {
+    Invalidate(ErrorState::kINFINITY);
     exp_ = 0;
     neg_ = false;
   } else {
@@ -43,6 +43,8 @@ AccuracyType::AccuracyType(const std::string& value) { FromString(value); }
 
 double AccuracyType::get_double() const {
   if (!is_valid_) {
+    if (error_state_ == ErrorState::kINFINITY)
+      return std::numeric_limits<double>::infinity();
     return std::numeric_limits<double>::quiet_NaN();
   }
 
@@ -64,16 +66,27 @@ AccuracyType& AccuracyType::operator=(const std::string& str) {
 }
 
 AccuracyType& AccuracyType::operator*=(const AccuracyType& other) {
-  if (!is_valid_ || !other.is_valid_) return *this;
+  if (!is_valid_) return *this;
+  if (!other.is_valid_) {
+    Invalidate(other.error_state_);
+    return *this;
+  }
 
   int_value_ *= other.int_value_;
   exp_ = (other.exp_ > exp_) ? other.exp_ : exp_;
+
+  // Set the sign of the result (using xor)
+  neg_ != other.neg_;
 
   return *this;
 }
 
 AccuracyType& AccuracyType::operator/=(const AccuracyType& other) {
   if (!is_valid_ || !other.is_valid_) return *this;
+  if (other.int_value_ == 0) {
+    Invalidate(ErrorState::kINFINITY);
+    return *this;
+  }
 
   // If the exponents do not match they need to be adjusted before the division.
   if (exp_ < other.exp_) {
@@ -89,12 +102,13 @@ AccuracyType& AccuracyType::operator/=(const AccuracyType& other) {
   return *this;
 }
 
-void AccuracyType::Invalidate(NormType reason) {
-  int_value_ = reason;
+void AccuracyType::Invalidate(ErrorState error_state) {
+  int_value_ = 0;
   exp_ = 0;
   neg_ = false;
 
   is_valid_ = false;
+  error_state_ = error_state;
 }
 
 bool AccuracyType::FromString(const std::string& value) {
@@ -131,7 +145,7 @@ bool AccuracyType::FromString(const std::string& value) {
   if (pos == std::string::npos) {
     if (str.find_first_not_of(kDigits) != std::string::npos) {
       // This means we have a non-digit character in the string
-      Invalidate(NAN);
+      Invalidate(ErrorState::kNAN);
       return false;
     }
 
@@ -142,7 +156,7 @@ bool AccuracyType::FromString(const std::string& value) {
     if (str.find_first_not_of(kDigits) != pos ||
         str.find_first_not_of(kDigits, pos + 1) != std::string::npos) {
       // This means we have a non-digit character in the string
-      Invalidate(NAN);
+      Invalidate(ErrorState::kNAN);
       return false;
     }
 
@@ -154,7 +168,7 @@ bool AccuracyType::FromString(const std::string& value) {
     }
 
     // Calculate the exponent based on the position of the decimal point
-    exp_ = static_cast<size_t>(str.size() - pos - 1);
+    exp_ = static_cast<uint32_t>(str.size() - pos - 1u);
 
     // Remove the decimal point from the string
     str.erase(pos, 1);
@@ -163,7 +177,7 @@ bool AccuracyType::FromString(const std::string& value) {
   // Now we should have a string of digits
   // Check for underflow and overflow
   if (str.size() > kMaxDigits) {
-    Invalidate(INFINITY);
+    Invalidate(ErrorState::kINFINITY);
     return false;
   } else if (str.empty()) {
     int_value_ = 0;
