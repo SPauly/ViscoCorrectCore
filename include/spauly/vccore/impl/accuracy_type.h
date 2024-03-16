@@ -64,7 +64,7 @@ class AccuracyType {
 
   /// The valid flag is set to false if the input was not representable in the
   /// given format.
-  inline const bool& is_valid() const { return is_valid; }
+  inline const bool& is_valid() const { return is_valid_; }
 
   /// Returns the value stored as integer. Which needs to be devided by 10^exp
   /// to retrieve the original value. Note however that this may introduce
@@ -91,17 +91,17 @@ class AccuracyType {
   // Multiplication is supported without loss of accuracy.
   AccuracyType& operator*=(const AccuracyType& other);
   template <typename T>
-  friend AccuracyType operator*(T& num, AccuracyType& acc_t);
+  friend AccuracyType operator*(T& num, AccuracyType& acc_t) {}
   template <typename T>
-  friend AccuracyType operator*(AccuracyType& acc_t, T& num);
+  friend AccuracyType operator*(AccuracyType& acc_t, T& num) {}
 
   // Devision may introduce some error margin since the result needs to be
   // converted back from its double value.
   AccuracyType& operator/=(const AccuracyType& other);
   template <typename T>
-  friend AccuracyType operator/(T& num, AccuracyType& acc_t);
+  friend AccuracyType operator/(T& num, AccuracyType& acc_t) {}
   template <typename T>
-  friend AccuracyType operator/(AccuracyType& acc_t, T& num);
+  friend AccuracyType operator/(AccuracyType& acc_t, T& num) {}
 
  protected:
   /// Invalidates the AccuracyType and sets int_value to INFINITX if the input
@@ -109,10 +109,10 @@ class AccuracyType {
   void Invalidate(NormType reason);
 
   bool FromString(const std::string& value);
-  bool FromDouble(const double& value);
+  bool FromDouble(const double& value) { return true; }
 
  private:
-  bool is_valid = true;
+  bool is_valid_ = true;
 
   NormType int_value_ = 0;
   uint32_t exp_ = 0;

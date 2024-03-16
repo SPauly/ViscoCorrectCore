@@ -42,11 +42,11 @@ AccuracyType::AccuracyType(const unsigned long long& value,
 AccuracyType::AccuracyType(const std::string& value) { FromString(value); }
 
 double AccuracyType::get_double() const {
-  if (!is_valid) {
+  if (!is_valid_) {
     return std::numeric_limits<double>::quiet_NaN();
   }
 
-  double result = int_value_ * std::pow(10, exp_);
+  double result = int_value_ / std::pow(10, exp_);
 
   if (neg_) result *= -1;
 
@@ -64,7 +64,7 @@ AccuracyType& AccuracyType::operator=(const std::string& str) {
 }
 
 AccuracyType& AccuracyType::operator*=(const AccuracyType& other) {
-  if (!is_valid || !other.is_valid) return *this;
+  if (!is_valid_ || !other.is_valid_) return *this;
 
   int_value_ *= other.int_value_;
   exp_ = (other.exp_ > exp_) ? other.exp_ : exp_;
@@ -73,7 +73,7 @@ AccuracyType& AccuracyType::operator*=(const AccuracyType& other) {
 }
 
 AccuracyType& AccuracyType::operator/=(const AccuracyType& other) {
-  if (!is_valid || !other.is_valid) return *this;
+  if (!is_valid_ || !other.is_valid_) return *this;
 
   // If the exponents do not match they need to be adjusted before the division.
   if (exp_ < other.exp_) {
@@ -94,13 +94,13 @@ void AccuracyType::Invalidate(NormType reason) {
   exp_ = 0;
   neg_ = false;
 
-  is_valid = false;
+  is_valid_ = false;
 }
 
 bool AccuracyType::FromString(const std::string& value) {
   static const std::string kDigits = "0123456789";
 
-  is_valid = true;
+  is_valid_ = true;
   std::string str = value;
 
   // Retrieve the sign of the number
