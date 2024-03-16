@@ -49,13 +49,14 @@ class AccuracyType {
   /// This constructor exposes the internal representation of the number. The
   /// resulting value is computed as: value * 10^exp and must fit into a double.
   /// Otherwise int_value is set to INFINITY.
-  AccuracyType(const unsigned long long& value, const uint32_t& exp = 0);
+  explicit AccuracyType(const unsigned long long& value,
+                        const uint32_t& exp = 0);
 
   /// Parses the input string and stores the number as int_value and exp. If
   /// the input is not in the format +/-[0-9]*(.[0-9]*)* it is considered
   /// invalid and int_value is set to NAN. If the number is too large to be
   /// converted to a double int_value is set to INFINITY.
-  AccuracyType(std::string str);
+  AccuracyType(const std::string& value);
 
   ~AccuracyType() = default;
 
@@ -81,20 +82,34 @@ class AccuracyType {
   /// introduce inaccuracies caused by the double representation.
   double get_double() const;
 
+  // Type conversion
+  explicit operator double() const { return get_double(); }
+
   AccuracyType& operator=(const double& value);
   AccuracyType& operator=(const std::string& str);
-  AccuracyType& operator+(const AccuracyType& other) const;
-  AccuracyType& operator-(const AccuracyType& other) const;
-  AccuracyType& operator*(const AccuracyType& other) const;
-  AccuracyType& operator/(const AccuracyType& other) const;
+
+  // Multiplication is supported without loss of accuracy.
+  AccuracyType& operator*=(const AccuracyType& other);
+  template <typename T>
+  friend AccuracyType operator*(T& num, AccuracyType& acc_t);
+  template <typename T>
+  friend AccuracyType operator*(AccuracyType& acc_t, T& num);
+
+  // Devision may introduce some error margin since the result needs to be
+  // converted back from its double value.
+  AccuracyType& operator/=(const AccuracyType& other);
+  template <typename T>
+  friend AccuracyType operator/(T& num, AccuracyType& acc_t);
+  template <typename T>
+  friend AccuracyType operator/(AccuracyType& acc_t, T& num);
 
  protected:
   /// Invalidates the AccuracyType and sets int_value to INFINITX if the input
   /// was to large or to NAN if the input could not be parsed.
   void Invalidate(NormType reason);
 
-  bool CreateFromString(std::string& str);
-  bool CreateFromDouble(const double& value);
+  bool FromString(const std::string& value);
+  bool FromDouble(const double& value);
 
  private:
   bool is_valid = true;

@@ -27,7 +27,7 @@ namespace {
 
 TEST(AccuracyTypeTest, string_initizalization) {
   AccuracyType accuracy_type("123.456");
-  EXPECT_EQ(accuracy_type.get_normalized(), 123456);
+  EXPECT_EQ(accuracy_type.get_int_value(), 123456);
   EXPECT_EQ(accuracy_type.get_exp(), 3);
   EXPECT_FALSE(accuracy_type.get_neg())
 }

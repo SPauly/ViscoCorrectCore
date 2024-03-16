@@ -23,7 +23,7 @@ namespace spauly {
 namespace vccore {
 namespace impl {
 
-AccuracyType::AccuracyType(const double& value) { CreateFromDouble(value); }
+AccuracyType::AccuracyType(const double& value) { FromDouble(value); }
 
 AccuracyType::AccuracyType(const unsigned long long& value,
                            const uint32_t& exp) {
@@ -39,7 +39,55 @@ AccuracyType::AccuracyType(const unsigned long long& value,
   }
 }
 
-AccuracyType::AccuracyType(std::string str) { CreateFromString(str); }
+AccuracyType::AccuracyType(const std::string& value) { FromString(value); }
+
+double AccuracyType::get_double() const {
+  if (!is_valid) {
+    return std::numeric_limits<double>::quiet_NaN();
+  }
+
+  double result = int_value_ * std::pow(10, exp_);
+
+  if (neg_) result *= -1;
+
+  return result;
+}
+
+AccuracyType& AccuracyType::operator=(const double& value) {
+  FromDouble(value);
+  return *this;
+}
+
+AccuracyType& AccuracyType::operator=(const std::string& str) {
+  FromString(str);
+  return *this;
+}
+
+AccuracyType& AccuracyType::operator*=(const AccuracyType& other) {
+  if (!is_valid || !other.is_valid) return *this;
+
+  int_value_ *= other.int_value_;
+  exp_ = (other.exp_ > exp_) ? other.exp_ : exp_;
+
+  return *this;
+}
+
+AccuracyType& AccuracyType::operator/=(const AccuracyType& other) {
+  if (!is_valid || !other.is_valid) return *this;
+
+  // If the exponents do not match they need to be adjusted before the division.
+  if (exp_ < other.exp_) {
+    int_value_ *= std::pow(10, other.exp_ - exp_);
+    exp_ = other.exp_;
+
+    operator=(static_cast<double>(int_value_ / other.int_value_));
+  } else if (exp_ > other.exp_) {
+    operator=(static_cast<double>(
+        int_value_ / (other.int_value_ * std::pow(10, exp_ - other.exp_))));
+  }
+
+  return *this;
+}
 
 void AccuracyType::Invalidate(NormType reason) {
   int_value_ = reason;
@@ -49,10 +97,11 @@ void AccuracyType::Invalidate(NormType reason) {
   is_valid = false;
 }
 
-bool AccuracyType::CreateFromString(std::string& str) {
+bool AccuracyType::FromString(const std::string& value) {
   static const std::string kDigits = "0123456789";
 
   is_valid = true;
+  std::string str = value;
 
   // Retrieve the sign of the number
   neg_ = false;
@@ -126,6 +175,7 @@ bool AccuracyType::CreateFromString(std::string& str) {
 
   return true;
 }
+
 }  // namespace impl
 }  // namespace vccore
 }  // namespace spauly
