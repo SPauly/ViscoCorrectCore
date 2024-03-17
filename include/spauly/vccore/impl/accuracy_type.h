@@ -19,7 +19,7 @@
 #define SPAULY_VCCORE_IMPL_ACCURACY_TYPE_H_
 
 #include <cstddef>
-#include <cmath>
+#include <cstdint>
 #include <limits>
 #include <string>
 
@@ -34,21 +34,20 @@ namespace impl {
 class AccuracyType {
  public:
   // used types
-  using NormType = unsigned long long;
+  using NormType = uint64_t;
 
   AccuracyType() = default;
 
-  /// This constructor has the overhead of determining the decimals of the input
-  /// number. It also can produce a larger overhead since not all real numbers
-  /// can be represented as double. E.g. 0.06 could be represented as
+  /// This constructor has the overhead of converting the input into a string
+  /// using std::to_string. It also can introduce percision errors since not all
+  /// number can be represented exact. E.g. 0.06 could be represented as
   /// 0.059999999999999997. Use std::string input for better accuracy.
   AccuracyType(const double& value);
 
-  /// This constructor exposes the internal representation of the number. The
-  /// resulting value is computed as: value * 10^exp and must fit into a double.
-  /// Otherwise int_value is set to INFINITY.
-  explicit AccuracyType(const unsigned long long& value,
-                        const uint32_t& exp = 0);
+  /// This constructor exposes the internal representation of the number.
+  explicit constexpr AccuracyType(const uint64_t& value,
+                                  const uint32_t& exp = 0, bool neg = false)
+      : int_value_(value), exp_(exp), neg_(neg) {}
 
   /// Parses the input string and stores the number as int_value and exp. If
   /// the input is not in the format +/-[0-9]*(.[0-9]*)* it is considered
@@ -67,7 +66,7 @@ class AccuracyType {
   /// Returns the value stored as integer. Which needs to be devided by 10^exp
   /// to retrieve the original value. Note however that this may introduce
   /// inaccuracies.
-  inline const unsigned long long& get_int_value() const { return int_value_; }
+  inline const uint64_t& get_int_value() const { return int_value_; }
 
   /// Returns the exponent to the base 10 by which the int_value value needs to
   /// be devided.
@@ -76,9 +75,21 @@ class AccuracyType {
   /// Returns the sign of the stored number.
   inline const bool& get_neg() const { return neg_; }
 
+  /// Returns the precision with with double input is converted to string.
+  inline const size_t& get_input_precision() const { return input_precision_; }
+
   /// Calculates the double representation: int_value / 10^exp. This may
   /// introduce inaccuracies caused by the double representation.
   double get_double() const;
+
+  // Setters
+  /// Sets the precision with which double input is converted to string. Note
+  /// that a higher precision affects runtime and memory usage and my introduce
+  /// inaccuracies. Additionally this may cause INFINITY errors when the numbers
+  /// get too big to fit into uint64_t. The default precision is 17.
+  inline void set_input_precision(const size_t& precision) {
+    input_precision_ = precision;
+  }
 
   // Type conversion
   explicit operator double() const { return std::move(get_double()); }
@@ -167,6 +178,8 @@ class AccuracyType {
  private:
   bool is_valid_ = true;
   ErrorState error_state_ = ErrorState::kNone;
+  size_t input_precision_ =
+      17;  // 17 seems to be a good sweet spot for my purposes
 
   NormType int_value_ = 0;
   uint32_t exp_ = 0;

@@ -26,20 +26,6 @@ namespace impl {
 
 AccuracyType::AccuracyType(const double& value) { FromDouble(value); }
 
-AccuracyType::AccuracyType(const unsigned long long& value,
-                           const uint32_t& exp) {
-  // If the resulting number is too large to be represented as double we neglect
-  // this input.
-  if (value / std::pow(10, exp - 1) > std::numeric_limits<double>::max()) {
-    Invalidate(ErrorState::kINFINITY);
-    exp_ = 0;
-    neg_ = false;
-  } else {
-    int_value_ = value;
-    exp_ = exp;
-  }
-}
-
 AccuracyType::AccuracyType(const std::string& value) { FromString(value); }
 
 double AccuracyType::get_double() const {
@@ -91,10 +77,30 @@ AccuracyType& AccuracyType::operator*=(const AccuracyType& other) {
 
   // Check for overflow
   if (int_value_ != 0 &&
-      other.int_value_ >
-          std::numeric_limits<unsigned long long>::max() / int_value_) {
-    Invalidate(ErrorState::kINFINITY);
-    return *this;
+      other.int_value_ > std::numeric_limits<uint64_t>::max() / int_value_) {
+    // Attempt to truncate one of the multiplicands to avoid overflow
+    AccuracyType tmp = (exp_ > other.exp_) ? *this : other;
+    const AccuracyType& tmp_other = (exp_ > other.exp_) ? other : *this;
+
+    // Truncate the number with the larger exponent until fitting
+    while (tmp.exp_ > 0 &&
+           tmp.int_value_ >
+               std::numeric_limits<uint64_t>::max() / tmp_other.int_value_) {
+      tmp.int_value_ /= 10;
+      tmp.exp_--;
+    }
+
+    // See if it is still too large
+    if (tmp.int_value_ >
+        std::numeric_limits<uint64_t>::max() / tmp_other.int_value_) {
+      Invalidate(ErrorState::kINFINITY);
+      return *this;
+    } else {
+      tmp.int_value_ *= tmp_other.int_value_;
+      tmp.exp_ = (tmp_other.exp_ > tmp.exp_) ? tmp_other.exp_ : tmp.exp_;
+      *this = tmp;
+      return *this;
+    }
   }
 
   int_value_ *= other.int_value_;
@@ -230,8 +236,7 @@ bool AccuracyType::FromDouble(const double& value) {
 
   try {
     std::stringstream sstr;
-    sstr << std::setprecision(std::numeric_limits<double>::max_digits10)
-         << value;
+    sstr << std::setprecision(input_precision_) << value;
 
     return FromString(sstr.str());
   } catch (const std::exception&) {
