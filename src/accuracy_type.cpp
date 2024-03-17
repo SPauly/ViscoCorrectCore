@@ -56,11 +56,15 @@ double AccuracyType::get_double() const {
 }
 
 AccuracyType& AccuracyType::operator=(const double& value) {
+  is_valid_ = true;
+  error_state_ = ErrorState::kNone;
   FromDouble(value);
   return *this;
 }
 
 AccuracyType& AccuracyType::operator=(const std::string& str) {
+  is_valid_ = true;
+  error_state_ = ErrorState::kNone;
   FromString(str);
   return *this;
 }
@@ -69,6 +73,14 @@ AccuracyType& AccuracyType::operator*=(const AccuracyType& other) {
   if (!is_valid_) return *this;
   if (!other.is_valid_) {
     Invalidate(other.error_state_);
+    return *this;
+  }
+
+  // Check for overflow
+  if (int_value_ != 0 &&
+      other.int_value_ >
+          std::numeric_limits<unsigned long long>::max() / int_value_) {
+    Invalidate(ErrorState::kINFINITY);
     return *this;
   }
 
