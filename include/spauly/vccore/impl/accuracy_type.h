@@ -162,7 +162,7 @@ class AccuracyType {
   void Invalidate(ErrorState error_state);
 
   bool FromString(const std::string& value);
-  bool FromDouble(const double& value) { return true; }
+  bool FromDouble(const double& value);
 
  private:
   bool is_valid_ = true;

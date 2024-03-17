@@ -17,7 +17,8 @@
 // Contact via <https://github.com/SPauly/ViscoCorrectCore>
 #include "spauly/vccore/impl/accuracy_type.h"
 
-#include <cmath>  //used for std::modf to retrieve the fractional part of a number
+#include <iomanip>
+#include <sstream>
 
 namespace spauly {
 namespace vccore {
@@ -216,6 +217,27 @@ bool AccuracyType::FromString(const std::string& value) {
   }
 
   return true;
+}
+
+bool AccuracyType::FromDouble(const double& value) {
+  if (std::isnan(value)) {
+    Invalidate(ErrorState::kNAN);
+    return false;
+  } else if (std::isinf(value)) {
+    Invalidate(ErrorState::kINFINITY);
+    return false;
+  }
+
+  try {
+    std::stringstream sstr;
+    sstr << std::setprecision(std::numeric_limits<double>::max_digits10)
+         << value;
+
+    return FromString(sstr.str());
+  } catch (const std::exception&) {
+    Invalidate(ErrorState::kNAN);
+    return false;
+  }
 }
 
 }  // namespace impl
