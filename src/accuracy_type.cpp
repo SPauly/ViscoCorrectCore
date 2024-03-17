@@ -55,6 +55,18 @@ double AccuracyType::get_double() const {
   return result;
 }
 
+AccuracyType& AccuracyType::operator=(const AccuracyType& other) {
+  if (this == &other) return *this;
+
+  is_valid_ = other.is_valid_;
+  error_state_ = other.error_state_;
+  int_value_ = other.int_value_;
+  exp_ = other.exp_;
+  neg_ = other.neg_;
+
+  return *this;
+}
+
 AccuracyType& AccuracyType::operator=(const double& value) {
   is_valid_ = true;
   error_state_ = ErrorState::kNone;

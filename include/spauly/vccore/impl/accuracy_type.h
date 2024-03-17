@@ -54,7 +54,7 @@ class AccuracyType {
   /// the input is not in the format +/-[0-9]*(.[0-9]*)* it is considered
   /// invalid and int_value is set to NAN. If the number is too large to be
   /// converted to a double int_value is set to INFINITY.
-  AccuracyType(const std::string& value);
+  explicit AccuracyType(const std::string& value);
 
   ~AccuracyType() = default;
 
@@ -81,25 +81,77 @@ class AccuracyType {
   double get_double() const;
 
   // Type conversion
-  explicit operator double() const { return get_double(); }
+  explicit operator double() const { return std::move(get_double()); }
 
+  explicit operator std::string() const { return std::to_string(get_double()); }
+
+  AccuracyType& operator=(const AccuracyType& other);
   AccuracyType& operator=(const double& value);
   AccuracyType& operator=(const std::string& str);
 
   // Multiplication is supported without loss of accuracy.
   AccuracyType& operator*=(const AccuracyType& other);
-  template <typename T>
-  friend AccuracyType operator*(T& num, AccuracyType& acc_t) {}
-  template <typename T>
-  friend AccuracyType operator*(AccuracyType& acc_t, T& num) {}
 
-  // Devision may introduce some error margin since the result needs to be
-  // converted back from its double value.
+  // Support for multiplication with other types. Must be convertable to double.
+  // This may introduce precision errors unless T is an AccuracyType.
+  template <typename T>
+  friend AccuracyType operator*(T& num, AccuracyType& acc_t) {
+    AccuracyType result;
+
+    if (std::is_same<T, AccuracyType>::value) {
+      result = num;
+      result *= acc_t;
+      return std::move(result);
+    } else {
+      static_assert(std::is_convertible<T, double>::value,
+                    "T must be convertable to double.");
+      result = static_cast<AccuracyType>(static_cast<double>(num));
+      result *= acc_t;
+      return std::move(result);
+    }
+  }
+  template <typename T>
+  friend AccuracyType operator*(AccuracyType& acc_t, T& num) {
+    return std::move(num * acc_t);
+  }
+
+  // Devision may introduce some precision error since the result needs to be
+  // converted back from its double representation.
   AccuracyType& operator/=(const AccuracyType& other);
+
+  // Support for division with other types. Must be convertable to double.
   template <typename T>
-  friend AccuracyType operator/(T& num, AccuracyType& acc_t) {}
+  friend AccuracyType operator/(const T& num, const AccuracyType& acc_t) {
+    AccuracyType result;
+
+    if (std::is_same<T, AccuracyType>::value) {
+      result = num;
+      result /= acc_t;
+      return std::move(result);
+    } else {
+      static_assert(std::is_convertible<T, double>::value,
+                    "T must be convertable to double.");
+      result = static_cast<AccuracyType>(static_cast<double>(num));
+      result /= acc_t;
+      return std::move(result);
+    }
+  }
   template <typename T>
-  friend AccuracyType operator/(AccuracyType& acc_t, T& num) {}
+  friend AccuracyType operator/(const AccuracyType& acc_t, const T& num) {
+    AccuracyType result;
+
+    if (std::is_same<T, AccuracyType>::value) {
+      result = acc_t;
+      result /= num;
+      return std::move(result);
+    } else {
+      static_assert(std::is_convertible<T, double>::value,
+                    "T must be convertable to double.");
+      result = acc_t;
+      result /= static_cast<AccuracyType>(static_cast<double>(num));
+      return std::move(result);
+    }
+  }
 
  protected:
   // Error_state is used to store the type of error
