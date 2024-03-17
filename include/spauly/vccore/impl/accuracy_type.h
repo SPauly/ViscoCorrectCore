@@ -19,6 +19,7 @@
 #define SPAULY_VCCORE_IMPL_ACCURACY_TYPE_H_
 
 #include <cstddef>
+#include <cmath>
 #include <limits>
 #include <string>
 
@@ -34,9 +35,6 @@ class AccuracyType {
  public:
   // used types
   using NormType = unsigned long long;
-
-  // static const locals
-  static constexpr size_t kMaxDigits = std::numeric_limits<NormType>::digits;
 
   AccuracyType() = default;
 

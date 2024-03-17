@@ -88,7 +88,7 @@ AccuracyType& AccuracyType::operator*=(const AccuracyType& other) {
   exp_ = (other.exp_ > exp_) ? other.exp_ : exp_;
 
   // Set the sign of the result (using xor)
-  neg_ != other.neg_;
+  neg_ ^= other.neg_;
 
   return *this;
 }
@@ -102,7 +102,7 @@ AccuracyType& AccuracyType::operator/=(const AccuracyType& other) {
 
   // If the exponents do not match they need to be adjusted before the division.
   if (exp_ < other.exp_) {
-    int_value_ *= std::pow(10, other.exp_ - exp_);
+    int_value_ *= static_cast<NormType>(std::pow(10, other.exp_ - exp_));
     exp_ = other.exp_;
 
     operator=(static_cast<double>(int_value_ / other.int_value_));
@@ -187,17 +187,21 @@ bool AccuracyType::FromString(const std::string& value) {
   }
 
   // Now we should have a string of digits
-  // Check for underflow and overflow
-  if (str.size() > kMaxDigits) {
-    Invalidate(ErrorState::kINFINITY);
-    return false;
-  } else if (str.empty()) {
+  // Check for underflow
+  if (str.empty()) {
     int_value_ = 0;
     return true;
   }
 
   // Convert the string to a number
-  int_value_ = std::stoull(str);
+  try {
+    int_value_ = std::stoull(str);
+  } catch (const std::exception&) {
+    // stoull throws an exception if the input is too large or cannot be
+    // converted.
+    Invalidate(ErrorState::kINFINITY);
+    return false;
+  }
 
   return true;
 }
