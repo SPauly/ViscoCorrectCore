@@ -17,14 +17,14 @@
 // Contact via <https://github.com/SPauly/ViscoCorrectCore>
 #include "spauly/vccore/impl/accuracy_type.h"
 
-#include <iomanip>
-#include <sstream>
-
 namespace spauly {
 namespace vccore {
 namespace impl {
 
-AccuracyType::AccuracyType(const double& value) { FromDouble(value); }
+AccuracyType::AccuracyType(const double& value, const size_t& precision)
+    : input_precision_(precision) {
+  FromDouble(value);
+}
 
 AccuracyType::AccuracyType(const std::string& value) { FromString(value); }
 
@@ -50,6 +50,7 @@ AccuracyType& AccuracyType::operator=(const AccuracyType& other) {
   int_value_ = other.int_value_;
   exp_ = other.exp_;
   neg_ = other.neg_;
+  input_precision_ = other.input_precision_;
 
   return *this;
 }

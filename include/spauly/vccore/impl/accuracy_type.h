@@ -21,7 +21,9 @@
 #include <cstddef>
 #include <cstdint>
 #include <limits>
+#include <iomanip>
 #include <string>
+#include <sstream>
 
 namespace spauly {
 namespace vccore {
@@ -42,7 +44,7 @@ class AccuracyType {
   /// using std::to_string. It also can introduce percision errors since not all
   /// number can be represented exact. E.g. 0.06 could be represented as
   /// 0.059999999999999997. Use std::string input for better accuracy.
-  AccuracyType(const double& value);
+  AccuracyType(const double& value, const size_t& precision = 17);
 
   /// This constructor exposes the internal representation of the number.
   explicit constexpr AccuracyType(const uint64_t& value,
@@ -94,7 +96,11 @@ class AccuracyType {
   // Type conversion
   explicit operator double() const { return std::move(get_double()); }
 
-  explicit operator std::string() const { return std::to_string(get_double()); }
+  explicit operator std::string() const {
+    std::stringstream sstr;
+    sstr << std::setprecision(input_precision_) << this->get_double();
+    return sstr.str();
+  }
 
   AccuracyType& operator=(const AccuracyType& other);
   AccuracyType& operator=(const double& value);
