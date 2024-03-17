@@ -34,7 +34,7 @@ namespace impl {
 class AccuracyType {
  public:
   // used types
-  using NormType = uint64_t;
+  using IntType = uint64_t;
 
   AccuracyType() = default;
 
@@ -181,7 +181,7 @@ class AccuracyType {
   size_t input_precision_ =
       17;  // 17 seems to be a good sweet spot for my purposes
 
-  NormType int_value_ = 0;
+  IntType int_value_ = 0;
   uint32_t exp_ = 0;
   bool neg_ = false;
 };

@@ -121,7 +121,7 @@ AccuracyType& AccuracyType::operator/=(const AccuracyType& other) {
 
   // If the exponents do not match they need to be adjusted before the division.
   if (exp_ < other.exp_) {
-    int_value_ *= static_cast<NormType>(std::pow(10, other.exp_ - exp_));
+    int_value_ *= static_cast<IntType>(std::pow(10, other.exp_ - exp_));
     exp_ = other.exp_;
 
     operator=(static_cast<double>(int_value_ / other.int_value_));
