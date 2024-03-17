@@ -17,6 +17,9 @@
 // Contact via <https://github.com/SPauly/ViscoCorrectCore>
 #include "spauly/vccore/impl/accuracy_type.h"
 
+#include <cmath>
+#include <limits>
+
 #include <gtest/gtest.h>
 
 namespace spauly {
@@ -31,6 +34,62 @@ TEST(AccuracyTypeTest, string_initizalization) {
   EXPECT_EQ(accuracy_type.get_exp(), 3);
   EXPECT_EQ(accuracy_type.get_double(), 123.456);
   EXPECT_FALSE(accuracy_type.get_neg());
+
+  accuracy_type = AccuracyType("+123.456");
+  EXPECT_EQ(accuracy_type.get_int_value(), 123456);
+  EXPECT_FALSE(accuracy_type.get_neg());
+
+  accuracy_type = AccuracyType("-123.456");
+  EXPECT_EQ(accuracy_type.get_int_value(), 123456);
+  EXPECT_EQ(accuracy_type.get_exp(), 3);
+  EXPECT_EQ(accuracy_type.get_double(), -123.456);
+  EXPECT_TRUE(accuracy_type.get_neg());
+
+  accuracy_type = AccuracyType("0.");
+  EXPECT_EQ(accuracy_type.get_int_value(), 0);
+
+  accuracy_type = AccuracyType("0.0");
+  EXPECT_EQ(accuracy_type.get_int_value(), 0);
+
+  accuracy_type = AccuracyType("0.000");
+  EXPECT_EQ(accuracy_type.get_int_value(), 0);
+
+  accuracy_type = AccuracyType(".0");
+  EXPECT_EQ(accuracy_type.get_int_value(), 0);
+
+  accuracy_type = AccuracyType(".");
+  EXPECT_EQ(accuracy_type.get_int_value(), 0);
+
+  accuracy_type = AccuracyType("0.1234");
+  EXPECT_EQ(accuracy_type.get_int_value(), 1234);
+  EXPECT_EQ(accuracy_type.get_exp(), 4);
+
+  accuracy_type = AccuracyType("1234");
+  EXPECT_EQ(accuracy_type.get_int_value(), 1234);
+  EXPECT_EQ(accuracy_type.get_exp(), 0);
+
+  accuracy_type = AccuracyType("1234.0");
+  EXPECT_EQ(accuracy_type.get_int_value(), 1234);
+
+  accuracy_type = AccuracyType(".123");
+  EXPECT_EQ(accuracy_type.get_int_value(), 123);
+  EXPECT_EQ(accuracy_type.get_exp(), 3);
+
+  // Check non valid inputs
+  accuracy_type = AccuracyType("123.456.789");
+  EXPECT_TRUE(accuracy_type.get_int_value() == 0);
+  EXPECT_TRUE(std::isnan(accuracy_type.get_double()));
+
+  accuracy_type = AccuracyType("123.A");
+  EXPECT_TRUE(std::isnan(accuracy_type.get_double()));
+
+  // Check overflow
+  accuracy_type = AccuracyType("18.446744073709551615");
+  EXPECT_EQ(accuracy_type.get_double(), 18.446744073709553);
+
+  accuracy_type = AccuracyType("18.446744073709551616");
+  EXPECT_EQ(accuracy_type.get_double(),
+            std::numeric_limits<double>::infinity());
 }
 
 }  // namespace
