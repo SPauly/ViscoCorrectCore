@@ -98,14 +98,14 @@ AccuracyType& AccuracyType::operator*=(const AccuracyType& other) {
       return *this;
     } else {
       tmp.int_value_ *= tmp_other.int_value_;
-      tmp.exp_ = (tmp_other.exp_ > tmp.exp_) ? tmp_other.exp_ : tmp.exp_;
+      tmp.exp_ += tmp_other.exp_;
       *this = tmp;
       return *this;
     }
   }
 
   int_value_ *= other.int_value_;
-  exp_ = (other.exp_ > exp_) ? other.exp_ : exp_;
+  exp_ += other.exp_;
 
   // Set the sign of the result (using xor)
   neg_ ^= other.neg_;

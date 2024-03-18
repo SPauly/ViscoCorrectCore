@@ -44,11 +44,11 @@ class AccuracyType {
   /// using std::to_string. It also can introduce percision errors since not all
   /// number can be represented exact. E.g. 0.06 could be represented as
   /// 0.059999999999999997. Use std::string input for better accuracy.
-  AccuracyType(const double& value, const size_t& precision = 17);
+  explicit AccuracyType(const double& value, const size_t& precision = 17);
 
   /// This constructor exposes the internal representation of the number.
-  explicit constexpr AccuracyType(const uint64_t& value,
-                                  const uint32_t& exp = 0, bool neg = false)
+  explicit constexpr AccuracyType(const uint64_t& value, const uint32_t& exp,
+                                  bool neg = false)
       : int_value_(value), exp_(exp), neg_(neg) {}
 
   /// Parses the input string and stores the number as int_value and exp. If

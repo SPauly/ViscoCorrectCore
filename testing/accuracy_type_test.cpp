@@ -154,29 +154,36 @@ TEST(AccuracyTypeTest, assignement) {
 }
 
 TEST(AccuracyTypeTest, multiplication) {
+  // Test *= construction
+
+  // Normal multiplication
   AccuracyType accuracy_type("123.456");
   accuracy_type *= accuracy_type;
-  EXPECT_EQ(accuracy_type.get_int_value(), 15241384);
+  EXPECT_EQ(accuracy_type.get_int_value(), 15241383936);
   EXPECT_EQ(accuracy_type.get_exp(), 6);
-  EXPECT_EQ(accuracy_type.get_double(), 152.41384);
+  EXPECT_EQ(accuracy_type.get_double(), 15241.383936);
 
   accuracy_type = "123.456";
-  accuracy_type *= 2;
-  EXPECT_EQ(accuracy_type.get_int_value(), 246912);
-  EXPECT_EQ(accuracy_type.get_exp(), 3);
-  EXPECT_EQ(accuracy_type.get_double(), 246.912);
+  accuracy_type *= AccuracyType(.0001);
+  EXPECT_EQ(accuracy_type.get_int_value(), 123456);
+  EXPECT_EQ(accuracy_type.get_exp(), 7);
+  EXPECT_EQ(accuracy_type.get_double(), 0.0123456);
 
-  accuracy_type = "123.456";
-  accuracy_type *= 0.5;
-  EXPECT_EQ(accuracy_type.get_int_value(), 61728);
-  EXPECT_EQ(accuracy_type.get_exp(), 3);
-  EXPECT_EQ(accuracy_type.get_double(), 61.728);
+  // Negative multiplication
+  accuracy_type = "-123.456";
+  accuracy_type *= accuracy_type;
+  EXPECT_EQ(accuracy_type.get_double(), 15241.383936);
 
-  accuracy_type = "123.456";
-  accuracy_type *= 0.0001;
-  EXPECT_EQ(accuracy_type.get_int_value(), 1234);
-  EXPECT_EQ(accuracy_type.get_exp(), 0);
-  EXPECT_EQ(accuracy_type.get_double(), 0.1234);
+  accuracy_type = "2.123";
+  accuracy_type *= AccuracyType(-2);
+  EXPECT_EQ(accuracy_type.get_double(), -4.246);
+
+  // Test edge cases
+  accuracy_type = "0";
+  accuracy_type *= accuracy_type;
+  EXPECT_EQ(accuracy_type.get_double(), 0.0);
+  accuracy_type *= AccuracyType(123);
+  EXPECT_EQ(accuracy_type.get_double(), 0.0);
 }
 
 }  // namespace
