@@ -184,6 +184,29 @@ TEST(AccuracyTypeTest, multiplication) {
   EXPECT_EQ(accuracy_type.get_double(), 0.0);
   accuracy_type *= AccuracyType(123);
   EXPECT_EQ(accuracy_type.get_double(), 0.0);
+
+  accuracy_type = "18.446744073709551615";
+  accuracy_type *= AccuracyType(2.0);
+  EXPECT_EQ(accuracy_type.get_double(), 36.89348814741910323);
+
+  accuracy_type = "-18.446744073709551615";
+  accuracy_type *= AccuracyType(2.0);
+  EXPECT_EQ(accuracy_type.get_double(), -36.89348814741910323);
+
+  accuracy_type = "18446744073709551615";
+  accuracy_type *= AccuracyType(2.0);
+  EXPECT_TRUE(std::isinf(accuracy_type.get_double()));
+
+  // Test num * AccuracyType construction
+  accuracy_type = "0.06";
+  accuracy_type = 10 * accuracy_type;
+  EXPECT_EQ(accuracy_type.get_double(), 0.6);
+
+  accuracy_type = accuracy_type * 10;
+  EXPECT_EQ(accuracy_type.get_double(), 6);
+
+  accuracy_type = AccuracyType("20.6") * AccuracyType("10");
+  EXPECT_EQ(accuracy_type.get_double(), 206);
 }
 
 }  // namespace

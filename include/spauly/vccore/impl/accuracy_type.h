@@ -115,7 +115,7 @@ class AccuracyType {
     AccuracyType result;
     result = acc_t;
     result *= other;
-    return std::move(result);
+    return result;
   }
 
   template <typename T>
@@ -126,12 +126,12 @@ class AccuracyType {
                   "T must be convertable to double.");
     result = static_cast<AccuracyType>(static_cast<double>(num));
     result *= acc_t;
-    return std::move(result);
+    return result;
   }
 
   template <typename T>
   friend AccuracyType operator*(AccuracyType& acc_t, T num) {
-    return std::move(num * acc_t);
+    return num * acc_t;
   }
 
   // Devision may introduce some precision error since the result needs to be
@@ -143,40 +143,28 @@ class AccuracyType {
     AccuracyType result;
     result = acc_t;
     result /= other;
-    return std::move(result);
+    return result;
   }
 
   template <typename T>
   friend AccuracyType operator/(const T& num, const AccuracyType& acc_t) {
     AccuracyType result;
 
-    if (std::is_same<T, AccuracyType>::value) {
-      result = num;
-      result /= acc_t;
-      return std::move(result);
-    } else {
-      static_assert(std::is_convertible<T, double>::value,
-                    "T must be convertable to double.");
-      result = static_cast<AccuracyType>(static_cast<double>(num));
-      result /= acc_t;
-      return std::move(result);
-    }
+    static_assert(std::is_convertible<T, double>::value,
+                  "T must be convertable to double.");
+    result = static_cast<AccuracyType>(static_cast<double>(num));
+    result /= acc_t;
+    return result;
   }
   template <typename T>
   friend AccuracyType operator/(const AccuracyType& acc_t, const T& num) {
     AccuracyType result;
 
-    if (std::is_same<T, AccuracyType>::value) {
-      result = acc_t;
-      result /= num;
-      return std::move(result);
-    } else {
-      static_assert(std::is_convertible<T, double>::value,
-                    "T must be convertable to double.");
-      result = acc_t;
-      result /= static_cast<AccuracyType>(static_cast<double>(num));
-      return std::move(result);
-    }
+    static_assert(std::is_convertible<T, double>::value,
+                  "T must be convertable to double.");
+    result = acc_t;
+    result /= static_cast<AccuracyType>(static_cast<double>(num));
+    return result;
   }
 
  protected:

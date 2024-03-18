@@ -168,11 +168,6 @@ bool AccuracyType::FromString(const std::string& value) {
     str.erase(0, 1);
   }
 
-  // Remove trailing zeros
-  while (str.size() && str[str.size() - 1] == '0') {
-    str.erase(str.size() - 1, 1);
-  }
-
   // Find the position of the decimal point
   size_t pos = str.find('.');
 
@@ -186,6 +181,12 @@ bool AccuracyType::FromString(const std::string& value) {
     exp_ = 0;
 
   } else {
+    // Remove trailing zeros after the decimal point
+    while (str.size() && str[str.size() - 1] == '0') {
+      str.erase(str.size() - 1, 1);
+      if (str[str.size() - 1] == '.') break;
+    }
+
     // Check that the values on both sides of the decimal point are digits
     if (str.find_first_not_of(kDigits) != pos ||
         str.find_first_not_of(kDigits, pos + 1) != std::string::npos) {
