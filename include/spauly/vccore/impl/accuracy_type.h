@@ -111,7 +111,8 @@ class AccuracyType {
 
   // Support for multiplication with other types. Must be convertable to double.
   // This may introduce precision errors unless T is an AccuracyType.
-  friend AccuracyType operator*(AccuracyType acc_t, AccuracyType other) {
+  friend AccuracyType operator*(const AccuracyType& acc_t,
+                                const AccuracyType& other) {
     AccuracyType result;
     result = acc_t;
     result *= other;
@@ -119,7 +120,7 @@ class AccuracyType {
   }
 
   template <typename T>
-  friend AccuracyType operator*(T num, AccuracyType& acc_t) {
+  friend AccuracyType operator*(const T& num, const AccuracyType& acc_t) {
     AccuracyType result;
 
     static_assert(std::is_convertible<T, double>::value,
@@ -130,7 +131,7 @@ class AccuracyType {
   }
 
   template <typename T>
-  friend AccuracyType operator*(AccuracyType& acc_t, T num) {
+  friend AccuracyType operator*(const AccuracyType& acc_t, const T& num) {
     return num * acc_t;
   }
 
@@ -139,7 +140,8 @@ class AccuracyType {
   AccuracyType& operator/=(const AccuracyType& other);
 
   // Support for division with other types. Must be convertable to double.
-  friend AccuracyType operator/(AccuracyType acc_t, AccuracyType other) {
+  friend AccuracyType operator/(const AccuracyType& acc_t,
+                                const AccuracyType& other) {
     AccuracyType result;
     result = acc_t;
     result /= other;
