@@ -17,6 +17,8 @@
 // Contact via <https://github.com/SPauly/ViscoCorrectCore>
 #include "spauly/vccore/impl/accuracy_type.h"
 
+#include <regex>
+
 namespace spauly {
 namespace vccore {
 namespace impl {
@@ -122,16 +124,23 @@ AccuracyType& AccuracyType::operator/=(const AccuracyType& other) {
     return *this;
   }
 
+  // Store the sign bit before the division since it will be lost
+  bool tmp_neg = neg_ ^ other.neg_;
+
   // If the exponents do not match they need to be adjusted before the division.
   if (exp_ < other.exp_) {
-    int_value_ *= static_cast<IntType>(std::pow(10, other.exp_ - exp_));
-    exp_ = other.exp_;
+    *this = static_cast<IntType>(std::pow(10, other.exp_ - exp_)) * *this;
 
-    operator=(static_cast<double>(int_value_ / other.int_value_));
-  } else if (exp_ > other.exp_) {
-    operator=(static_cast<double>(
-        int_value_ / (other.int_value_ * std::pow(10, exp_ - other.exp_))));
+    operator=(static_cast<double>(int_value_) /
+              static_cast<double>(other.int_value_));
+  } else {
+    operator=(static_cast<double>(int_value_) /
+              static_cast<double>(other.int_value_ *
+                                  std::pow(10, exp_ - other.exp_)));
   }
+
+  // Set the sign of the result (using xor)
+  neg_ = tmp_neg;
 
   return *this;
 }
@@ -149,7 +158,19 @@ bool AccuracyType::FromString(const std::string& value) {
   static const std::string kDigits = "0123456789";
 
   is_valid_ = true;
+  exp_ = 0;
   std::string str = value;
+
+  // Detect whether the input ends with e or E and a number
+  static const std::regex sci_notation_regex("([eE][-+]?[0-9]+)$");
+
+  std::smatch match;
+  std::regex_search(str, match, sci_notation_regex);
+  int32_t sci_exp = 0;
+  if (match.size() > 0) {
+    sci_exp = RetrieveExponent(match[0].str());
+    str.erase(match[1].first, match[1].second);
+  }
 
   // Retrieve the sign of the number
   neg_ = false;
@@ -209,6 +230,23 @@ bool AccuracyType::FromString(const std::string& value) {
     str.erase(pos, 1);
   }
 
+  // Now that the exponent is set we can merge it with an from the scientific
+  // notation. If the exponent was < 0 we can simply add it to the exponent.
+  // Otherwise we need to check if we can substract it from the exponent without
+  // underflow. If that fails we create an error since we don't need to handle
+  // this case.
+  if (sci_exp <= 0) {
+    exp_ += static_cast<uint32_t>(std::abs(sci_exp));
+  } else {
+    if (exp_ <= static_cast<uint32_t>(sci_exp)) {
+      // We need to convert the number to a double
+      Invalidate(ErrorState::kINFINITY);
+      return false;
+    } else {
+      exp_ -= static_cast<uint32_t>(sci_exp);
+    }
+  }
+
   // Now we should have a string of digits
   // Check for underflow
   if (str.empty()) {
@@ -247,6 +285,15 @@ bool AccuracyType::FromDouble(const double& value) {
     Invalidate(ErrorState::kNAN);
     return false;
   }
+}
+
+int32_t AccuracyType::RetrieveExponent(const std::string& value) const {
+  if (value.size() < 2) return 0;
+
+  std::string str = value;
+  str.erase(0, 1);
+
+  return std::stoul(str);
 }
 
 }  // namespace impl

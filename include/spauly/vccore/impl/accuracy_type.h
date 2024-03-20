@@ -178,6 +178,10 @@ class AccuracyType {
   bool FromString(const std::string& value);
   bool FromDouble(const double& value);
 
+  // This helper function retrieves the exponent from a string in scientific
+  // notation.Should start with e or E.
+  int32_t RetrieveExponent(const std::string& value) const;
+
  private:
   bool is_valid_ = true;
   ErrorState error_state_ = ErrorState::kNone;
