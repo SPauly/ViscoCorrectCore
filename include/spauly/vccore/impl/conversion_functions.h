@@ -20,6 +20,7 @@
 
 #include <map>
 
+#include "spauly/vccore/impl/accuracy_type.h"
 #include "spauly/vccore/input_parameters.h"
 
 namespace spauly {
@@ -28,27 +29,26 @@ namespace impl {
 
 /// Holds the factors by which to multiply the input parameters to convert them
 /// to m³/h.
-const std::map<FlowrateUnit, const double> kFlowrateToCubicMPH{
-    {FlowrateUnit::kLitersPerMinute, 0.06},  // not percise enough
-    {FlowrateUnit::kGallonsPerMinute, 0.227125},
-    {FlowrateUnit::kCubicMetersPerHour, 1.0}};
+const std::map<FlowrateUnit, const IType> kFlowrateToCubicMPH{
+    {FlowrateUnit::kLitersPerMinute, IType("0.06")},
+    {FlowrateUnit::kGallonsPerMinute, IType("0.227125")},
+    {FlowrateUnit::kCubicMetersPerHour, IType("1.0")}};
 
 /// Holds the factors by which to multiply the input parameters to convert them
 /// to m.
-const std::map<HeadUnit, const double> kHeadToMeters{
-    {HeadUnit::kFeet, 0.3048},  // not percise enough
-    {HeadUnit::kMeters, 1.0}};
+const std::map<HeadUnit, const IType> kHeadToMeters{
+    {HeadUnit::kFeet, IType("0.3048")}, {HeadUnit::kMeters, IType("1.0")}};
 
 /// Holds the factors by which to multiply the input parameters to convert them
 /// to g/l.
-const std::map<DensityUnit, const double> kDensityToGPL{
-    {DensityUnit::kGramPerLiter, 1.0},
-    {DensityUnit::kKilogramsPerCubicMeter, 0.001}};
+const std::map<DensityUnit, const IType> kDensityToGPL{
+    {DensityUnit::kGramPerLiter, IType("1.0")},
+    {DensityUnit::kKilogramsPerCubicMeter, IType("0.001")}};
 
 /// Converts value to the specified base unit for _Unit. This function can be
 /// used to convert to: -> CubicMPH, -> Meters, -> GramPerLiter.
 template <typename _Unit>
-P_type ConvertToBaseUnit(const P_type& value, const _Unit from) noexcept {
+IType ConvertToBaseUnit(const IType& value, const _Unit from) noexcept {
   static_assert(std::is_same<FlowrateUnit, _Unit>::value ||
                     std::is_same<HeadUnit, _Unit>::value ||
                     std::is_same<DensityUnit, _Unit>::value,
@@ -64,17 +64,16 @@ P_type ConvertToBaseUnit(const P_type& value, const _Unit from) noexcept {
 }
 
 /// Converts the input value to the base viscosity unit of mm2/s
-P_type ConvertViscosityTomm2s(
-    const P_type& value, const ViscosityUnit from,
-    const DensityInputType& density = 0,
+IType ConvertViscosityTomm2s(
+    const IType& value, const ViscosityUnit from,
+    const IType& density = IType(""),
     const DensityUnit d_unit = DensityUnit::kGramPerLiter) noexcept {
-  P_type out = 0;
+  IType out = IType("0.0");
 
-  /// TODO: check the validity of this
   switch (from) {
     case ViscosityUnit::kcP:
     case ViscosityUnit::kmPas:
-      if (density) {
+      if (density.get_int_value() != 0) {
         out = value / (density * kDensityToGPL.at(d_unit));
       }
       break;

@@ -18,13 +18,17 @@
 #ifndef SPAULY_VCCORE_INPUT_PARAMETERS_H_
 #define SPAULY_VCCORE_INPUT_PARAMETERS_H_
 
+#include <string>
+
 namespace spauly {
 namespace vccore {
 
-// P_type determines the accuracy of the input parameters.
-using P_type = double;
+// PType is the type used for the input parameters. Since double may not be
+// accurate enough for the calculations, std::string is used instead. Internally
+// this will be converted to a more accurate representation.
+using PType = std::string;
 // DensityInputType is only used when the viscosity is given in centipoise.
-using DensityInputType = double;
+using DensityInputType = std::string;
 
 /// FlowrateUnit determines the unit of the flowrate. Available units are: m³/h,
 /// l/min, gpm.
@@ -53,11 +57,11 @@ enum class DensityUnit : int { kGramPerLiter, kKilogramsPerCubicMeter };
 /// InputParameters contains all input parameters for the calculation. It is a
 /// DTO used for the communication with the Calculator.
 struct InputParameters {
-  P_type flowrate_q = 0;
-  P_type total_head = 0;
-  P_type viscosity_v = 0;
+  PType flowrate_q = "";
+  PType total_head = "";
+  PType viscosity_v = "";
   /// Must be provided when the viscosity is given in centipoise.
-  DensityInputType density_cp = 0;
+  DensityInputType density_cp = "";
 
   FlowrateUnit flowrate_unit = FlowrateUnit::kCubicMetersPerHour;
   HeadUnit head_unit = HeadUnit::kMeters;
@@ -65,7 +69,7 @@ struct InputParameters {
   DensityUnit density_unit = DensityUnit::kGramPerLiter;
 
   InputParameters() = default;
-  InputParameters(P_type _flowrate, P_type _head, P_type _viscosity,
+  InputParameters(PType _flowrate, PType _head, PType _viscosity,
                   DensityInputType _density = 0,
                   FlowrateUnit _f_unit = FlowrateUnit::kCubicMetersPerHour,
                   HeadUnit _h_unit = HeadUnit::kMeters,
@@ -82,7 +86,7 @@ struct InputParameters {
   ~InputParameters() = default;
 
   // Sets the input parameters. Behaves like the constructor.
-  void set(P_type _flowrate, P_type _head, P_type _viscosity,
+  void set(PType _flowrate, PType _head, PType _viscosity,
            DensityInputType _density = 0,
            FlowrateUnit _f_unit = FlowrateUnit::kCubicMetersPerHour,
            HeadUnit _h_unit = HeadUnit::kMeters,

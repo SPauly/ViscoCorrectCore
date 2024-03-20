@@ -29,6 +29,12 @@ namespace spauly {
 namespace vccore {
 namespace impl {
 
+// Forward declaration
+class AccuracyType;
+
+// IType represents the internally used type for the calculations.
+using IType = AccuracyType;
+
 /// AccuracyType stores floating point number as their integer representation
 /// together with an exponent to the base 10. This allows for more accurate
 /// arithmetic. When get_double() is called this representation is converted

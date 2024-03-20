@@ -30,7 +30,7 @@ namespace impl {
 namespace vccore_testing {
 namespace {
 // First param represents the test value the second one the expected conversion.
-using TestCasesMap = std::map<P_type, P_type>;
+using TestCasesMap = std::map<PType, PType>;
 
 // Test utilities for Flowrate:
 TestCasesMap lpmToCubicMPH{
@@ -61,7 +61,7 @@ TestCasesMap
 
 // Test utilities for Viscosity
 // The pair holds the following args: 1. Viscosity in cp/mpas, 2. Density in gPl
-std::map<std::pair<P_type, P_type>, P_type> cpmpasTomm2s{
+std::map<std::pair<PType, PType>, PType> cpmpasTomm2s{
     {{1, 1}, 1},    {{1, 2}, 0.5f},      {{1, 3}, 0.333333f},
     {{1, 4}, 0.25}, {{1, 5}, 0.2f},      {{2, 1}, 2},
     {{2, 2}, 1},    {{2, 3}, 0.666667f}, {{2, 4}, 0.5f},
@@ -83,7 +83,7 @@ std::string ConversionHelper(TestCasesMap& cases, _Unit from) {
   std::string errors = "";
 
   for (const auto& elem : cases) {
-    P_type res = ConvertToBaseUnit<_Unit>(elem.first, from);
+    PType res = ConvertToBaseUnit<_Unit>(elem.first, from);
 
     // If the result is not what expected we create a string with the
     // expected and resulting conversion.
@@ -142,7 +142,7 @@ TEST(ConversionFunctions, viscosity_conversion) {
   std::string errors = "";
 
   for (const auto& elem : cpmpasTomm2s) {
-    P_type res =
+    PType res =
         ConvertViscosityTomm2s(elem.first.first, ViscosityUnit::kcP,
                                elem.first.second, DensityUnit::kGramPerLiter);
 

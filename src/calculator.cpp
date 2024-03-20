@@ -25,7 +25,7 @@ const CorrectionFactors Calculator::Calculate(
 }
 
 const CorrectionFactors Calculator::Calculate(
-    P_type _flowrate, P_type _head, P_type _viscosity, FlowrateUnit _f_unit,
+    PType _flowrate, PType _head, PType _viscosity, FlowrateUnit _f_unit,
     HeadUnit _h_unit, ViscosityUnit _v_unit) const noexcept {
   // Work with an InputParameters object internaly.
   InputParameters input{
@@ -36,9 +36,9 @@ const CorrectionFactors Calculator::Calculate(
 }
 
 const CorrectionFactors Calculator::Calculate(
-    P_type _flowrate, P_type _head, P_type _viscosity,
-    DensityInputType _density, FlowrateUnit _f_unit, HeadUnit _h_unit,
-    ViscosityUnit _v_unit, DensityUnit _d_unit) const noexcept {
+    PType _flowrate, PType _head, PType _viscosity, DensityInputType _density,
+    FlowrateUnit _f_unit, HeadUnit _h_unit, ViscosityUnit _v_unit,
+    DensityUnit _d_unit) const noexcept {
   // Work with an InputParameters object internaly.
   InputParameters input{std::move(_flowrate),  std::move(_head),
                         std::move(_viscosity), std::move(_density),
