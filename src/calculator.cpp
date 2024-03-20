@@ -25,8 +25,9 @@ const CorrectionFactors Calculator::Calculate(
 }
 
 const CorrectionFactors Calculator::Calculate(
-    PType _flowrate, PType _head, PType _viscosity, FlowrateUnit _f_unit,
-    HeadUnit _h_unit, ViscosityUnit _v_unit) const noexcept {
+    const std::string& _flowrate, const std::string& _head,
+    const std::string& _viscosity, FlowrateUnit _f_unit, HeadUnit _h_unit,
+    ViscosityUnit _v_unit) const noexcept {
   // Work with an InputParameters object internaly.
   InputParameters input{
       std::move(_flowrate), std::move(_head),   std::move(_viscosity), 0,
@@ -36,7 +37,8 @@ const CorrectionFactors Calculator::Calculate(
 }
 
 const CorrectionFactors Calculator::Calculate(
-    PType _flowrate, PType _head, PType _viscosity, DensityInputType _density,
+    const std::string& _flowrate, const std::string& _head,
+    const std::string& _viscosity, const std::string& _density,
     FlowrateUnit _f_unit, HeadUnit _h_unit, ViscosityUnit _v_unit,
     DensityUnit _d_unit) const noexcept {
   // Work with an InputParameters object internaly.
@@ -50,19 +52,26 @@ const CorrectionFactors Calculator::Calculate(
 // Implementations
 const InputParameters Calculator::ConvertInput(
     const InputParameters& input) const noexcept {
-  InputParameters out;
+  // This constructor converts the given input to the internally used
+  // representation.
+  impl::InternalPType i_input(input);
 
   // Set all converted values, the units can be left standard initialized.
-  out.flowrate_q = impl::ConvertToBaseUnit<FlowrateUnit>(input.flowrate_q,
-                                                         input.flowrate_unit);
-  out.total_head =
-      impl::ConvertToBaseUnit<HeadUnit>(input.total_head, input.head_unit);
-  out.viscosity_v =
-      impl::ConvertViscosityTomm2s(input.viscosity_v, input.viscosity_unit,
-                                   input.density_cp, input.density_unit);
-  out.density_cp = impl::ConvertToBaseUnit<DensityUnit>(input.density_cp,
-                                                        input.density_unit);
+  i_input.flowrate_q = impl::ConvertToBaseUnit<FlowrateUnit>(
+      i_input.flowrate_q, i_input.flowrate_unit);
+  i_input.total_head =
+      impl::ConvertToBaseUnit<HeadUnit>(i_input.total_head, i_input.head_unit);
+  i_input.viscosity_v =
+      impl::ConvertViscosityTomm2s(i_input.viscosity_v, i_input.viscosity_unit,
+                                   i_input.density_cp, i_input.density_unit);
+  i_input.density_cp = impl::ConvertToBaseUnit<DensityUnit>(
+      i_input.density_cp, i_input.density_unit);
 
+  InputParameters out;
+  out.flowrate_q = static_cast<std::string>(i_input.flowrate_q);
+  out.total_head = static_cast<std::string>(i_input.total_head);
+  out.viscosity_v = static_cast<std::string>(i_input.viscosity_v);
+  out.density_cp = static_cast<std::string>(i_input.density_cp);
   return std::move(out);
 }
 

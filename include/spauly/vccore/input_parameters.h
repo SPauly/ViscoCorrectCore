@@ -19,6 +19,7 @@
 #define SPAULY_VCCORE_INPUT_PARAMETERS_H_
 
 #include <string>
+#include "spauly/vccore/impl/accuracy_type.h"
 
 namespace spauly {
 namespace vccore {
@@ -102,6 +103,35 @@ struct InputParameters {
     density_unit = _d_unit;
   }
 };
+
+namespace impl {
+
+/// InternalPType is the internal representation of the input parameters. It
+/// represents the data in the specified IType.
+struct InternalPType {
+  IType flowrate_q;
+  IType total_head;
+  IType viscosity_v;
+  IType density_cp;
+
+  FlowrateUnit flowrate_unit = FlowrateUnit::kCubicMetersPerHour;
+  HeadUnit head_unit = HeadUnit::kMeters;
+  ViscosityUnit viscosity_unit = ViscosityUnit::kSquareMilPerSecond;
+  DensityUnit density_unit = DensityUnit::kGramPerLiter;
+
+  InternalPType() = default;
+  InternalPType(const InputParameters& input)
+      : flowrate_q(IType(input.flowrate_q)),
+        total_head(IType(input.total_head)),
+        viscosity_v(IType(input.viscosity_v)),
+        density_cp(IType(input.density_cp)),
+        flowrate_unit(input.flowrate_unit),
+        head_unit(input.head_unit),
+        viscosity_unit(input.viscosity_unit),
+        density_unit(input.density_unit) {}
+};
+
+}  // namespace impl
 
 }  // namespace vccore
 }  // namespace spauly
