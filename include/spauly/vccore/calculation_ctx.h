@@ -15,8 +15,8 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 // Contact via <https://github.com/SPauly/ViscoCorrectCore>
-#ifndef SPAULY_VCCORE_CALCULATOR_H_
-#define SPAULY_VCCORE_CALCULATOR_H_
+#ifndef SPAULY_VCCORE_CALCULATION_CTX_H_
+#define SPAULY_VCCORE_CALCULATION_CTX_H_
 
 #include <array>
 #include <string>
@@ -52,10 +52,10 @@ struct CorrectionFactors {
       : q(0), eta(0), h({0, 0, 0, 0}), error_flag(_error) {}
 };
 
-class Calculator {
+class CalculationCTX {
  public:
-  Calculator() = default;
-  ~Calculator() = default;
+  CalculationCTX() = default;
+  ~CalculationCTX() = default;
 
   /// Calculates the correction factors for the given input parameters. The
   /// parameters are copied to ensure threadsafety. The error flag in
@@ -134,7 +134,7 @@ class Calculator {
 
 // Template definitions
 template <typename _Unit>
-const double Calculator::ConvertValueToBase(
+const double CalculationCTX::ConvertValueToBase(
     const std::string value, const _Unit from, const DensityInputType& density,
     const DensityUnit d_unit) const noexcept {
   static_assert(std::is_same<ViscosityUnit, _Unit>::value,
@@ -151,4 +151,4 @@ const double Calculator::ConvertValueToBase(
 }  // namespace vccore
 }  // namespace spauly
 
-#endif  // SPAULY_VCCORE_CALCULATOR_H_
+#endif  // SPAULY_VCCORE_CALCULATION_CTX_H_

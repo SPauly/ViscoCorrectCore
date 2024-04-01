@@ -15,32 +15,23 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 // Contact via <https://github.com/SPauly/ViscoCorrectCore>
-#ifndef SPAULY_VCCORE_IMPL_CORRECTION_CONTEXT_H_
-#define SPAULY_VCCORE_IMPL_CORRECTION_CONTEXT_H_
+#ifndef SPAULY_VCCORE_VC_PROJECT_H_
+#define SPAULY_VCCORE_VC_PROJECT_H_
 
 namespace spauly {
 namespace vccore {
-namespace impl {
-class CorrectionContext {
- public:
-  /// This only sets the initialization flag to false. Initialize() must be
-  /// called to initialize the context properly.
-  CorrectionContext() = default;
-  ~CorrectionContext() = default;
 
-  /// The copy constructor simply copies the retrieved data from the original if
-  /// it is initialized. Otherwise it constructs the object itself using the
-  /// normal constructor.
-  CorrectionContext(const CorrectionContext&);
-  /// Copies the retrieved data from the original if it is initialized.
-  /// Otherwise it constructs the object itself using the normal constructor. If
-  /// this is already set to initialzed nothing happens.
-  const CorrectionContext& operator=(const CorrectionContext&);
+class Project {
+ public:
+  Project() = delete;
+  /// Project needs a valid CalculationCTX object to work with.
+  Project(const CalculationCTX& ctx);
 
  private:
+  const CalculationCTX& ctx_;
 };
-}  // namespace impl
+
 }  // namespace vccore
 }  // namespace spauly
 
-#endif  // SPAULY_VCCORE_IMPL_CORRECTION_CONTEXT_H_
+#endif  // SPAULY_VCCORE_VC_PROJECT_H_

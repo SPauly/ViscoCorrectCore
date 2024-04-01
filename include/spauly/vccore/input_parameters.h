@@ -56,7 +56,7 @@ enum class ViscosityUnit : int {
 enum class DensityUnit : int { kGramPerLiter, kKilogramsPerCubicMeter };
 
 /// InputParameters contains all input parameters for the calculation. It is a
-/// DTO used for the communication with the Calculator.
+/// DTO used for the communication with the CalculationCTX.
 struct InputParameters {
   PType flowrate_q = "";
   PType total_head = "";

@@ -52,8 +52,7 @@ find_package(Threads REQUIRED)
 # Build the library
 add_library(ViscoCorrectCore STATIC
     src/accuracy_type.cpp
-    src/calculator.cpp
-    src/correction_context.cpp
+    src/calculation_ctx.cpp
 )
 
 # Set library definitions
@@ -107,10 +106,9 @@ include(GNUInstallDirs)
 
 # Install the headers into the installation directory
 foreach(header 
-    include/spauly/vccore/calculator.h
+    include/spauly/vccore/calculation_ctx.h
     include/spauly/vccore/input_parameters.h
     include/spauly/vccore/impl/accuracy_type.h
-    include/spauly/vccore/impl/correction_context.h
     include/spauly/vccore/impl/conversion_functions.h
 )
     string(REPLACE "include/" "" _path ${header})
@@ -160,7 +158,6 @@ if(vcc_BUILD_TESTS)
     # Build the tests
     set(TEST_TARGETS
         accuracy_type_test
-        correction_context_test
         conversion_functions_test
     )
 

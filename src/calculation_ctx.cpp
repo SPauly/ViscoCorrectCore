@@ -15,16 +15,16 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 // Contact via <https://github.com/SPauly/ViscoCorrectCore>
-#include "spauly/vccore/calculator.h"
+#include "spauly/vccore/calculation_ctx.h"
 
 namespace spauly {
 namespace vccore {
-const CorrectionFactors Calculator::Calculate(
+const CorrectionFactors CalculationCTX::Calculate(
     const InputParameters input) const noexcept {
   return std::move(CalcImpl(input));
 }
 
-const CorrectionFactors Calculator::Calculate(
+const CorrectionFactors CalculationCTX::Calculate(
     const std::string& _flowrate, const std::string& _head,
     const std::string& _viscosity, FlowrateUnit _f_unit, HeadUnit _h_unit,
     ViscosityUnit _v_unit) const noexcept {
@@ -36,7 +36,7 @@ const CorrectionFactors Calculator::Calculate(
   return std::move(CalcImpl(input));
 }
 
-const CorrectionFactors Calculator::Calculate(
+const CorrectionFactors CalculationCTX::Calculate(
     const std::string& _flowrate, const std::string& _head,
     const std::string& _viscosity, const std::string& _density,
     FlowrateUnit _f_unit, HeadUnit _h_unit, ViscosityUnit _v_unit,
@@ -50,7 +50,7 @@ const CorrectionFactors Calculator::Calculate(
 }
 
 // Implementations
-const InputParameters Calculator::ConvertInput(
+const InputParameters CalculationCTX::ConvertInput(
     const InputParameters& input) const noexcept {
   // This constructor converts the given input to the internally used
   // representation.
@@ -75,7 +75,7 @@ const InputParameters Calculator::ConvertInput(
   return std::move(out);
 }
 
-const CorrectionFactors Calculator::CalcImpl(
+const CorrectionFactors CalculationCTX::CalcImpl(
     const InputParameters& input) const noexcept {
   // Convert the given Inputs to the internally used units
   // Verify that the input values are in the provided range by the standard
