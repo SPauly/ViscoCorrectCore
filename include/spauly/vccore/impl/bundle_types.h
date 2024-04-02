@@ -42,6 +42,12 @@ struct ParametersInternal {
         total_head(std::move(_head)),
         viscosity_v(std::move(_viscosity)),
         density_cp(std::move(_density)) {}
+
+  ParametersInternal(const ParametersInternal& other)
+      : flowrate_q(std::move(other.flowrate_q)),
+        total_head(std::move(other.total_head)),
+        viscosity_v(std::move(other.viscosity_v)),
+        density_cp(std::move(other.density_cp)) {}
 };
 
 /// HFaktor depicts the coefficient for the head correction. 0.6 = kH06, 0.8 =
@@ -51,14 +57,15 @@ enum class HFaktor : int { kH06 = 0, kH08 = 1, kH10 = 2, kH12 = 3 };
 /// CorrectionFactors is a DTO used for the communication between Project and
 /// Calculator. It is mainly used for the output of the calculation.
 struct CorrectionFactors {
-  const double q;
-  const double eta;
+  double q = 0;
+  double eta = 0;
   // The order of the factors is the same as the HFaktor enum.
-  const std::array<const double, 4> h;
+  std::array<double, 4> h = {0, 0, 0, 0};
 
-  const int error_flag = 0;
+  int error_flag = 0;
 
-  CorrectionFactors(double _q, double _eta, std::array<const double, 4> _h)
+  CorrectionFactors() = default;
+  CorrectionFactors(double _q, double _eta, std::array<double, 4> _h)
       : q(q), eta(eta), h(_h) {}
   CorrectionFactors(int _error)
       : q(0), eta(0), h({0, 0, 0, 0}), error_flag(_error) {}

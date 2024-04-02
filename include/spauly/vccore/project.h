@@ -88,14 +88,19 @@ class Project {
   Project(const Project &other);
   Project &operator=(const Project &other);
 
+  /// Calculates the correction factors for the given input parameters. Calling
+  /// this before trying to access any of the correction factors is more
+  /// efficient. Returns false if the input parameters are invalid.
+  bool Calculate();
+
   // Getters
-  const double q();
-  const double eta();
-  const std::array<const double, 4> h();
-  const double h_06();
-  const double h_08();
-  const double h_10();
-  const double h_12();
+  double q();
+  double eta();
+  const std::array<double, 4> h();
+  double h_06();
+  double h_08();
+  double h_10();
+  double h_12();
 
   /// Returns the name of the project.
   inline const std::string &name() const {
@@ -214,8 +219,17 @@ class Project {
   /// changes. Assumes that mtx_ is locked!
   void IndicateChange();
 
+  /// Helper function that handles the actual calculation. Assumes that mtx_ is
+  /// locked!
+  bool CalcImpl();
+
+  /// This wrapper ensures that the given read lock is unlocked and a write lock
+  /// is aquired before calling CalcImpl.
+  bool GetterCalcWrapper(ReadLock &lock);
+
  private:
-  std::shared_ptr<CalculationCTX> ctx_;
+  std::shared_ptr<CalculationCTX> ctx_ = nullptr;
+  const impl::Calculator calculator_;
 
   mutable std::shared_mutex mtx_;
   bool was_computed_ = false;
