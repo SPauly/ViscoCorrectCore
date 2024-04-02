@@ -28,7 +28,7 @@
 namespace spauly {
 namespace vccore {
 // Forward declarations
-class ConversionCTX;
+class CalculationCTX;
 
 // PType is the type used for the input parameters. Since double may not be
 // accurate enough for the calculations, std::string is used instead. Internally
@@ -70,8 +70,8 @@ class Project {
   using WriteLock = std::unique_lock<std::shared_mutex>;
 
  public:
-  // ConversionCTX needs access to the internals of Project.
-  friend class ConversionCTX;
+  // CalculationCTX needs access to the internals of Project.
+  friend class CalculationCTX;
 
   Project() = default;
   Project(PType _flowrate, PType _head, PType _viscosity,
@@ -197,7 +197,10 @@ class Project {
   // Setters
 
   /// Sets the name of the project.
-  void set_name(const std::string &_name);
+  inline void set_name(const std::string &_name) {
+    WriteLock lock(mtx_);
+    name_ = _name;
+  }
 
   /// Sets the floating point precision for the calculations.
   void set_floating_point_precision(size_t _precision);
@@ -230,14 +233,21 @@ class Project {
   /// Sets the density unit to either g/l or kg/m³.
   void set_density_unit(const DensityUnit &_unit);
 
+ protected:
+  /// Helper function that resets the correction factors and metadata to
+  /// indicate an uncomputed change. Should be called whenever an input_ value
+  /// changes. Assumes that mtx_ is locked!
+  void IndicateChange();
+
  private:
   mutable std::shared_mutex mtx_;
+  bool was_computed_ = false;
   bool has_error_ = false;
 
   // Settings for the project
-  std::string name_;
-  size_t id_;
-  size_t floating_point_precision_;
+  std::string name_ = "";
+  size_t id_ = 0;
+  size_t floating_point_precision_ = 17;
 
   // Input parameters
   // This is used to avoid recomputing unchanged values. 0 = flowrate_, 1 =
@@ -262,9 +272,9 @@ class Project {
   impl::IType density_cp_;
 
   // Correction factors
-  double q_;
-  double eta_;
-  std::array<double, 4> h_;
+  double q_ = 0;
+  double eta_ = 0;
+  std::array<double, 4> h_{0, 0, 0, 0};
 
   // Computed helper functions for the correction factors
 };
