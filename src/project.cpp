@@ -19,10 +19,14 @@
 
 namespace spauly {
 namespace vccore {
-Project::Project(PType _flowrate, PType _head, PType _viscosity,
-                 DensityInputType _density, FlowrateUnit _f_unit,
-                 HeadUnit _h_unit, ViscosityUnit _v_unit, DensityUnit _d_unit)
-    : input_flowrate_(_flowrate),
+Project::Project(std::shared_ptr<CalculationCTX> ctx) : ctx_(ctx) {}
+
+Project::Project(std::shared_ptr<CalculationCTX> ctx, PType _flowrate,
+                 PType _head, PType _viscosity, DensityInputType _density,
+                 FlowrateUnit _f_unit, HeadUnit _h_unit, ViscosityUnit _v_unit,
+                 DensityUnit _d_unit)
+    : ctx_(ctx),
+      input_flowrate_(_flowrate),
       input_total_head_(_head),
       input_viscosity_(_viscosity),
       input_density_cp_(_density),
@@ -31,18 +35,7 @@ Project::Project(PType _flowrate, PType _head, PType _viscosity,
       viscosity_unit_(_v_unit),
       density_unit_(_d_unit) {}
 
-Project::Project(const Project& other) {
-  std::unique_lock<std::shared_mutex> lock(other.mtx_);
-
-  input_flowrate_ = other.input_flowrate_;
-  input_total_head_ = other.input_total_head_;
-  input_viscosity_ = other.input_viscosity_;
-  input_density_cp_ = other.input_density_cp_;
-  flowrate_unit_ = other.flowrate_unit_;
-  head_unit_ = other.head_unit_;
-  viscosity_unit_ = other.viscosity_unit_;
-  density_unit_ = other.density_unit_;
-}
+Project::Project(const Project& other) { operator=(other); }
 
 Project& Project::operator=(const Project& other) {
   std::unique_lock<std::shared_mutex> lock(other.mtx_);

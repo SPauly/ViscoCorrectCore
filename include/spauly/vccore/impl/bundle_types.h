@@ -1,0 +1,71 @@
+// ViscoCorrectCore - Correction factors for centrifugal pumps
+// Copyright (C) 2024  Simon Pauly
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+//(at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+//
+// Contact via <https://github.com/SPauly/ViscoCorrectCore>
+#ifndef SPAULY_VCCORE_INPUT_PARAMETERS_H_
+#define SPAULY_VCCORE_INPUT_PARAMETERS_H_
+
+#include <array>
+#include <string>
+#include "spauly/vccore/impl/accuracy_type.h"
+
+namespace spauly {
+namespace vccore {
+namespace impl {
+
+/// ParametersInternal is a DTO used for the communication between Project and
+/// Calculator. This should only contain the input parameters already converted
+/// to the needed units.
+struct ParametersInternal {
+  IType flowrate_q;
+  IType total_head;
+  IType viscosity_v;
+  IType density_cp;
+
+  ParametersInternal() = default;
+  ParametersInternal(IType _flowrate, IType _head, IType _viscosity,
+                     IType _density = IType("0"))
+      : flowrate_q(std::move(_flowrate)),
+        total_head(std::move(_head)),
+        viscosity_v(std::move(_viscosity)),
+        density_cp(std::move(_density)) {}
+};
+
+/// HFaktor depicts the coefficient for the head correction. 0.6 = kH06, 0.8 =
+/// kH08, 1.0 = kH10, 1.2 = kH12.
+enum class HFaktor : int { kH06 = 0, kH08 = 1, kH10 = 2, kH12 = 3 };
+
+/// CorrectionFactors is a DTO used for the communication between Project and
+/// Calculator. It is mainly used for the output of the calculation.
+struct CorrectionFactors {
+  const double q;
+  const double eta;
+  // The order of the factors is the same as the HFaktor enum.
+  const std::array<const double, 4> h;
+
+  const int error_flag = 0;
+
+  CorrectionFactors(double _q, double _eta, std::array<const double, 4> _h)
+      : q(q), eta(eta), h(_h) {}
+  CorrectionFactors(int _error)
+      : q(0), eta(0), h({0, 0, 0, 0}), error_flag(_error) {}
+};
+
+}  // namespace impl
+}  // namespace vccore
+}  // namespace spauly
+
+#endif  // SPAULY_VCCORE_INPUT_PARAMETERS_H_

@@ -23,7 +23,8 @@
 #include <string>
 #include <shared_mutex>
 
-#include "spauly/vccore/impl/accuracy_type.h"
+#include "spauly/vccore/impl/bundle_types.h"
+#include "spauly/vccore/impl/calculator.h"
 
 namespace spauly {
 namespace vccore {
@@ -70,12 +71,13 @@ class Project {
   using WriteLock = std::unique_lock<std::shared_mutex>;
 
  public:
-  // CalculationCTX needs access to the internals of Project.
-  friend class CalculationCTX;
+  // Calculator needs access to the internals of Project.
+  friend class Calculator;
 
-  Project() = default;
-  Project(PType _flowrate, PType _head, PType _viscosity,
-          DensityInputType _density = 0,
+  Project() = delete;
+  Project(std::shared_ptr<CalculationCTX> ctx);
+  Project(std::shared_ptr<CalculationCTX> ctx, PType _flowrate, PType _head,
+          PType _viscosity, DensityInputType _density = 0,
           FlowrateUnit _f_unit = FlowrateUnit::kCubicMetersPerHour,
           HeadUnit _h_unit = HeadUnit::kMeters,
           ViscosityUnit _v_unit = ViscosityUnit::kSquareMilPerSecond,
@@ -87,40 +89,13 @@ class Project {
   Project &operator=(const Project &other);
 
   // Getters
-  inline const double q() const {
-    ReadLock lock(mtx_);
-    return q_;
-  }
-
-  inline const double eta() const {
-    ReadLock lock(mtx_);
-    return eta_;
-  }
-
-  inline const std::array<double, 4> h() const {
-    ReadLock lock(mtx_);
-    return h_;
-  }
-
-  inline const double h_06() const {
-    ReadLock lock(mtx_);
-    return h_[0];
-  }
-
-  inline const double h_08() const {
-    ReadLock lock(mtx_);
-    return h_[1];
-  }
-
-  inline const double h_10() const {
-    ReadLock lock(mtx_);
-    return h_[2];
-  }
-
-  inline const double h_12() const {
-    ReadLock lock(mtx_);
-    return h_[3];
-  }
+  const double q();
+  const double eta();
+  const std::array<const double, 4> h();
+  const double h_06();
+  const double h_08();
+  const double h_10();
+  const double h_12();
 
   /// Returns the name of the project.
   inline const std::string &name() const {
@@ -240,6 +215,8 @@ class Project {
   void IndicateChange();
 
  private:
+  std::shared_ptr<CalculationCTX> ctx_;
+
   mutable std::shared_mutex mtx_;
   bool was_computed_ = false;
   bool has_error_ = false;
@@ -265,16 +242,11 @@ class Project {
   ViscosityUnit viscosity_unit_ = ViscosityUnit::kSquareMilPerSecond;
   DensityUnit density_unit_ = DensityUnit::kGramPerLiter;
 
-  // Internal representation of the input parameters
-  impl::IType flowrate_;
-  impl::IType total_head_;
-  impl::IType viscosity_;
-  impl::IType density_cp_;
+  // Converted Parameters
+  impl::ParametersInternal converted_input_;
 
-  // Correction factors
-  double q_ = 0;
-  double eta_ = 0;
-  std::array<double, 4> h_{0, 0, 0, 0};
+  // Result
+  impl::CorrectionFactors res_;
 
   // Computed helper functions for the correction factors
 };
