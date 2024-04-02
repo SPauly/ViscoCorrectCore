@@ -65,6 +65,10 @@ enum class DensityUnit : int {
 } StandardDensityUnit = kGramPerLiter;
 
 class Project {
+ private:
+  using ReadLock = std::shared_lock<std::shared_mutex>;
+  using WriteLock = std::unique_lock<std::shared_mutex>;
+
  public:
   // ConversionCTX needs access to the internals of Project.
   friend class ConversionCTX;
@@ -75,15 +79,7 @@ class Project {
           FlowrateUnit _f_unit = FlowrateUnit::kCubicMetersPerHour,
           HeadUnit _h_unit = HeadUnit::kMeters,
           ViscosityUnit _v_unit = ViscosityUnit::kSquareMilPerSecond,
-          DensityUnit _d_unit = DensityUnit::kGramPerLiter)
-      : input_flowrate_(_flowrate),
-        input_total_head_(_head),
-        input_viscosity_(_viscosity),
-        input_density_cp_(_density),
-        flowrate_unit_(_f_unit),
-        head_unit_(_h_unit),
-        viscosity_unit_(_v_unit),
-        density_unit_(_d_unit) {}
+          DensityUnit _d_unit = DensityUnit::kGramPerLiter);
 
   ~Project() = default;
 
@@ -91,38 +87,112 @@ class Project {
   Project &operator=(const Project &other);
 
   // Getters
-  const double q() const;
-  const double eta() const;
-  const std::array<double, 4> h() const;
-  const double h_06() const;
-  const double h_08() const;
-  const double h_10() const;
-  const double h_12() const;
+  inline const double q() const {
+    ReadLock lock(mtx_);
+    return q_;
+  }
+
+  inline const double eta() const {
+    ReadLock lock(mtx_);
+    return eta_;
+  }
+
+  inline const std::array<double, 4> h() const {
+    ReadLock lock(mtx_);
+    return h_;
+  }
+
+  inline const double h_06() const {
+    ReadLock lock(mtx_);
+    return h_[0];
+  }
+
+  inline const double h_08() const {
+    ReadLock lock(mtx_);
+    return h_[1];
+  }
+
+  inline const double h_10() const {
+    ReadLock lock(mtx_);
+    return h_[2];
+  }
+
+  inline const double h_12() const {
+    ReadLock lock(mtx_);
+    return h_[3];
+  }
 
   /// Returns the name of the project.
-  const std::string &name() const;
+  inline const std::string &name() const {
+    ReadLock lock(mtx_);
+    return name_;
+  }
+
   /// Returns the floating point precision for the calculations.
-  size_t floating_point_precision() const;
+  inline size_t floating_point_precision() const {
+    ReadLock lock(mtx_);
+    return floating_point_precision_;
+  }
+
   /// Returns the ID of the project.
-  const size_t id() const;
+  inline const size_t id() const {
+    ReadLock lock(mtx_);
+    return id_;
+  }
+
   /// Returns whether the project has an error.
-  bool has_error() const;
+  inline bool has_error() const {
+    ReadLock lock(mtx_);
+    return has_error_;
+  }
+
   /// Returns the flowrate.
-  const PType &flowrate() const;
+  inline const PType &flowrate() const {
+    ReadLock lock(mtx_);
+    return input_flowrate_;
+  }
+
   /// Returns the flowrate unit.
-  const FlowrateUnit &flowrate_unit() const;
+  inline const FlowrateUnit &flowrate_unit() const {
+    ReadLock lock(mtx_);
+    return flowrate_unit_;
+  }
+
   /// Returns the total head.
-  const PType &total_head() const;
+  inline const PType &total_head() const {
+    ReadLock lock(mtx_);
+    return input_total_head_;
+  }
+
   /// Returns the head unit.
-  const HeadUnit &head_unit() const;
+  inline const HeadUnit &head_unit() const {
+    ReadLock lock(mtx_);
+    return head_unit_;
+  }
+
   /// Returns the viscosity.
-  const PType &viscosity() const;
+  inline const PType &viscosity() const {
+    ReadLock lock(mtx_);
+    return input_viscosity_;
+  }
+
   /// Returns the viscosity unit.
-  const ViscosityUnit &viscosity_unit() const;
+  inline const ViscosityUnit &viscosity_unit() const {
+    ReadLock lock(mtx_);
+    return viscosity_unit_;
+  }
+
   /// Returns the density.
-  const DensityInputType &density() const;
+  inline const DensityInputType &density() const {
+    ReadLock lock(mtx_);
+    return input_density_cp_;
+  }
+
   /// Returns the density unit.
-  const DensityUnit &density_unit() const;
+  inline const DensityUnit &density_unit() const {
+    ReadLock lock(mtx_);
+    return density_unit_;
+  }
 
   // Setters
 
