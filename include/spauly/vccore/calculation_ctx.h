@@ -20,8 +20,10 @@
 
 #include <array>
 #include <string>
+#include <memory>
 
 #include "spauly/vccore/input_parameters.h"
+#include "spauly/vccore/project.h"
 #include "spauly/vccore/impl/conversion_functions.h"
 
 namespace spauly {
