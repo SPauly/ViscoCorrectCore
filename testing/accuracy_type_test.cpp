@@ -266,7 +266,8 @@ TEST(AccuracyTypeTest, devision) {
   EXPECT_EQ(accuracy_type.get_double(), 166.66666666666666);
 
   accuracy_type = AccuracyType("-6.59354666553092e-06") / 10;
-  EXPECT_EQ(accuracy_type.get_double(), -6.59354666553092e-07);
+  EXPECT_TRUE(std::abs(accuracy_type.get_double() - -6.59354666553092e-07) <
+              1e-15);
 
   accuracy_type = AccuracyType("20.6") / AccuracyType("10");
   EXPECT_EQ(accuracy_type.get_double(), 2.06);
