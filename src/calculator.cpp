@@ -15,30 +15,18 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 // Contact via <https://github.com/SPauly/ViscoCorrectCore>
-#ifndef SPAULY_VCCORE_IMPL_CALCULATOR_H_
-#define SPAULY_VCCORE_IMPL_CALCULATOR_H_
-
-#include <memory>
-
-#include "spauly/vccore/impl/bundle_types.h"
-#include "spauly/vccore/calculation_ctx.h"
+#include "spauly/vccore/impl/calculator.h"
 
 namespace spauly {
 namespace vccore {
 namespace impl {
 
-class Calculator {
- public:
-  Calculator() = delete;
-  Calculator(std::shared_ptr<CalculationCTX> ctx) : ctx_(ctx) {}
+CorrectionFactors Calculator::Calculate(
+    const ParametersInternal& params) const {
+  CorrectionFactors out;
+  return out;
+}
 
-  CorrectionFactors Calculate(const ParametersInternal& params) const;
-
- private:
-  std::shared_ptr<CalculationCTX> ctx_;
-};
 }  // namespace impl
 }  // namespace vccore
 }  // namespace spauly
-
-#endif  // SPAULY_VCCORE_IMPL_CALCULATOR_H_

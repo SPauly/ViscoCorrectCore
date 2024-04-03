@@ -65,15 +65,18 @@ enum class DensityUnit : int {
   kKilogramsPerCubicMeter
 } StandardDensityUnit = kGramPerLiter;
 
+/// Project is the main class of the library the user will interact with. It
+/// stores the input parameters and the correction factors. The calculation is
+/// done by the Calculator class. The Project class is thread-safe.
+/// Project expexts a CalculationCTX to be provided. The context holds necessary
+/// constants and helpers for the calculation and should be shared across
+/// multiple projects.
 class Project {
  private:
   using ReadLock = std::shared_lock<std::shared_mutex>;
   using WriteLock = std::unique_lock<std::shared_mutex>;
 
  public:
-  // Calculator needs access to the internals of Project.
-  friend class Calculator;
-
   Project() = delete;
   Project(std::shared_ptr<CalculationCTX> ctx);
   Project(std::shared_ptr<CalculationCTX> ctx, PType _flowrate, PType _head,

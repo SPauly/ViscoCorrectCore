@@ -44,10 +44,11 @@ Project::Project(const Project& other) : calculator_(other.ctx_) {
 }
 
 Project& Project::operator=(const Project& other) {
-  std::unique_lock<std::shared_mutex> lock(other.mtx_);
-  std::unique_lock<std::shared_mutex> lock2(mtx_);
+  ReadLock lock(other.mtx_);
+  WriteLock lock2(mtx_);
 
   ctx_ = other.ctx_;
+  name_ = other.name_;
 
   input_flowrate_ = other.input_flowrate_;
   input_total_head_ = other.input_total_head_;
@@ -251,6 +252,7 @@ bool Project::CalcImpl() {
   res_ = calculator_.Calculate(converted_input_);
 
   was_computed_ = true;
+  was_changed_ = {false, false, false, false};
   return has_error_ = res_.error_flag != 0;
 }
 

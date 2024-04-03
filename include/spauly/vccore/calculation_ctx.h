@@ -34,34 +34,6 @@ class CalculationCTX {
   CalculationCTX() = default;
   ~CalculationCTX() = default;
 
-  /// Calculates the correction factors for the given input parameters. The
-  /// parameters are copied to ensure threadsafety. The error flag in
-  /// CorrectionFactors is set when the input parameters are invalid.
-  const CorrectionFactors Calculate(
-      const ParametersInternal input) const noexcept;
-
-  /// Calculates the correction factors for the given input parameters. The
-  /// parameters are copied to ensure threadsafety. The error flag in
-  /// CorrectionFactors is set when the input parameters are invalid.
-  const CorrectionFactors Calculate(
-      const std::string& _flowrate, const std::string& _head,
-      const std::string& _viscosity,
-      FlowrateUnit _f_unit = FlowrateUnit::kCubicMetersPerHour,
-      HeadUnit _h_unit = HeadUnit::kMeters,
-      ViscosityUnit _v_unit =
-          ViscosityUnit::kSquareMilPerSecond) const noexcept;
-
-  /// Calculates the correction factors for the given input parameters. The
-  /// parameters are copied to ensure threadsafety. The error flag in
-  /// CorrectionFactors is set when the input parameters are invalid.
-  const CorrectionFactors Calculate(
-      const std::string& _flowrate, const std::string& _head,
-      const std::string& _viscosity, const std::string& _density = "",
-      FlowrateUnit _f_unit = FlowrateUnit::kCubicMetersPerHour,
-      HeadUnit _h_unit = HeadUnit::kMeters,
-      ViscosityUnit _v_unit = ViscosityUnit::kSquareMilPerSecond,
-      DensityUnit _d_unit = DensityUnit::kGramPerLiter) const noexcept;
-
   /// Converts the given value from _Unit to the given internal representation.
   /// _Unit must be set to either FlowrateUnit, HeadUnit, ViscosityUnit or
   /// DensityUnit. Returns 0 on error.
@@ -74,12 +46,7 @@ class CalculationCTX {
   /// Converts the given input parameters to the internal representation. This
   /// can be used to validate on which bases the correction factors were
   /// calculated.
-  const ParametersInternal ConvertInput(
-      const ParametersInternal& input) const noexcept;
-
- private:
-  const CorrectionFactors CalcImpl(
-      const ParametersInternal& input) const noexcept;
+  const Project ConvertInput(const Project& input) const noexcept;
 
  private:
   // The provided values here were calculated in the original code and must

@@ -15,8 +15,8 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 // Contact via <https://github.com/SPauly/ViscoCorrectCore>
-#ifndef SPAULY_VCCORE_INPUT_PARAMETERS_H_
-#define SPAULY_VCCORE_INPUT_PARAMETERS_H_
+#ifndef SPAULY_VCCORE_IMPL_BUNDLE_TYPES_H_
+#define SPAULY_VCCORE_IMPL_BUNDLE_TYPES_H_
 
 #include <array>
 #include <string>
@@ -75,4 +75,4 @@ struct CorrectionFactors {
 }  // namespace vccore
 }  // namespace spauly
 
-#endif  // SPAULY_VCCORE_INPUT_PARAMETERS_H_
+#endif  // SPAULY_VCCORE_IMPL_BUNDLE_TYPES_H_
