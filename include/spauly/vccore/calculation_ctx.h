@@ -28,8 +28,17 @@
 
 namespace spauly {
 namespace vccore {
+// Forward declarations
+namespace impl {
+class Calculator
+}
 
 class CalculationCTX {
+ private:
+  // The Calculator needs direct access to the constant values for faster
+  // calculations.
+  friend class impl::Calculator;
+
  public:
   CalculationCTX() = default;
   ~CalculationCTX() = default;
