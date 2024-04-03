@@ -22,13 +22,14 @@
 #include <string>
 #include <memory>
 
-#include "spauly/vccore/input_parameters.h"
-#include "spauly/vccore/project.h"
+#include "spauly/vccore/input_types.h"
+#include "spauly/vccore/impl/bundle_types.h"
 #include "spauly/vccore/impl/conversion_functions.h"
 
 namespace spauly {
 namespace vccore {
 // Forward declarations
+class CalculationCTX;
 namespace impl {
 class Calculator;
 }
@@ -51,11 +52,6 @@ class CalculationCTX {
       const std::string value, const _Unit from,
       const std::string& density = "",
       const DensityUnit d_unit = DensityUnit::kGramPerLiter) const noexcept;
-
-  /// Converts the given input parameters to the internal representation. This
-  /// can be used to validate on which bases the correction factors were
-  /// calculated.
-  const Project ConvertInput(const Project& input) const noexcept;
 
  private:
   // The provided values here were calculated in the original code and must

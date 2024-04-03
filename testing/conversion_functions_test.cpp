@@ -20,7 +20,7 @@
 #include <string>
 #include <map>
 
-#include "spauly/vccore/input_parameters.h"
+#include "spauly/vccore/input_types.h"
 
 #include <gtest/gtest.h>
 

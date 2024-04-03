@@ -110,6 +110,7 @@ include(GNUInstallDirs)
 foreach(header 
     include/spauly/vccore/calculation_ctx.h
     include/spauly/vccore/project.h
+    include/spauly/vccore/input_types.h
     include/spauly/vccore/impl/accuracy_type.h
     include/spauly/vccore/impl/bundle_types.h
     include/spauly/vccore/impl/conversion_functions.h

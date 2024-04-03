@@ -23,45 +23,15 @@
 #include <string>
 #include <shared_mutex>
 
+#include "spauly/vccore/input_types.h"
 #include "spauly/vccore/impl/bundle_types.h"
 #include "spauly/vccore/impl/calculator.h"
 
 namespace spauly {
 namespace vccore {
 // Forward declarations
+class Project;
 class CalculationCTX;
-
-// InputT is the type used for the input parameters. Since double may not be
-// accurate enough for the calculations, std::string is used instead. Internally
-// this will be converted to a more accurate representation.
-using InputT = std::string;
-
-/// FlowrateUnit determines the unit of the flowrate. Available units are: m³/h,
-/// l/min, gpm.
-enum class FlowrateUnit : int {
-  kCubicMetersPerHour,
-  kLitersPerMinute,
-  kGallonsPerMinute
-} StandardFlowrateUnit = kCubicMetersPerHour;
-
-/// HeadUnit determines the unit of the total head. Available units are: m, ft.
-enum class HeadUnit : int { kMeters, kFeet } StandardHeadUnit = kMeters;
-
-/// ViscosityUnit determines the unit of the viscosity. Available units are:
-/// mm²/s, cSt, cP, mPa·s.
-enum class ViscosityUnit : int {
-  kSquareMilPerSecond,  // mm²/s
-  kcSt,                 // Centistokes
-  kcP,                  // Centipoise
-  kmPas                 // Millipascal seconds
-} StandardViscosityUnit = kSquareMilPerSecond;
-
-/// DensityUnit determines the unit of the density. Available units are: g/l,
-/// kg/m³.
-enum class DensityUnit : int {
-  kGramPerLiter,
-  kKilogramsPerCubicMeter
-} StandardDensityUnit = kGramPerLiter;
 
 /// Project is the main class of the library the user will interact with. It
 /// stores the input parameters and the correction factors. The calculation is
@@ -93,6 +63,11 @@ class Project {
   /// this before trying to access any of the correction factors is more
   /// efficient. Returns false if the input parameters are invalid.
   bool Calculate();
+
+  /// Converts the given input parameters to the internal representation. This
+  /// can be used to validate on which bases the correction factors were
+  /// calculated.
+  const Project ShowConverted() const;
 
   // Getters
   double q();

@@ -18,30 +18,6 @@
 #include "spauly/vccore/calculation_ctx.h"
 
 namespace spauly {
-namespace vccore {
-
-const Project CalculationCTX::ConvertInput(
-    const Project& input) const noexcept {
-  Project out = input;
-
-  // Set all converted values, the units can be left standard initialized.
-  out.set_flowrate(impl::ConvertToBaseUnit<FlowrateUnit>(
-      impl::AccType(out.flowrate()), out.flowrate_unit()));
-  out.set_total_head(impl::ConvertToBaseUnit<HeadUnit>(
-      impl::AccType(out.total_head()), out.total_head_unit()));
-  out.set_viscosity_v(impl::ConvertViscosityTomm2s(
-      impl::AccType(out.viscosity_v()), out.viscosity_v_unit(),
-      out.density_cp(), out.density_cp_unit()));
-  out.set_density_cp(impl::ConvertToBaseUnit<DensityUnit>(
-      impl::AccType(out.density_cp()), out.density_cp_unit()));
-
-  out.set_flowrate_unit(StandardFlowrateUnit);
-  out.set_head_unit(StandardHeadUnit);
-  out.set_viscosity_unit(StandardViscosityUnit);
-  out.set_density_unit(StandardDensityUnit);
-
-  return out;
-}
-}  // namespace vccore
+namespace vccore {}  // namespace vccore
 
 }  // namespace spauly
