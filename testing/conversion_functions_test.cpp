@@ -34,43 +34,45 @@ using TestCasesMap = std::map<InputT, InputT>;
 
 // Test utilities for Flowrate:
 TestCasesMap lpmToCubicMPH{
-    {1, 0.06f},       {10, 0.6f},         {100, 6},        {1000, 60},
-    {10000, 600},     {0.5f, 0.03f},      {5.5f, 0.33f},   {11.1f, 0.666f},
-    {111.1f, 6.666f}, {1111.1f, 66.666f}, {0.11f, 0.0066f}};  // Liters per
-                                                              // Minute to m^3/h
+    {"1", "0.06"},        {"10", "0.6"},     {"100", "6"},
+    {"1000", "60"},       {"10000", "600"},  {"0.5", "0.03"},
+    {"5.5", "0.33"},      {"11.1", "0.666"}, {"111.1", "6.666"},
+    {"1111.1", "66.666"}, {"0.11", "0.0066"}};  // Liters per
+                                                // Minute to m^3/h
 TestCasesMap gpmToCubicMPH{
-    {1, 0.2271f},        {10, 2.271f},      {100, 22.71f},
-    {1000, 227.1f},      {10000, 2271},     {0.5f, 0.11355f},
-    {5.5f, 1.24905f},    {11.1f, 2.52281f}, {111.1f, 25.2711f},
-    {1111.1f, 252.281f}, {0.11f, 0.02498f}};  // Gallons per
-                                              // Minute to m^3/h
+    {"1", "0.2271"},       {"10", "2.271"},     {"100", "22.71"},
+    {"1000", "227.1"},     {"10000", "2271"},   {"0.5", "0.11355"},
+    {"5.5", "1.24905"},    {"11.1", "2.52281"}, {"111.1", "25.2711"},
+    {"1111.1", "252.281"}, {"0.11", "0.02498"}};  // Gallons per
+                                                  // Minute to m^3/h
 
 // Test utilities for Head
 TestCasesMap feetToMeters{
-    {1, 0.3048f},  {10, 3.048f},    {100, 30.48f},     {1000, 304.8f},
-    {10000, 3048}, {5.5f, 1.6764f}, {11.1f, 3.38328f},
+    {"1", "0.3048"},     {"10", "3.048"},   {"100", "30.48"},
+    {"1000", "304.8"},   {"10000", "3048"}, {"5.5", "1.6764"},
+    {"11.1", "3.38328"},
 };  // Feet to Meters
 
 // Test utilities for Density
-TestCasesMap
-    kpcmToGPL{{1, 0.001f},       {10, 0.01f},      {100, 0.1f},
-              {1000, 1},         {10000, 10},      {0.5f, 0.0005f},
-              {5.5f, 0.0055f},   {11.1f, 0.0111f}, {111.1f, 0.111f},
-              {1111.1f, 1.111f}, {0.11f, 0.00011f}};  // KilogramsPerCubicMeter
-                                                      // To GramPerLiter
+TestCasesMap kpcmToGPL{
+    {"1", "0.001"},      {"10", "0.01"},     {"100", "0.1"},
+    {"1000", "1"},       {"10000", "10"},    {"0.5", "0.0005"},
+    {"5.5", "0.0055"},   {"11.1", "0.0111"}, {"111.1", "0.111"},
+    {"1111.1", "1.111"}, {"0.11", "0.00011"}};  // KilogramsPerCubicMeter
+                                                // To GramPerLiter
 
 // Test utilities for Viscosity
 // The pair holds the following args: 1. Viscosity in cp/mpas, 2. Density in gPl
 std::map<std::pair<InputT, InputT>, InputT> cpmpasTomm2s{
-    {{1, 1}, 1},    {{1, 2}, 0.5f},      {{1, 3}, 0.333333f},
-    {{1, 4}, 0.25}, {{1, 5}, 0.2f},      {{2, 1}, 2},
-    {{2, 2}, 1},    {{2, 3}, 0.666667f}, {{2, 4}, 0.5f},
-    {{2, 5}, 0.4f}, {{3, 1}, 3},         {{3, 2}, 1.5f},
-    {{3, 3}, 1},    {{3, 4}, 0.75f},     {{3, 5}, 0.6f},
-    {{4, 1}, 4},    {{4, 2}, 2},         {{4, 3}, 1.333333f},
-    {{4, 4}, 1},    {{4, 5}, 0.8f},      {{5, 1}, 5},
-    {{5, 2}, 2.5f}, {{5, 3}, 1.666667f}, {{5, 4}, 1.25f},
-    {{5, 5}, 1}};  // Centipoise and Millipascal Seconds to mm^2/s
+    {{"1", "1"}, "1"},    {{"1", "2"}, "0.5"},      {{"1", "3"}, "0.333333"},
+    {{"1", "4"}, "0.25"}, {{"1", "5"}, "0.2"},      {{"2", "1"}, "2"},
+    {{"2", "2"}, "1"},    {{"2", "3"}, "0.666667"}, {{"2", "4"}, "0.5"},
+    {{"2", "5"}, "0.4"},  {{"3", "1"}, "3"},        {{"3", "2"}, "1.5"},
+    {{"3", "3"}, "1"},    {{"3", "4"}, "0.75"},     {{"3", "5"}, "0.6"},
+    {{"4", "1"}, "4"},    {{"4", "2"}, "2"},        {{"4", "3"}, "1.333333"},
+    {{"4", "4"}, "1"},    {{"4", "5"}, "0.8"},      {{"5", "1"}, "5"},
+    {{"5", "2"}, "2.5"},  {{"5", "3"}, "1.666667"}, {{"5", "4"}, "1.25"},
+    {{"5", "5"}, "1"}};  // Centipoise and Millipascal Seconds to mm^2/s
 
 // Helper function to create a string with the differences in the calculated and
 // the expected conversions. _Unit must fullfill the same requirements as
@@ -83,13 +85,13 @@ std::string ConversionHelper(TestCasesMap& cases, _Unit from) {
   std::string errors = "";
 
   for (const auto& elem : cases) {
-    InputT res = ConvertToBaseUnit<_Unit>(elem.first, from);
+    AccType res = ConvertToBaseUnit<_Unit>(impl::AccType(elem.first), from);
 
     // If the result is not what expected we create a string with the
     // expected and resulting conversion.
-    if (res != elem.second) {
-      errors += std::to_string(elem.first) + " -> " + std::to_string(res) +
-                " != " + std::to_string(elem.second) + '\n';
+    if (res.get_double() != AccType(elem.second).get_double()) {
+      errors += elem.first + " -> " + static_cast<std::string>(res) +
+                " != " + elem.second + '\n';
     }
   }
 
@@ -109,7 +111,7 @@ TEST(ConversionFunctions, gallons_per_minute) {
   // collect all failing cases as string so that they will be provided for the
   // testcase
   std::string errors = ConversionHelper<FlowrateUnit>(
-      lpmToCubicMPH, FlowrateUnit::kGallonsPerMinute);
+      gpmToCubicMPH, FlowrateUnit::kGallonsPerMinute);
 
   EXPECT_STREQ(errors.c_str(), "");
 }
@@ -118,7 +120,7 @@ TEST(ConversionFunctions, feet_to_meters) {
   // collect all failing cases as string so that they will be provided for the
   // testcase
   std::string errors =
-      ConversionHelper<HeadUnit>(lpmToCubicMPH, HeadUnit::kFeet);
+      ConversionHelper<HeadUnit>(feetToMeters, HeadUnit::kFeet);
 
   EXPECT_STREQ(errors.c_str(), "");
 }
@@ -127,7 +129,7 @@ TEST(ConversionFunctions, kilogram_per_cubic_meter_to_gpl) {
   // collect all failing cases as string so that they will be provided for the
   // testcase
   std::string errors = ConversionHelper<DensityUnit>(
-      lpmToCubicMPH, DensityUnit::kKilogramsPerCubicMeter);
+      kpcmToGPL, DensityUnit::kKilogramsPerCubicMeter);
 
   EXPECT_STREQ(errors.c_str(), "");
 }
@@ -135,23 +137,22 @@ TEST(ConversionFunctions, kilogram_per_cubic_meter_to_gpl) {
 TEST(ConversionFunctions, viscosity_conversion) {
   // For this test to pass Density must be converted properly
   ASSERT_STREQ(ConversionHelper<DensityUnit>(
-                   lpmToCubicMPH, DensityUnit::kKilogramsPerCubicMeter)
+                   kpcmToGPL, DensityUnit::kKilogramsPerCubicMeter)
                    .c_str(),
                "");
 
   std::string errors = "";
 
-  for (const auto& elem : cpmpasTomm2s) {
-    InputT res =
-        ConvertViscosityTomm2s(elem.first.first, ViscosityUnit::kcP,
-                               elem.first.second, DensityUnit::kGramPerLiter);
+  for (const auto& [test_c, expect] : cpmpasTomm2s) {
+    AccType res = ConvertViscosityTomm2s(
+        impl::AccType(test_c.first), ViscosityUnit::kcP,
+        impl::AccType(test_c.second), DensityUnit::kGramPerLiter);
 
     // If the result is not what expected we create a string with the
     // expected and resulting conversion.
-    if (res != elem.second) {
-      errors += std::to_string(elem.first.first) + " -> " +
-                std::to_string(res) + " != " + std::to_string(elem.second) +
-                '\n';
+    if (res.get_double() != AccType(expect).get_double()) {
+      errors += static_cast<std::string>(test_c.first) + " -> " +
+                static_cast<std::string>(res) + " != " + expect + '\n';
     }
   }
 
