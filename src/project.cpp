@@ -25,7 +25,7 @@ Project::Project(std::shared_ptr<CalculationCTX> ctx)
     : ctx_(ctx), calculator_(ctx) {}
 
 Project::Project(std::shared_ptr<CalculationCTX> ctx, PType _flowrate,
-                 PType _head, PType _viscosity, DensityInputType _density,
+                 PType _head, PType _viscosity, PType _density,
                  FlowrateUnit _f_unit, HeadUnit _h_unit, ViscosityUnit _v_unit,
                  DensityUnit _d_unit)
     : ctx_(ctx),
@@ -126,9 +126,8 @@ void Project::set_floating_point_precision(size_t _precision) {
 }
 
 void Project::Set(PType _flowrate, PType _head, PType _viscosity,
-                  DensityInputType _density, FlowrateUnit _f_unit,
-                  HeadUnit _h_unit, ViscosityUnit _v_unit,
-                  DensityUnit _d_unit) {
+                  PType _density, FlowrateUnit _f_unit, HeadUnit _h_unit,
+                  ViscosityUnit _v_unit, DensityUnit _d_unit) {
   WriteLock lock(mtx_);
   input_flowrate_ = _flowrate;
   input_total_head_ = _head;
@@ -198,7 +197,7 @@ void Project::set_viscosity_unit(const ViscosityUnit& _unit) {
   was_changed_[2] = true;
 }
 
-void Project::set_density(const DensityInputType& _density) {
+void Project::set_density(const PType& _density) {
   WriteLock lock(mtx_);
   input_density_cp_ = _density;
   IndicateChange();

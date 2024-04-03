@@ -30,7 +30,7 @@ namespace spauly {
 namespace vccore {
 // Forward declarations
 namespace impl {
-class Calculator
+class Calculator;
 }
 
 class CalculationCTX {
@@ -90,7 +90,7 @@ class CalculationCTX {
 // Template definitions
 template <typename _Unit>
 const double CalculationCTX::ConvertValueToBase(
-    const std::string value, const _Unit from, const DensityInputType& density,
+    const std::string value, const _Unit from, const PType& density,
     const DensityUnit d_unit) const noexcept {
   static_assert(std::is_same<ViscosityUnit, _Unit>::value,
                 "Invalid unit type. Must be either FlowrateUnit, HeadUnit, or "

@@ -35,8 +35,6 @@ class CalculationCTX;
 // accurate enough for the calculations, std::string is used instead. Internally
 // this will be converted to a more accurate representation.
 using PType = std::string;
-// DensityInputType is only used when the viscosity is given in centipoise.
-using DensityInputType = std::string;
 
 /// FlowrateUnit determines the unit of the flowrate. Available units are: m³/h,
 /// l/min, gpm.
@@ -80,7 +78,7 @@ class Project {
   Project() = delete;
   Project(std::shared_ptr<CalculationCTX> ctx);
   Project(std::shared_ptr<CalculationCTX> ctx, PType _flowrate, PType _head,
-          PType _viscosity, DensityInputType _density = 0,
+          PType _viscosity, PType _density = 0,
           FlowrateUnit _f_unit = FlowrateUnit::kCubicMetersPerHour,
           HeadUnit _h_unit = HeadUnit::kMeters,
           ViscosityUnit _v_unit = ViscosityUnit::kSquareMilPerSecond,
@@ -166,7 +164,7 @@ class Project {
   }
 
   /// Returns the density.
-  inline const DensityInputType &density() const {
+  inline const PType &density() const {
     ReadLock lock(mtx_);
     return input_density_cp_;
   }
@@ -189,8 +187,7 @@ class Project {
   void set_floating_point_precision(size_t _precision);
 
   /// Sets the input parameters
-  void Set(PType _flowrate, PType _head, PType _viscosity,
-           DensityInputType _density = 0,
+  void Set(PType _flowrate, PType _head, PType _viscosity, PType _density = 0,
            FlowrateUnit _f_unit = FlowrateUnit::kCubicMetersPerHour,
            HeadUnit _h_unit = HeadUnit::kMeters,
            ViscosityUnit _v_unit = ViscosityUnit::kSquareMilPerSecond,
@@ -212,7 +209,7 @@ class Project {
   void set_viscosity_unit(const ViscosityUnit &_unit);
 
   /// Sets the density to the specified value.
-  void set_density(const DensityInputType &_density);
+  void set_density(const PType &_density);
   /// Sets the density unit to either g/l or kg/m³.
   void set_density_unit(const DensityUnit &_unit);
 
@@ -252,7 +249,7 @@ class Project {
   PType input_total_head_ = "";
   PType input_viscosity_ = "";
   /// Must be provided when the viscosity is given in centipoise.
-  DensityInputType input_density_cp_ = "";
+  PType input_density_cp_ = "";
 
   FlowrateUnit flowrate_unit_ = FlowrateUnit::kCubicMetersPerHour;
   HeadUnit head_unit_ = HeadUnit::kMeters;
