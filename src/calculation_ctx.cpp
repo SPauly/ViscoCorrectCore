@@ -26,14 +26,14 @@ const Project CalculationCTX::ConvertInput(
 
   // Set all converted values, the units can be left standard initialized.
   out.set_flowrate(impl::ConvertToBaseUnit<FlowrateUnit>(
-      impl::IType(out.flowrate()), out.flowrate_unit()));
+      impl::AccType(out.flowrate()), out.flowrate_unit()));
   out.set_total_head(impl::ConvertToBaseUnit<HeadUnit>(
-      impl::IType(out.total_head()), out.total_head_unit()));
+      impl::AccType(out.total_head()), out.total_head_unit()));
   out.set_viscosity_v(impl::ConvertViscosityTomm2s(
-      impl::IType(out.viscosity_v()), out.viscosity_v_unit(), out.density_cp(),
-      out.density_cp_unit()));
+      impl::AccType(out.viscosity_v()), out.viscosity_v_unit(),
+      out.density_cp(), out.density_cp_unit()));
   out.set_density_cp(impl::ConvertToBaseUnit<DensityUnit>(
-      impl::IType(out.density_cp()), out.density_cp_unit()));
+      impl::AccType(out.density_cp()), out.density_cp_unit()));
 
   out.set_flowrate_unit(StandardFlowrateUnit);
   out.set_head_unit(StandardHeadUnit);

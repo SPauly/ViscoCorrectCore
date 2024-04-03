@@ -61,36 +61,40 @@ class CalculationCTX {
   // The provided values here were calculated in the original code and must
   // be updated. Please refer to the original code for how the were
   // obtained: <https://github.com/SPauly/ViscoCorrect>
-  const std::array<const impl::IType, 6> kQ = {
-      impl::IType("4.3286373442021278e-09"),
-      impl::IType("-6.5935466655309209e-06"),
-      impl::IType("0.0039704102541411324"),
-      impl::IType("-1.1870337647376101"),
-      impl::IType("176.52190832690891"),
-      impl::IType("-10276.558815133236")};
-  const std::array<const impl::IType, 6> kEta = {
-      impl::IType("2.5116987378131985e-10"),
-      impl::IType("-3.2416532447274418e-07"),
-      impl::IType("0.00015531747394399714"),
-      impl::IType("-0.037300324399145976"),
-      impl::IType("4.2391803778160968"),
-      impl::IType("-6.2364025573465849")};
-  const std::array<const std::array<const impl::IType, 3>, 4> kH = {{
-      {impl::IType("285.39113639063004"), impl::IType("-0.019515612319848788"),
-       impl::IType("451.79876054847699")},  // 0.6
-      {impl::IType("286.44331640461877"), impl::IType("-0.016739174282778945"),
-       impl::IType("453.11949555301783")},  // 0.8
-      {impl::IType("285.70823636118865"), impl::IType("-0.016126836943018912"),
-       impl::IType("443.60573501332937")},  // 1.0
-      {impl::IType("285.91175890816675"), impl::IType("-0.015057232233799856"),
-       impl::IType("436.03377039579027")}  // 1.2
+  const std::array<const impl::AccType, 6> kQ = {
+      impl::AccType("4.3286373442021278e-09"),
+      impl::AccType("-6.5935466655309209e-06"),
+      impl::AccType("0.0039704102541411324"),
+      impl::AccType("-1.1870337647376101"),
+      impl::AccType("176.52190832690891"),
+      impl::AccType("-10276.558815133236")};
+  const std::array<const impl::AccType, 6> kEta = {
+      impl::AccType("2.5116987378131985e-10"),
+      impl::AccType("-3.2416532447274418e-07"),
+      impl::AccType("0.00015531747394399714"),
+      impl::AccType("-0.037300324399145976"),
+      impl::AccType("4.2391803778160968"),
+      impl::AccType("-6.2364025573465849")};
+  const std::array<const std::array<const impl::AccType, 3>, 4> kH = {{
+      {impl::AccType("285.39113639063004"),
+       impl::AccType("-0.019515612319848788"),
+       impl::AccType("451.79876054847699")},  // 0.6
+      {impl::AccType("286.44331640461877"),
+       impl::AccType("-0.016739174282778945"),
+       impl::AccType("453.11949555301783")},  // 0.8
+      {impl::AccType("285.70823636118865"),
+       impl::AccType("-0.016126836943018912"),
+       impl::AccType("443.60573501332937")},  // 1.0
+      {impl::AccType("285.91175890816675"),
+       impl::AccType("-0.015057232233799856"),
+       impl::AccType("436.03377039579027")}  // 1.2
   }};
 };
 
 // Template definitions
 template <typename _Unit>
 const double CalculationCTX::ConvertValueToBase(
-    const std::string value, const _Unit from, const PType& density,
+    const std::string value, const _Unit from, const InputT& density,
     const DensityUnit d_unit) const noexcept {
   static_assert(std::is_same<ViscosityUnit, _Unit>::value,
                 "Invalid unit type. Must be either FlowrateUnit, HeadUnit, or "

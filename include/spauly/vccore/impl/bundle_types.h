@@ -30,14 +30,14 @@ namespace impl {
 /// Calculator. This should only contain the input parameters already converted
 /// to the needed units.
 struct ParametersInternal {
-  IType flowrate_q;
-  IType total_head;
-  IType viscosity_v;
-  IType density_cp;
+  AccType flowrate_q;
+  AccType total_head;
+  AccType viscosity_v;
+  AccType density_cp;
 
   ParametersInternal() = default;
-  ParametersInternal(IType _flowrate, IType _head, IType _viscosity,
-                     IType _density = IType("0"))
+  ParametersInternal(AccType _flowrate, AccType _head, AccType _viscosity,
+                     AccType _density = AccType("0"))
       : flowrate_q(std::move(_flowrate)),
         total_head(std::move(_head)),
         viscosity_v(std::move(_viscosity)),

@@ -31,10 +31,10 @@ namespace vccore {
 // Forward declarations
 class CalculationCTX;
 
-// PType is the type used for the input parameters. Since double may not be
+// InputT is the type used for the input parameters. Since double may not be
 // accurate enough for the calculations, std::string is used instead. Internally
 // this will be converted to a more accurate representation.
-using PType = std::string;
+using InputT = std::string;
 
 /// FlowrateUnit determines the unit of the flowrate. Available units are: m³/h,
 /// l/min, gpm.
@@ -77,8 +77,8 @@ class Project {
  public:
   Project() = delete;
   Project(std::shared_ptr<CalculationCTX> ctx);
-  Project(std::shared_ptr<CalculationCTX> ctx, PType _flowrate, PType _head,
-          PType _viscosity, PType _density = 0,
+  Project(std::shared_ptr<CalculationCTX> ctx, InputT _flowrate, InputT _head,
+          InputT _viscosity, InputT _density = 0,
           FlowrateUnit _f_unit = FlowrateUnit::kCubicMetersPerHour,
           HeadUnit _h_unit = HeadUnit::kMeters,
           ViscosityUnit _v_unit = ViscosityUnit::kSquareMilPerSecond,
@@ -128,7 +128,7 @@ class Project {
   }
 
   /// Returns the flowrate.
-  inline const PType &flowrate() const {
+  inline const InputT &flowrate() const {
     ReadLock lock(mtx_);
     return input_flowrate_;
   }
@@ -140,7 +140,7 @@ class Project {
   }
 
   /// Returns the total head.
-  inline const PType &total_head() const {
+  inline const InputT &total_head() const {
     ReadLock lock(mtx_);
     return input_total_head_;
   }
@@ -152,7 +152,7 @@ class Project {
   }
 
   /// Returns the viscosity.
-  inline const PType &viscosity() const {
+  inline const InputT &viscosity() const {
     ReadLock lock(mtx_);
     return input_viscosity_;
   }
@@ -164,7 +164,7 @@ class Project {
   }
 
   /// Returns the density.
-  inline const PType &density() const {
+  inline const InputT &density() const {
     ReadLock lock(mtx_);
     return input_density_cp_;
   }
@@ -187,29 +187,30 @@ class Project {
   void set_floating_point_precision(size_t _precision);
 
   /// Sets the input parameters
-  void Set(PType _flowrate, PType _head, PType _viscosity, PType _density = 0,
+  void Set(InputT _flowrate, InputT _head, InputT _viscosity,
+           InputT _density = 0,
            FlowrateUnit _f_unit = FlowrateUnit::kCubicMetersPerHour,
            HeadUnit _h_unit = HeadUnit::kMeters,
            ViscosityUnit _v_unit = ViscosityUnit::kSquareMilPerSecond,
            DensityUnit _d_unit = DensityUnit::kGramPerLiter);
 
   /// Sets the flowrate to the specified value.
-  void set_flowrate(const PType &_flowrate);
+  void set_flowrate(const InputT &_flowrate);
   /// Sets the flowrate unit to either m³/h, l/min or gpm.
   void set_flowrate_unit(const FlowrateUnit &_unit);
 
   /// Sets the total head to the specified value.
-  void set_total_head(const PType &_head);
+  void set_total_head(const InputT &_head);
   /// Sets the head unit to either m or ft.
   void set_head_unit(const HeadUnit &_unit);
 
   /// Sets the viscosity to the specified value.
-  void set_viscosity(const PType &_viscosity);
+  void set_viscosity(const InputT &_viscosity);
   /// Sets the viscosity unit to either mm²/s, cSt, cP or mPa·s.
   void set_viscosity_unit(const ViscosityUnit &_unit);
 
   /// Sets the density to the specified value.
-  void set_density(const PType &_density);
+  void set_density(const InputT &_density);
   /// Sets the density unit to either g/l or kg/m³.
   void set_density_unit(const DensityUnit &_unit);
 
@@ -245,11 +246,11 @@ class Project {
   // total_head_, 2 = viscosity_, 3 = density_cp_
   std::array<bool, 4> was_changed_ = {true, true, true, true};
 
-  PType input_flowrate_ = "";
-  PType input_total_head_ = "";
-  PType input_viscosity_ = "";
+  InputT input_flowrate_ = "";
+  InputT input_total_head_ = "";
+  InputT input_viscosity_ = "";
   /// Must be provided when the viscosity is given in centipoise.
-  PType input_density_cp_ = "";
+  InputT input_density_cp_ = "";
 
   FlowrateUnit flowrate_unit_ = FlowrateUnit::kCubicMetersPerHour;
   HeadUnit head_unit_ = HeadUnit::kMeters;

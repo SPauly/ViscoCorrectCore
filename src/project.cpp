@@ -24,8 +24,8 @@ namespace vccore {
 Project::Project(std::shared_ptr<CalculationCTX> ctx)
     : ctx_(ctx), calculator_(ctx) {}
 
-Project::Project(std::shared_ptr<CalculationCTX> ctx, PType _flowrate,
-                 PType _head, PType _viscosity, PType _density,
+Project::Project(std::shared_ptr<CalculationCTX> ctx, InputT _flowrate,
+                 InputT _head, InputT _viscosity, InputT _density,
                  FlowrateUnit _f_unit, HeadUnit _h_unit, ViscosityUnit _v_unit,
                  DensityUnit _d_unit)
     : ctx_(ctx),
@@ -125,8 +125,8 @@ void Project::set_floating_point_precision(size_t _precision) {
   IndicateChange();
 }
 
-void Project::Set(PType _flowrate, PType _head, PType _viscosity,
-                  PType _density, FlowrateUnit _f_unit, HeadUnit _h_unit,
+void Project::Set(InputT _flowrate, InputT _head, InputT _viscosity,
+                  InputT _density, FlowrateUnit _f_unit, HeadUnit _h_unit,
                   ViscosityUnit _v_unit, DensityUnit _d_unit) {
   WriteLock lock(mtx_);
   input_flowrate_ = _flowrate;
@@ -143,7 +143,7 @@ void Project::Set(PType _flowrate, PType _head, PType _viscosity,
   IndicateChange();
 }
 
-void Project::set_flowrate(const PType& _flowrate) {
+void Project::set_flowrate(const InputT& _flowrate) {
   WriteLock lock(mtx_);
   input_flowrate_ = _flowrate;
   IndicateChange();
@@ -161,7 +161,7 @@ void Project::set_flowrate_unit(const FlowrateUnit& _unit) {
   was_changed_[0] = true;
 }
 
-void Project::set_total_head(const PType& _head) {
+void Project::set_total_head(const InputT& _head) {
   WriteLock lock(mtx_);
   input_total_head_ = _head;
   IndicateChange();
@@ -179,7 +179,7 @@ void Project::set_head_unit(const HeadUnit& _unit) {
   was_changed_[1] = true;
 }
 
-void Project::set_viscosity(const PType& _viscosity) {
+void Project::set_viscosity(const InputT& _viscosity) {
   WriteLock lock(mtx_);
   input_viscosity_ = _viscosity;
   IndicateChange();
@@ -197,7 +197,7 @@ void Project::set_viscosity_unit(const ViscosityUnit& _unit) {
   was_changed_[2] = true;
 }
 
-void Project::set_density(const PType& _density) {
+void Project::set_density(const InputT& _density) {
   WriteLock lock(mtx_);
   input_density_cp_ = _density;
   IndicateChange();
@@ -233,7 +233,7 @@ bool Project::CalcImpl() {
 
   if (was_changed_[0])
     converted_input_.flowrate_q = impl::ConvertToBaseUnit<FlowrateUnit>(
-        impl::IType(input_flowrate_), flowrate_unit_);
+        impl::AccType(input_flowrate_), flowrate_unit_);
 
   if (was_changed_[1])
     converted_input_.total_head = impl::ConvertToBaseUnit<HeadUnit>(
