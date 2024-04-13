@@ -28,8 +28,12 @@ template <typename T, size_t S>
 class PolynomialFunc {
  public:
   PolynomialFunc() = default;
-  PolynomialFunc(const std::array<T, S> &coefficients)
-      : coeffs_(coefficients) {}
+  PolynomialFunc(const std::array<T, S> &coefficients) {
+    // The coefficients need to be stored in reverse order
+    for (int i = 0; i < S; i++) {
+      coeffs_[i] = coefficients[S - i - 1];
+    }
+  }
 
   T operator()(T &x) const {
     T result = 0;
@@ -40,6 +44,8 @@ class PolynomialFunc {
   }
 
  private:
+  // The coefficeints of the polynomial function are stored in reverse order
+  // meaning: coeffs_[0]*x^0 + coeffs_[1]*x^1 + ... + coeffs_[S-1]*x^(S-1)
   std::array<T, S> coeffs_;
 };
 
