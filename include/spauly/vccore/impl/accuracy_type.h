@@ -37,66 +37,83 @@ using AccType = double;
 #else
 using AccType = AccuracyType;
 
-/// AccuracyType stores floating point number as their integer representation
-/// together with an exponent to the base 10. This allows for more accurate
-/// arithmetic. When get_double() is called this representation is converted
-/// back to a double which may introduce rounding errors.
+/// @brief AccuracyType stores floating point numbers as their integer
+/// representation together with an exponent to the base 10. This allows for
+/// more accurate arithmetic. When get_double() is called this representation is
+/// converted back to a double which may introduce rounding errors.
 class AccuracyType {
  public:
   // used types
   using IntType = uint64_t;
 
+  /// @brief Default constructor initializes the number to 0.
   AccuracyType() = default;
 
-  /// This constructor has the overhead of converting the input into a string
-  /// using std::to_string. It also can introduce percision errors since not all
-  /// number can be represented exact. E.g. 0.06 could be represented as
+  /// @brief This constructor has the overhead of converting the input into a
+  /// string using std::to_string. It also can introduce percision errors since
+  /// not all number can be represented exact. E.g. 0.06 could be represented as
   /// 0.059999999999999997. Use std::string input for better accuracy.
+  /// @param value The number to store in double format.
+  /// @param precision The precision with which the number is stored.
   AccuracyType(const double& value, const size_t& precision = 17);
 
-  /// This constructor exposes the internal representation of the number.
+  /// @brief This constructor exposes the internal representation of the number.
+  /// This is useful for debugging and testing purposes.
+  /// @param value The number to store as integer.
+  /// @param exp The exponent to the base 10 by which the value needs to be
+  /// devided.
+  /// @param neg The sign of the number.
   constexpr AccuracyType(const uint64_t& value, const uint32_t& exp,
                          bool neg = false)
       : int_value_(value), exp_(exp), neg_(neg) {}
 
-  /// Parses the input string and stores the number as int_value and exp. If
-  /// the input is not in the format +/-[0-9]*(.[0-9]*)* it is considered
+  /// @brief Parses the input string and stores the number as int_value and exp.
+  /// If the input is not in the format +/-[0-9]*(.[0-9]*)* it is considered
   /// invalid and int_value is set to NAN. If the number is too large to be
   /// converted to a double int_value is set to INFINITY.
+  /// @param value The number to store as string.
   AccuracyType(const std::string& value);
 
   ~AccuracyType() = default;
 
   // Getters
 
-  /// The valid flag is set to false if the input was not representable in the
-  /// given format.
+  /// @brief The valid flag is set to false if the input was not representable
+  /// in the given format.
+  /// @return true if the number is valid else false.
   inline const bool& is_valid() const { return is_valid_; }
 
-  /// Returns the value stored as integer. Which needs to be devided by 10^exp
-  /// to retrieve the original value. Note however that this may introduce
-  /// inaccuracies.
+  /// @brief Returns the value stored as integer. Which needs to be devided by
+  /// 10^exp to retrieve the original value. Note however that this may
+  /// introduce inaccuracies.
+  /// @return The integer representation of the number.
   inline const uint64_t& get_int_value() const { return int_value_; }
 
-  /// Returns the exponent to the base 10 by which the int_value value needs to
-  /// be devided.
+  /// @brief Returns the exponent to the base 10 by which the int_value value
+  /// needs to be devided.
+  /// @return The exponent to the base 10.
   inline const uint32_t& get_exp() const { return exp_; }
 
-  /// Returns the sign of the stored number.
+  /// @brief Returns the sign of the stored number.
+  /// @return true if the number is negative else false.
   inline const bool& get_neg() const { return neg_; }
 
-  /// Returns the precision with with double input is converted to string.
+  /// @brief Returns the precision with with double input is converted to
+  /// string.
+  /// @return The precision with which the number is stored.
   inline const size_t& get_input_precision() const { return input_precision_; }
 
-  /// Calculates the double representation: int_value / 10^exp. This may
+  /// @brief Calculates the double representation: int_value / 10^exp. This may
   /// introduce inaccuracies caused by the double representation.
+  /// @return The double representation of the number.
   double get_double() const;
 
   // Setters
-  /// Sets the precision with which double input is converted to string. Note
-  /// that a higher precision affects runtime and memory usage and my introduce
-  /// inaccuracies. Additionally this may cause INFINITY errors when the numbers
-  /// get too big to fit into uint64_t. The default precision is 17.
+  /// @brief Sets the precision with which double input is converted to string.
+  /// Note that a higher precision affects runtime and memory usage and my
+  /// introduce inaccuracies. Additionally this may cause INFINITY errors when
+  /// the numbers get too big to fit into uint64_t. The default precision is 17.
+  /// @param precision The precision with which the number is stored.
   inline void set_input_precision(const size_t& precision) {
     input_precision_ = precision;
   }
