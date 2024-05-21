@@ -74,16 +74,15 @@ const Project Project::ShowConverted() const {
   Project out = *this;
 
   // Set all converted values, the units can be left standard initialized.
-  out.set_flowrate(
-      static_cast<std::string>(impl::ConvertToBaseUnit<FlowrateUnit>(
-          impl::AccType(out.flowrate()), out.flowrate_unit())));
-  out.set_total_head(static_cast<std::string>(impl::ConvertToBaseUnit<HeadUnit>(
-      impl::AccType(out.total_head()), out.head_unit())));
-  out.set_viscosity(static_cast<std::string>(impl::ConvertViscosityTomm2s(
+  out.set_flowrate(impl::ConvertToBaseUnit<FlowrateUnit>(
+      impl::AccType(out.flowrate()), out.flowrate_unit()));
+  out.set_total_head(impl::ConvertToBaseUnit<HeadUnit>(
+      impl::AccType(out.total_head()), out.head_unit()));
+  out.set_viscosity(impl::ConvertViscosityTomm2s(
       impl::AccType(out.viscosity()), out.viscosity_unit(),
-      impl::AccType(out.density()), out.density_unit())));
-  out.set_density(static_cast<std::string>(impl::ConvertToBaseUnit<DensityUnit>(
-      impl::AccType(out.density()), out.density_unit())));
+      impl::AccType(out.density()), out.density_unit()));
+  out.set_density(impl::ConvertToBaseUnit<DensityUnit>(
+      impl::AccType(out.density()), out.density_unit()));
 
   out.set_flowrate_unit(kStandardFlowrateUnit);
   out.set_head_unit(kStandardHeadUnit);

@@ -20,10 +20,15 @@
 
 namespace spauly {
 namespace vccore {
+
+#ifndef VCCORE_USE_ACCURACY_TYPE
+using InputT = double;
+#else
 // InputT is the type used for the input parameters. Since double may not be
 // accurate enough for the calculations, std::string is used instead. Internally
 // this will be converted to a more accurate representation.
 using InputT = std::string;
+#endif  // VCCORE_USE_ACCURACY_TYPE
 
 /// FlowrateUnit determines the unit of the flowrate. Available units are: m³/h,
 /// l/min, gpm.

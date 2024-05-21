@@ -27,6 +27,26 @@ namespace spauly {
 namespace vccore {
 namespace impl {
 
+#ifndef VCCORE_USE_ACCURACY_TYPE
+/// Holds the factors by which to multiply the input parameters to convert them
+/// to m³/h.
+const std::map<FlowrateUnit, const AccType> kFlowrateToCubicMPH{
+    {FlowrateUnit::kLitersPerMinute, 0.06},
+    {FlowrateUnit::kGallonsPerMinute, 0.227125},
+    {FlowrateUnit::kCubicMetersPerHour, 1.0}};
+
+/// Holds the factors by which to multiply the input parameters to convert them
+/// to m.
+const std::map<HeadUnit, const AccType> kHeadToMeters{{HeadUnit::kFeet, 0.3048},
+                                                      {HeadUnit::kMeters, 1.0}};
+
+/// Holds the factors by which to multiply the input parameters to convert them
+/// to g/l.
+const std::map<DensityUnit, const AccType> kDensityToGPL{
+    {DensityUnit::kGramPerLiter, 1.0},
+    {DensityUnit::kKilogramsPerCubicMeter, 0.001}};
+
+#else
 /// Holds the factors by which to multiply the input parameters to convert them
 /// to m³/h.
 const std::map<FlowrateUnit, const AccType> kFlowrateToCubicMPH{
@@ -44,6 +64,8 @@ const std::map<HeadUnit, const AccType> kHeadToMeters{
 const std::map<DensityUnit, const AccType> kDensityToGPL{
     {DensityUnit::kGramPerLiter, AccType("1.0")},
     {DensityUnit::kKilogramsPerCubicMeter, AccType("0.001")}};
+
+#endif  // VCCORE_USE_ACCURACY_TYPE
 
 /// Converts value to the specified base unit for _Unit. This function can be
 /// used to convert to: -> CubicMPH, -> Meters, -> GramPerLiter.
@@ -65,15 +87,18 @@ AccType ConvertToBaseUnit(const AccType& value, const _Unit from) noexcept {
 
 /// Converts the input value to the base viscosity unit of mm2/s
 AccType ConvertViscosityTomm2s(
-    const AccType& value, const ViscosityUnit from,
-    const AccType& density = AccType(""),
+    const AccType& value, const ViscosityUnit from, const AccType& density,
     const DensityUnit d_unit = DensityUnit::kGramPerLiter) noexcept {
+#ifndef VCCORE_USE_ACCURACY_TYPE
+  AccType out = 0.0;
+#else
   AccType out = AccType("0.0");
+#endif  // VCCORE_USE_ACCURACY_TYPE
 
   switch (from) {
     case ViscosityUnit::kcP:
     case ViscosityUnit::kmPas:
-      if (density.get_int_value() != 0) {
+      if (density != 0) {
         out = value / (density * kDensityToGPL.at(d_unit));
       }
       break;

@@ -15,11 +15,16 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 // Contact via <https://github.com/SPauly/ViscoCorrectCore>
+
+#define VCCORE_USE_ACCURACY_TYPE
+
 #include "spauly/vccore/impl/accuracy_type.h"
 
 #include <limits>
 
 #include <gtest/gtest.h>
+
+#define VCCORE_USE_ACCURACY_TYPE
 
 namespace spauly {
 namespace vccore {

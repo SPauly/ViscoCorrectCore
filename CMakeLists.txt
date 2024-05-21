@@ -171,10 +171,10 @@ if(vcc_BUILD_TESTS)
         target_compile_features(${target} PUBLIC cxx_std_20)
         target_include_directories(${target} PRIVATE 
         ${PROJECT_SOURCE_DIR}/include
-        ${PROJECT_SOURCE_DIR}/
         )
         target_link_libraries(${target} GTest::gtest_main ViscoCorrectCore)
         add_dependencies(${target} ViscoCorrectCore)
+        target_compile_definitions(ViscoCorrectCore PRIVATE VCCORE_USE_ACCURACY_TYPE=1)
         gtest_discover_tests(${target})
     endforeach()
 endif()

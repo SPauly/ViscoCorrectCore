@@ -37,7 +37,7 @@ struct ParametersInternal {
 
   ParametersInternal() = default;
   ParametersInternal(AccType _flowrate, AccType _head, AccType _viscosity,
-                     AccType _density = AccType("0"))
+                     AccType _density)
       : flowrate_q(std::move(_flowrate)),
         total_head(std::move(_head)),
         viscosity_v(std::move(_viscosity)),

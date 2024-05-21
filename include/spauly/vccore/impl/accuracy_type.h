@@ -32,7 +32,9 @@ namespace impl {
 // Forward declaration
 class AccuracyType;
 
-// AccType represents the internally used type for the calculations.
+#ifndef VCCORE_USE_ACCURACY_TYPE
+using AccType = double;
+#else
 using AccType = AccuracyType;
 
 /// AccuracyType stores floating point number as their integer representation
@@ -50,18 +52,18 @@ class AccuracyType {
   /// using std::to_string. It also can introduce percision errors since not all
   /// number can be represented exact. E.g. 0.06 could be represented as
   /// 0.059999999999999997. Use std::string input for better accuracy.
-  explicit AccuracyType(const double& value, const size_t& precision = 17);
+  AccuracyType(const double& value, const size_t& precision = 17);
 
   /// This constructor exposes the internal representation of the number.
-  explicit constexpr AccuracyType(const uint64_t& value, const uint32_t& exp,
-                                  bool neg = false)
+  constexpr AccuracyType(const uint64_t& value, const uint32_t& exp,
+                         bool neg = false)
       : int_value_(value), exp_(exp), neg_(neg) {}
 
   /// Parses the input string and stores the number as int_value and exp. If
   /// the input is not in the format +/-[0-9]*(.[0-9]*)* it is considered
   /// invalid and int_value is set to NAN. If the number is too large to be
   /// converted to a double int_value is set to INFINITY.
-  explicit AccuracyType(const std::string& value);
+  AccuracyType(const std::string& value);
 
   ~AccuracyType() = default;
 
@@ -102,7 +104,7 @@ class AccuracyType {
   // Type conversion
   explicit operator double() const { return std::move(get_double()); }
 
-  explicit operator std::string() const {
+  operator std::string() const {
     std::stringstream sstr;
     sstr << std::setprecision(input_precision_) << this->get_double();
     return sstr.str();
@@ -175,6 +177,29 @@ class AccuracyType {
     return result;
   }
 
+  /// @brief Returns true if the stored number is equal to the other number.
+  /// Comparisson is performed by checking the equality of both int value and
+  /// exponent.
+  /// @param other The number to compare to.
+  /// @return true if this == other else false.
+  bool operator==(const AccuracyType& other) const;
+  /// @brief Returns true if the stored number is equal to the other number. The
+  /// comparison is performed by calling this->get_double() == other.
+  /// @param other double to compare to.
+  /// @return true if this == other else false.
+  bool operator==(const double& other) const;
+  /// @brief Returns true if the stored number is not equal to the other number.
+  /// Comparrisson is performed by checking the equality of both int value and
+  /// exponent. Stops as soon as one of the values is not equal.
+  /// @param other The number to compare to.
+  /// @return true if this != other else false.
+  bool operator!=(const AccuracyType& other) const;
+  /// @brief Returns true if the stored number is not equal to the other number.
+  /// The comparison is performed by calling this->get_double() != other.
+  /// @param other double to compare to.
+  /// @return true if this != other else false.
+  bool operator!=(const double& other) const;
+
  protected:
   // Error_state is used to store the type of error
   enum class ErrorState { kNone, kNAN, kINFINITY };
@@ -200,6 +225,8 @@ class AccuracyType {
   uint32_t exp_ = 0;
   bool neg_ = false;
 };
+
+#endif
 
 }  // namespace impl
 

@@ -23,6 +23,9 @@ namespace spauly {
 namespace vccore {
 namespace impl {
 
+#ifndef VCCORE_USE_ACCURACY_TYPE
+
+#else
 AccuracyType::AccuracyType(const double& value, const size_t& precision)
     : input_precision_(precision) {
   FromDouble(value);
@@ -295,6 +298,29 @@ int32_t AccuracyType::RetrieveExponent(const std::string& value) const {
 
   return std::stoul(str);
 }
+
+bool AccuracyType::operator==(const AccuracyType& other) const {
+  return operator!=(other);
+}
+
+bool AccuracyType::operator==(const double& other) const {
+  return operator!=(other);
+}
+
+bool AccuracyType::operator!=(const AccuracyType& other) const {
+  if (!is_valid_ || !other.is_valid_) return false;
+
+  return int_value_ != other.int_value_ || exp_ != other.exp_ ||
+         neg_ != other.neg_;
+}
+
+bool AccuracyType::operator!=(const double& other) const {
+  if (!is_valid_) return false;
+
+  return this->get_double() != other;
+}
+
+#endif  // VCCORE_USE_ACCURACY_TYPE
 
 }  // namespace impl
 }  // namespace vccore

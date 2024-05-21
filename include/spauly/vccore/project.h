@@ -48,7 +48,7 @@ class Project {
   Project() = delete;
   Project(std::shared_ptr<CalculationCTX> ctx);
   Project(std::shared_ptr<CalculationCTX> ctx, InputT _flowrate, InputT _head,
-          InputT _viscosity, InputT _density = 0,
+          InputT _viscosity, InputT _density,
           FlowrateUnit _f_unit = FlowrateUnit::kCubicMetersPerHour,
           HeadUnit _h_unit = HeadUnit::kMeters,
           ViscosityUnit _v_unit = ViscosityUnit::kSquareMilPerSecond,
@@ -162,8 +162,7 @@ class Project {
   void set_floating_point_precision(size_t _precision);
 
   /// Sets the input parameters
-  void Set(InputT _flowrate, InputT _head, InputT _viscosity,
-           InputT _density = 0,
+  void Set(InputT _flowrate, InputT _head, InputT _viscosity, InputT _density,
            FlowrateUnit _f_unit = FlowrateUnit::kCubicMetersPerHour,
            HeadUnit _h_unit = HeadUnit::kMeters,
            ViscosityUnit _v_unit = ViscosityUnit::kSquareMilPerSecond,
@@ -221,11 +220,11 @@ class Project {
   // total_head_, 2 = viscosity_, 3 = density_cp_
   std::array<bool, 4> was_changed_ = {true, true, true, true};
 
-  InputT input_flowrate_ = "";
-  InputT input_total_head_ = "";
-  InputT input_viscosity_ = "";
+  InputT input_flowrate_;
+  InputT input_total_head_;
+  InputT input_viscosity_;
   /// Must be provided when the viscosity is given in centipoise.
-  InputT input_density_cp_ = "";
+  InputT input_density_cp_;
 
   FlowrateUnit flowrate_unit_ = FlowrateUnit::kCubicMetersPerHour;
   HeadUnit head_unit_ = HeadUnit::kMeters;
