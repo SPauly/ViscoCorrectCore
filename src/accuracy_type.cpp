@@ -148,6 +148,54 @@ AccuracyType& AccuracyType::operator/=(const AccuracyType& other) {
   return *this;
 }
 
+AccuracyType& AccuracyType::operator+=(const AccuracyType& other) {
+  if (!is_valid_ || !other.is_valid_) return *this;
+
+  IntType other_int = other.int_value_;
+
+  // The exponent of the number with the smaller exponent must be adjusted to
+  // the larger one
+  if (exp_ < other.exp_) {
+    exp_ = other.exp_;
+    int_value_ =
+        static_cast<IntType>(std::pow(10, other.exp_ - exp_)) * int_value_;
+  } else if (exp_ > other.exp_) {
+    other_int = static_cast<IntType>(std::pow(10, exp_ - other.exp_)) *
+                other.int_value_;
+  }
+
+  if (neg_ == other.neg_) {
+    int_value_ += other_int;
+  } else {
+    if (neg_) {
+      if (int_value_ > other_int) {
+        int_value_ -= other_int;
+        neg_ = true;
+      } else {
+        int_value_ = other_int - int_value_;
+        neg_ = false;
+      }
+    } else {
+      if (other_int > int_value_) {
+        int_value_ = other_int - int_value_;
+        neg_ = true;
+      } else {
+        int_value_ -= other_int;
+        neg_ = false;
+      }
+    }
+  }
+
+  return *this;
+}
+
+AccuracyType& AccuracyType::operator-=(const AccuracyType& other) {
+  AccuracyType result = other;
+  result.neg_ = !result.neg_;
+
+  return operator+=(result);
+}
+
 void AccuracyType::Invalidate(ErrorState error_state) {
   int_value_ = 0;
   exp_ = 0;

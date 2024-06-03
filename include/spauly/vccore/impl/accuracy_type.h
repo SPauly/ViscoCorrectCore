@@ -194,6 +194,64 @@ class AccuracyType {
     return result;
   }
 
+  AccuracyType& operator+=(const AccuracyType& other);
+
+  friend AccuracyType operator+(const AccuracyType& acc_t,
+                                const AccuracyType& other) {
+    AccuracyType result;
+    result = acc_t;
+    result += other;
+    return result;
+  }
+
+  template <typename T>
+  friend AccuracyType operator+(const AccuracyType& acc_t, const T& num) {
+    AccuracyType result;
+
+    static_assert(std::is_convertible<T, double>::value,
+                  "T must be convertable to double.");
+    result = acc_t;
+    result += static_cast<AccuracyType>(static_cast<double>(num));
+    return result;
+  }
+
+  template <typename T>
+  friend AccuracyType operator+(const T& num, const AccuracyType& acc_t) {
+    return acc_t + num;
+  }
+
+  AccuracyType& operator-=(const AccuracyType& other);
+
+  friend AccuracyType operator-(const AccuracyType& acc_t,
+                                const AccuracyType& other) {
+    AccuracyType result;
+    result = acc_t;
+    result -= other;
+    return result;
+  }
+
+  template <typename T>
+  friend AccuracyType operator-(const AccuracyType& acc_t, const T& num) {
+    AccuracyType result;
+
+    static_assert(std::is_convertible<T, double>::value,
+                  "T must be convertable to double.");
+    result = acc_t;
+    result -= static_cast<AccuracyType>(static_cast<double>(num));
+    return result;
+  }
+
+  template <typename T>
+  friend AccuracyType operator-(const T& num, const AccuracyType& acc_t) {
+    AccuracyType result;
+
+    static_assert(std::is_convertible<T, double>::value,
+                  "T must be convertable to double.");
+    result = static_cast<AccuracyType>(static_cast<double>(num));
+    result -= acc_t;
+    return result;
+  }
+
   /// @brief Returns true if the stored number is equal to the other number.
   /// Comparisson is performed by checking the equality of both int value and
   /// exponent.

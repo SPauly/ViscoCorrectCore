@@ -112,10 +112,9 @@ const double CalculationCTX::ConvertValueToBase(
                 "DensityUnit, or ViscosityUnit");
 
   if (!std::is_same<ViscosityUnit, _Unit>::value)
-    return impl::ConvertToBaseUnit<_Unit>(value, from).get_double();
+    return (double)impl::ConvertToBaseUnit<_Unit>(value, from);
   else
-    return impl::ConvertViscosityTomm2s(value, from, density, d_unit)
-        .get_double();
+    return (double)impl::ConvertViscosityTomm2s(value, from, density, d_unit);
 }
 
 }  // namespace vccore

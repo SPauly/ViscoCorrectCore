@@ -92,8 +92,8 @@ std::string ConversionHelper(TestCasesMap& cases, _Unit from) {
 
     // If the result is not what expected we create a string with the
     // expected and resulting conversion.
-    if (std::abs(res.get_double() - AccType(elem.second).get_double()) > 0.5) {
-      errors += elem.first + " -> " + static_cast<std::string>(res) +
+    if (std::abs((double)(res - AccType(elem.second))) > 0.5) {
+      errors += elem.first + " -> " + std::to_string((double)res) +
                 " != " + elem.second + '\n';
     }
   }
@@ -153,9 +153,10 @@ TEST(ConversionFunctions, viscosity_conversion) {
 
     // If the result is not what expected we create a string with the
     // expected and resulting conversion.
-    if (std::abs(res.get_double() - AccType(expect).get_double()) > 0.001) {
+    if (std::abs((double)(res - AccType(expect))) > 0.001) {
       errors += static_cast<std::string>(test_c.first) + " -> " +
-                static_cast<std::string>(res) + " != " + expect + '\n';
+                std::to_string((double)(res)) +
+                " != " + std::to_string((double)(AccType(expect))) + '\n';
     }
   }
 
