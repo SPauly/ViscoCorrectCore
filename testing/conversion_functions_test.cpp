@@ -88,11 +88,11 @@ std::string ConversionHelper(TestCasesMap& cases, _Unit from) {
   std::string errors = "";
 
   for (const auto& elem : cases) {
-    AccType res = ConvertToBaseUnit<_Unit>(impl::AccType(elem.first), from);
+    DoubleT res = ConvertToBaseUnit<_Unit>(impl::DoubleT(elem.first), from);
 
     // If the result is not what expected we create a string with the
     // expected and resulting conversion.
-    if (std::abs((double)(res - AccType(elem.second))) > 0.5) {
+    if (std::abs((double)(res - DoubleT(elem.second))) > 0.5) {
       errors += elem.first + " -> " + std::to_string((double)res) +
                 " != " + elem.second + '\n';
     }
@@ -147,16 +147,16 @@ TEST(ConversionFunctions, viscosity_conversion) {
   std::string errors = "";
 
   for (const auto& [test_c, expect] : cpmpasTomm2s) {
-    AccType res = ConvertViscosityTomm2s(
-        impl::AccType(test_c.first), ViscosityUnit::kcP,
-        impl::AccType(test_c.second), DensityUnit::kGramPerLiter);
+    DoubleT res = ConvertViscosityTomm2s(
+        impl::DoubleT(test_c.first), ViscosityUnit::kcP,
+        impl::DoubleT(test_c.second), DensityUnit::kGramPerLiter);
 
     // If the result is not what expected we create a string with the
     // expected and resulting conversion.
-    if (std::abs((double)(res - AccType(expect))) > 0.001) {
+    if (std::abs((double)(res - DoubleT(expect))) > 0.001) {
       errors += static_cast<std::string>(test_c.first) + " -> " +
                 std::to_string((double)(res)) +
-                " != " + std::to_string((double)(AccType(expect))) + '\n';
+                " != " + std::to_string((double)(DoubleT(expect))) + '\n';
     }
   }
 

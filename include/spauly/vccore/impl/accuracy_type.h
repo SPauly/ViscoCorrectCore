@@ -33,9 +33,9 @@ namespace impl {
 class AccuracyType;
 
 #ifndef VCCORE_USE_ACCURACY_TYPE
-using AccType = double;
+using DoubleT = double;
 #else
-using AccType = AccuracyType;
+using DoubleT = AccuracyType;
 
 /// @brief AccuracyType stores floating point numbers as their integer
 /// representation together with an exponent to the base 10. This allows for

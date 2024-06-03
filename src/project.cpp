@@ -75,14 +75,14 @@ const Project Project::ShowConverted() const {
 
   // Set all converted values, the units can be left standard initialized.
   out.set_flowrate(impl::ConvertToBaseUnit<FlowrateUnit>(
-      impl::AccType(out.flowrate()), out.flowrate_unit()));
+      impl::DoubleT(out.flowrate()), out.flowrate_unit()));
   out.set_total_head(impl::ConvertToBaseUnit<HeadUnit>(
-      impl::AccType(out.total_head()), out.head_unit()));
+      impl::DoubleT(out.total_head()), out.head_unit()));
   out.set_viscosity(impl::ConvertViscosityTomm2s(
-      impl::AccType(out.viscosity()), out.viscosity_unit(),
-      impl::AccType(out.density()), out.density_unit()));
+      impl::DoubleT(out.viscosity()), out.viscosity_unit(),
+      impl::DoubleT(out.density()), out.density_unit()));
   out.set_density(impl::ConvertToBaseUnit<DensityUnit>(
-      impl::AccType(out.density()), out.density_unit()));
+      impl::DoubleT(out.density()), out.density_unit()));
 
   out.set_flowrate_unit(kStandardFlowrateUnit);
   out.set_head_unit(kStandardHeadUnit);
@@ -255,7 +255,7 @@ bool Project::CalcImpl() {
 
   if (was_changed_[0])
     converted_input_.flowrate_q = impl::ConvertToBaseUnit<FlowrateUnit>(
-        impl::AccType(input_flowrate_), flowrate_unit_);
+        impl::DoubleT(input_flowrate_), flowrate_unit_);
 
   if (was_changed_[1])
     converted_input_.total_head = impl::ConvertToBaseUnit<HeadUnit>(

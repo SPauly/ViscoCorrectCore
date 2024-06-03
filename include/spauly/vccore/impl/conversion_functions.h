@@ -30,47 +30,47 @@ namespace impl {
 #ifndef VCCORE_USE_ACCURACY_TYPE
 /// Holds the factors by which to multiply the input parameters to convert them
 /// to m³/h.
-const std::map<FlowrateUnit, const AccType> kFlowrateToCubicMPH{
+const std::map<FlowrateUnit, const DoubleT> kFlowrateToCubicMPH{
     {FlowrateUnit::kLitersPerMinute, 0.06},
     {FlowrateUnit::kGallonsPerMinute, 0.227125},
     {FlowrateUnit::kCubicMetersPerHour, 1.0}};
 
 /// Holds the factors by which to multiply the input parameters to convert them
 /// to m.
-const std::map<HeadUnit, const AccType> kHeadToMeters{{HeadUnit::kFeet, 0.3048},
+const std::map<HeadUnit, const DoubleT> kHeadToMeters{{HeadUnit::kFeet, 0.3048},
                                                       {HeadUnit::kMeters, 1.0}};
 
 /// Holds the factors by which to multiply the input parameters to convert them
 /// to g/l.
-const std::map<DensityUnit, const AccType> kDensityToGPL{
+const std::map<DensityUnit, const DoubleT> kDensityToGPL{
     {DensityUnit::kGramPerLiter, 1.0},
     {DensityUnit::kKilogramsPerCubicMeter, 0.001}};
 
 #else
 /// Holds the factors by which to multiply the input parameters to convert them
 /// to m³/h.
-const std::map<FlowrateUnit, const AccType> kFlowrateToCubicMPH{
-    {FlowrateUnit::kLitersPerMinute, AccType("0.06")},
-    {FlowrateUnit::kGallonsPerMinute, AccType("0.227125")},
-    {FlowrateUnit::kCubicMetersPerHour, AccType("1.0")}};
+const std::map<FlowrateUnit, const DoubleT> kFlowrateToCubicMPH{
+    {FlowrateUnit::kLitersPerMinute, DoubleT("0.06")},
+    {FlowrateUnit::kGallonsPerMinute, DoubleT("0.227125")},
+    {FlowrateUnit::kCubicMetersPerHour, DoubleT("1.0")}};
 
 /// Holds the factors by which to multiply the input parameters to convert them
 /// to m.
-const std::map<HeadUnit, const AccType> kHeadToMeters{
-    {HeadUnit::kFeet, AccType("0.3048")}, {HeadUnit::kMeters, AccType("1.0")}};
+const std::map<HeadUnit, const DoubleT> kHeadToMeters{
+    {HeadUnit::kFeet, DoubleT("0.3048")}, {HeadUnit::kMeters, DoubleT("1.0")}};
 
 /// Holds the factors by which to multiply the input parameters to convert them
 /// to g/l.
-const std::map<DensityUnit, const AccType> kDensityToGPL{
-    {DensityUnit::kGramPerLiter, AccType("1.0")},
-    {DensityUnit::kKilogramsPerCubicMeter, AccType("0.001")}};
+const std::map<DensityUnit, const DoubleT> kDensityToGPL{
+    {DensityUnit::kGramPerLiter, DoubleT("1.0")},
+    {DensityUnit::kKilogramsPerCubicMeter, DoubleT("0.001")}};
 
 #endif  // VCCORE_USE_ACCURACY_TYPE
 
 /// Converts value to the specified base unit for _Unit. This function can be
 /// used to convert to: -> CubicMPH, -> Meters, -> GramPerLiter.
 template <typename _Unit>
-AccType ConvertToBaseUnit(const AccType& value, const _Unit from) noexcept {
+DoubleT ConvertToBaseUnit(const DoubleT& value, const _Unit from) noexcept {
   static_assert(std::is_same<FlowrateUnit, _Unit>::value ||
                     std::is_same<HeadUnit, _Unit>::value ||
                     std::is_same<DensityUnit, _Unit>::value,
@@ -86,13 +86,13 @@ AccType ConvertToBaseUnit(const AccType& value, const _Unit from) noexcept {
 }
 
 /// Converts the input value to the base viscosity unit of mm2/s
-AccType ConvertViscosityTomm2s(
-    const AccType& value, const ViscosityUnit from, const AccType& density,
+DoubleT ConvertViscosityTomm2s(
+    const DoubleT& value, const ViscosityUnit from, const DoubleT& density,
     const DensityUnit d_unit = DensityUnit::kGramPerLiter) noexcept {
 #ifndef VCCORE_USE_ACCURACY_TYPE
-  AccType out = 0.0;
+  DoubleT out = 0.0;
 #else
-  AccType out = AccType("0.0");
+  DoubleT out = DoubleT("0.0");
 #endif  // VCCORE_USE_ACCURACY_TYPE
 
   switch (from) {
