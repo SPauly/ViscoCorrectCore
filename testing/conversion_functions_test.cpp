@@ -35,6 +35,8 @@ namespace {
 // First param represents the test value the second one the expected conversion.
 using TestCasesMap = std::map<InputT, InputT>;
 
+#ifdef VCCORE_USE_ACCURACY_TYPE
+
 // Test utilities for Flowrate:
 TestCasesMap lpmToCubicMPH{
     {"1", "0.06"},        {"10", "0.6"},     {"100", "6"},
@@ -76,6 +78,9 @@ std::map<std::pair<InputT, InputT>, InputT> cpmpasTomm2s{
     {{"4", "4"}, "1"},    {{"4", "5"}, "0.8"},      {{"5", "1"}, "5"},
     {{"5", "2"}, "2.5"},  {{"5", "3"}, "1.666667"}, {{"5", "4"}, "1.25"},
     {{"5", "5"}, "1"}};  // Centipoise and Millipascal Seconds to mm^2/s
+#else
+
+#endif  // VCCORE_USE_ACCURACY_TYPE
 
 // Helper function to create a string with the differences in the calculated and
 // the expected conversions. _Unit must fullfill the same requirements as
@@ -88,11 +93,11 @@ std::string ConversionHelper(TestCasesMap& cases, _Unit from) {
   std::string errors = "";
 
   for (const auto& elem : cases) {
-    DoubleT res = ConvertToBaseUnit<_Unit>(impl::DoubleT(elem.first), from);
+    DoubleT res = ConvertToBaseUnit<_Unit>(DOUBLE_T(elem.first), from);
 
     // If the result is not what expected we create a string with the
     // expected and resulting conversion.
-    if (std::abs((double)(res - DoubleT(elem.second))) > 0.5) {
+    if (std::abs((double)(res - DOUBLE_T(elem.second))) > 0.001) {
       errors += elem.first + " -> " + std::to_string((double)res) +
                 " != " + elem.second + '\n';
     }
@@ -148,15 +153,15 @@ TEST(ConversionFunctions, viscosity_conversion) {
 
   for (const auto& [test_c, expect] : cpmpasTomm2s) {
     DoubleT res = ConvertViscosityTomm2s(
-        impl::DoubleT(test_c.first), ViscosityUnit::kcP,
-        impl::DoubleT(test_c.second), DensityUnit::kGramPerLiter);
+        DOUBLE_T(test_c.first), ViscosityUnit::kcP, DOUBLE_T(test_c.second),
+        DensityUnit::kGramPerLiter);
 
     // If the result is not what expected we create a string with the
     // expected and resulting conversion.
-    if (std::abs((double)(res - DoubleT(expect))) > 0.001) {
+    if (std::abs((double)(res - DOUBLE_T(expect))) > 0.001) {
       errors += static_cast<std::string>(test_c.first) + " -> " +
                 std::to_string((double)(res)) +
-                " != " + std::to_string((double)(DoubleT(expect))) + '\n';
+                " != " + std::to_string((double)(DOUBLE_T(expect))) + '\n';
     }
   }
 

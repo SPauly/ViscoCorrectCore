@@ -19,6 +19,10 @@ cmake_minimum_required(VERSION 3.14) # 3.14 is required by GoogleTest
 
 project(ViscoCorrectCore VERSION 1.0.0)
 
+#####################################################
+### Set project configuration
+#####################################################
+
 # Set the Version and SONAME 
 set(vcc_VERSION ${PROJECT_VERSION})
 set(vcc_SOVERSION 0)
@@ -46,6 +50,10 @@ endif()
 set(vcc_INSTALL ${vcc_INSTALL_default} CACHE BOOL
     "Generate installation target")
 
+#####################################################
+### Main Library ViscoCorrectCore
+#####################################################
+
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
@@ -58,7 +66,7 @@ add_library(ViscoCorrectCore STATIC
 )
 
 # Set library definitions
-target_compile_features(ViscoCorrectCore PUBLIC cxx_std_20)
+target_compile_features(ViscoCorrectCore PUBLIC cxx_std_17)
 
 set_target_properties(ViscoCorrectCore PROPERTIES 
     SOVERSION ${vcc_SOVERSION} 
@@ -98,11 +106,11 @@ $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>
 $<INSTALL_INTERFACE:${vcc_INSTALL_INCLUDEDIR}>
 )
 
-target_link_libraries(ViscoCorrectCore PRIVATE 
-    Threads::Threads
-)
-
 add_library(ViscoCorrectCore::ViscoCorrectCore ALIAS ViscoCorrectCore)
+
+#####################################################
+### Install ViscoCorrectCore
+#####################################################
 
 include(GNUInstallDirs)
 
@@ -139,36 +147,67 @@ if(vcc_INSTALL)
     )
 endif()
 
+#####################################################
+### Include GoogleTests
+#####################################################
+
+if(vcc_BUILD_TESTS)
+
+include(GoogleTest)
+    
+# Add GoogleTest
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE) # Required for Windows to prevent overriding compiler/linker flags
+set(BUILD_GMOCK OFF CACHE BOOL "" FORCE) # Disable building GoogleMock
+if(vcc_INSTALL)
+    set(INSTALL_GTEST ON CACHE BOOL "" FORCE) # Enable installing GoogleTest
+else()
+    set(INSTALL_GTEST OFF CACHE BOOL "" FORCE) # Disable installing GoogleTest
+endif()
+
+# Only add GTest if it was not already added
+if(NOT TARGET GTest::gtest_)
+    add_subdirectory(third_party/googletest)
+endif()
+
+enable_testing()
+
+endif() # vcc_BUILD_TESTS
+
+#####################################################
+### Build Tests for ViscoCorrectCore
+#####################################################
+
 # Build the tests
 if(vcc_BUILD_TESTS)
 
-    include(GoogleTest)
-    
-    # Add GoogleTest
-    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE) # Required for Windows to prevent overriding compiler/linker flags
-    set(BUILD_GMOCK OFF CACHE BOOL "" FORCE) # Disable building GoogleMock
-    if(vcc_INSTALL)
-        set(INSTALL_GTEST ON CACHE BOOL "" FORCE) # Enable installing GoogleTest
-    else()
-        set(INSTALL_GTEST OFF CACHE BOOL "" FORCE) # Disable installing GoogleTest
-    endif()
+    # Build the tests with double as DoubleT
+    set(vcc_TEST_TARGETS
+        conversion_functions_test
+    )
 
-    # Only add GTest if it was not already added
-    if(NOT TARGET GTest::gtest_)
-        add_subdirectory(third_party/googletest)
-    endif()
+    foreach(target ${vcc_TEST_TARGETS})
+    add_executable(${target} ${CMAKE_CURRENT_SOURCE_DIR}/testing/${target}.cpp)
+    target_compile_features(${target} PUBLIC cxx_std_17)
+    target_include_directories(${target} PRIVATE 
+    ${PROJECT_SOURCE_DIR}/include
+    )
+    target_link_libraries(${target} GTest::gtest_main ViscoCorrectCore)
+    add_dependencies(${target} ViscoCorrectCore)
+    target_compile_definitions(ViscoCorrectCore PRIVATE VCCORE_USE_ACCURACY_TYPE=0)
+    gtest_discover_tests(${target})
+endforeach()
 
-    enable_testing()
 
-    # Build the tests
-    set(TEST_TARGETS
+    # Build the tests with AccuracyType
+    set(vcc_TEST_TARGETS_ACC
         accuracy_type_test
         conversion_functions_test
     )
 
-    foreach(target ${TEST_TARGETS})
-        add_executable(${target} ${CMAKE_CURRENT_SOURCE_DIR}/testing/${target}.cpp)
-        target_compile_features(${target} PUBLIC cxx_std_20)
+    foreach(trgt ${vcc_TEST_TARGETS_ACC})
+        set(target acc_${trgt})
+        add_executable(${target} ${CMAKE_CURRENT_SOURCE_DIR}/testing/${trgt}.cpp)
+        target_compile_features(${target} PUBLIC cxx_std_17)
         target_include_directories(${target} PRIVATE 
         ${PROJECT_SOURCE_DIR}/include
         )
@@ -178,6 +217,10 @@ if(vcc_BUILD_TESTS)
         gtest_discover_tests(${target})
     endforeach()
 endif()
+
+#####################################################
+### Add Config file for Library
+#####################################################
 
 # Create config files for the library
 include(CMakePackageConfigHelpers)
