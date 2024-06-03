@@ -278,6 +278,28 @@ TEST(AccuracyTypeTest, devision) {
   EXPECT_EQ(accuracy_type.get_double(), 2.06);
 }
 
+TEST(AccuracyTypeTest, addition) {
+  AccuracyType a1("5.25");
+  a1 += AccuracyType("0.5");
+  EXPECT_EQ(a1.get_double(), 5.75);
+
+  a1 += AccuracyType("-0.5");
+  EXPECT_EQ(a1.get_double(), 5.25);
+
+  a1 = "-78.9999";
+  a1 += AccuracyType("-0.1");
+  EXPECT_EQ(a1.get_double(), -79.0999);
+}
+
+TEST(AccuracyTypeTest, subtraction) {
+  AccuracyType a1("5.25");
+  a1 -= AccuracyType("0.5");
+  EXPECT_EQ(a1.get_double(), 4.75);
+
+  a1 -= AccuracyType("-0.5");
+  EXPECT_EQ(a1.get_double(), 5.25);
+}
+
 }  // namespace
 }  // namespace vccore_testing
 }  // namespace impl
