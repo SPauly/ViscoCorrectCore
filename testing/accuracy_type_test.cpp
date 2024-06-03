@@ -24,8 +24,6 @@
 
 #include <gtest/gtest.h>
 
-#define VCCORE_USE_ACCURACY_TYPE
-
 namespace spauly {
 namespace vccore {
 namespace impl {

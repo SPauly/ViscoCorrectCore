@@ -27,45 +27,23 @@ namespace spauly {
 namespace vccore {
 namespace impl {
 
-#ifndef VCCORE_USE_ACCURACY_TYPE
 /// Holds the factors by which to multiply the input parameters to convert them
 /// to m³/h.
 const std::map<FlowrateUnit, const DoubleT> kFlowrateToCubicMPH{
-    {FlowrateUnit::kLitersPerMinute, 0.06},
-    {FlowrateUnit::kGallonsPerMinute, 0.227125},
-    {FlowrateUnit::kCubicMetersPerHour, 1.0}};
-
-/// Holds the factors by which to multiply the input parameters to convert them
-/// to m.
-const std::map<HeadUnit, const DoubleT> kHeadToMeters{{HeadUnit::kFeet, 0.3048},
-                                                      {HeadUnit::kMeters, 1.0}};
-
-/// Holds the factors by which to multiply the input parameters to convert them
-/// to g/l.
-const std::map<DensityUnit, const DoubleT> kDensityToGPL{
-    {DensityUnit::kGramPerLiter, 1.0},
-    {DensityUnit::kKilogramsPerCubicMeter, 0.001}};
-
-#else
-/// Holds the factors by which to multiply the input parameters to convert them
-/// to m³/h.
-const std::map<FlowrateUnit, const DoubleT> kFlowrateToCubicMPH{
-    {FlowrateUnit::kLitersPerMinute, DoubleT("0.06")},
-    {FlowrateUnit::kGallonsPerMinute, DoubleT("0.227125")},
-    {FlowrateUnit::kCubicMetersPerHour, DoubleT("1.0")}};
+    {FlowrateUnit::kLitersPerMinute, DOUBLE_T(0.06)},
+    {FlowrateUnit::kGallonsPerMinute, DOUBLE_T(0.227125)},
+    {FlowrateUnit::kCubicMetersPerHour, DOUBLE_T(1.0)}};
 
 /// Holds the factors by which to multiply the input parameters to convert them
 /// to m.
 const std::map<HeadUnit, const DoubleT> kHeadToMeters{
-    {HeadUnit::kFeet, DoubleT("0.3048")}, {HeadUnit::kMeters, DoubleT("1.0")}};
+    {HeadUnit::kFeet, DOUBLE_T(0.3048)}, {HeadUnit::kMeters, DOUBLE_T(1.0)}};
 
 /// Holds the factors by which to multiply the input parameters to convert them
 /// to g/l.
 const std::map<DensityUnit, const DoubleT> kDensityToGPL{
-    {DensityUnit::kGramPerLiter, DoubleT("1.0")},
-    {DensityUnit::kKilogramsPerCubicMeter, DoubleT("0.001")}};
-
-#endif  // VCCORE_USE_ACCURACY_TYPE
+    {DensityUnit::kGramPerLiter, DOUBLE_T(1.0)},
+    {DensityUnit::kKilogramsPerCubicMeter, DOUBLE_T(0.001)}};
 
 /// Converts value to the specified base unit for _Unit. This function can be
 /// used to convert to: -> CubicMPH, -> Meters, -> GramPerLiter.
@@ -89,11 +67,7 @@ DoubleT ConvertToBaseUnit(const DoubleT& value, const _Unit from) noexcept {
 DoubleT ConvertViscosityTomm2s(
     const DoubleT& value, const ViscosityUnit from, const DoubleT& density,
     const DensityUnit d_unit = DensityUnit::kGramPerLiter) noexcept {
-#ifndef VCCORE_USE_ACCURACY_TYPE
-  DoubleT out = 0.0;
-#else
-  DoubleT out = DoubleT("0.0");
-#endif  // VCCORE_USE_ACCURACY_TYPE
+  DoubleT out = DOUBLE_T(0.0);
 
   switch (from) {
     case ViscosityUnit::kcP:

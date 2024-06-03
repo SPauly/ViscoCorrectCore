@@ -29,13 +29,21 @@ namespace spauly {
 namespace vccore {
 namespace impl {
 
-// Forward declaration
+#ifndef VCCORE_USE_ACCURACY_TYPE
+
+using DoubleT = double;
+
+#define DOUBLE_T(arg) (double)(arg)
+
+#else
+
 class AccuracyType;
 
-#ifndef VCCORE_USE_ACCURACY_TYPE
-using DoubleT = double;
-#else
-using DoubleT = AccuracyType;
+using DoubleT = ::spauly::vccore::impl::AccuracyType;
+
+// This allows for easier switching between double and AccuracyType since I do
+// not have to write "arg" everytime.
+#define DOUBLE_T(arg) ::spauly::vccore::impl::AccuracyType(#arg)
 
 /// @brief AccuracyType stores floating point numbers as their integer
 /// representation together with an exponent to the base 10. This allows for
@@ -309,4 +317,4 @@ class AccuracyType {
 
 }  // namespace spauly
 
-#endif  // SPAULY_VCCORE_IMPL_ACCURACY_TYPE_H_
+#endif  // SPAULY_VCCORE_IMPL_ACCURACY_TYPE_H_W
