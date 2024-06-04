@@ -76,7 +76,43 @@ std::map<std::pair<InputT, InputT>, InputT> cpmpasTomm2s{
     {{"5", "2"}, "2.5"},  {{"5", "3"}, "1.666667"}, {{"5", "4"}, "1.25"},
     {{"5", "5"}, "1"}};  // Centipoise and Millipascal Seconds to mm^2/s
 #else
+// Test utilities for Flowrate:
+TestCasesMap lpmToCubicMPH{
+    {1.0, 0.06},      {10.0, 0.6},      {100.0, 6.0},  {1000.0, 60.0},
+    {10000.0, 600.0}, {0.5, 0.03},      {5.5, 0.33},   {11.1, 0.666},
+    {111.1, 6.666},   {1111.1, 66.666}, {0.11, 0.0066}};  // Liters per
+                                                          // Minute to m^3/h
+TestCasesMap gpmToCubicMPH{
+    {1.0, 0.2271},     {10.0, 2.271},     {100.0, 22.71}, {1000.0, 227.1},
+    {10000.0, 2271.0}, {0.5, 0.11355},    {5.5, 1.24905}, {11.1, 2.52281},
+    {111.1, 25.2711},  {1111.1, 252.281}, {0.11, 0.02498}};  // Gallons per
+                                                             // Minute to m^3/h
 
+// Test utilities for Head
+TestCasesMap feetToMeters{
+    {1.0, 0.3048},     {10.0, 3.048}, {100.0, 30.48},  {1000.0, 304.8},
+    {10000.0, 3048.0}, {5.5, 1.6764}, {11.1, 3.38328},
+};  // Feet to Meters
+
+// Test utilities for Density
+TestCasesMap kpcmToGPL{
+    {1.0, 0.001},    {10.0, 0.01},    {100.0, 0.1},   {1000.0, 1.0},
+    {10000.0, 10.0}, {0.5, 0.0005},   {5.5, 0.0055},  {11.1, 0.0111},
+    {111.1, 0.111},  {1111.1, 1.111}, {0.11, 0.00011}};  // KilogramsPerCubicMeter
+                                                         // To GramPerLiter
+
+// Test utilities for Viscosity
+// The pair holds the following args: 1. Viscosity in cp/mpas, 2. Density in gPl
+std::map<std::pair<InputT, InputT>, InputT> cpmpasTomm2s{
+    {{1.0, 1.0}, 1.0},  {{1.0, 2.0}, 0.5},      {{1.0, 3.0}, 0.333333},
+    {{1.0, 4.0}, 0.25}, {{1.0, 5.0}, 0.2},      {{2.0, 1.0}, 2.0},
+    {{2.0, 2.0}, 1.0},  {{2.0, 3.0}, 0.666667}, {{2.0, 4.0}, 0.5},
+    {{2.0, 5.0}, 0.4},  {{3.0, 1.0}, 3.0},      {{3.0, 2.0}, 1.5},
+    {{3.0, 3.0}, 1.0},  {{3.0, 4.0}, 0.75},     {{3.0, 5.0}, 0.6},
+    {{4.0, 1.0}, 4.0},  {{4.0, 2.0}, 2.0},      {{4.0, 3.0}, 1.333333},
+    {{4.0, 4.0}, 1.0},  {{4.0, 5.0}, 0.8},      {{5.0, 1.0}, 5.0},
+    {{5.0, 2.0}, 2.5},  {{5.0, 3.0}, 1.666667}, {{5.0, 4.0}, 1.25},
+    {{5.0, 5.0}, 1.0}};  // Centipoise and Millipascal Seconds to mm^2/s
 #endif  // VCCORE_USE_ACCURACY_TYPE
 
 // Helper function to create a string with the differences in the calculated and
@@ -95,8 +131,14 @@ std::string ConversionHelper(TestCasesMap& cases, _Unit from) {
     // If the result is not what expected we create a string with the
     // expected and resulting conversion.
     if (std::abs((double)(res - DOUBLE_T(elem.second))) > 0.001) {
+#ifdef VCCORE_USE_ACCURACY_TYPE
       errors += elem.first + " -> " + std::to_string((double)res) +
                 " != " + elem.second + '\n';
+#else
+      errors += std::to_string(elem.first) + " -> " +
+                std::to_string((double)(res)) +
+                " != " + std::to_string((double)(DOUBLE_T(elem.second))) + '\n';
+#endif
     }
   }
 
@@ -156,9 +198,15 @@ TEST(ConversionFunctions, viscosity_conversion) {
     // If the result is not what expected we create a string with the
     // expected and resulting conversion.
     if (std::abs((double)(res - DOUBLE_T(expect))) > 0.001) {
+#ifdef VCCORE_USE_ACCURACY_TYPE
       errors += static_cast<std::string>(test_c.first) + " -> " +
                 std::to_string((double)(res)) +
                 " != " + std::to_string((double)(DOUBLE_T(expect))) + '\n';
+#else
+      errors += std::to_string(test_c.first) + " -> " +
+                std::to_string((double)(res)) +
+                " != " + std::to_string((double)(DOUBLE_T(expect))) + '\n';
+#endif
     }
   }
 
