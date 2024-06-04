@@ -15,9 +15,6 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 // Contact via <https://github.com/SPauly/ViscoCorrectCore>
-
-#define VCCORE_USE_ACCURACY_TYPE
-
 #include "spauly/vccore/impl/conversion_functions.h"
 
 #include <string>

@@ -25,13 +25,55 @@ namespace vccore {
 namespace impl {
 
 template <typename T, size_t S>
+class ParameterisedBaseFunc {
+ public:
+  ParameterisedBaseFunc() : coeffs_(std::array<T, S>(0)) {}
+  /// @brief Initializes the coefficients in the correct order.
+  /// @param coefficients The coefficients should be ordered like so [0]*x^0 [1]
+  /// * x^1 if not set reverse_order = false
+  /// @param reverse_order Set to true by default. If coefficients are ordered
+  /// like [0]*x^n [1]*x^n-1 set this to false.
+  ParameterisedBaseFunc(const std::array<T, S> &coefficients,
+                        bool reverse_order = true) {
+    if (reverse_order) {
+      // The coefficients need to be stored in reverse order
+      for (int i = 0; i < S; i++) {
+        coeffs_[i] = coefficients[S - i - 1];
+      }
+    } else {
+      coeffs_ = coefficients;
+    }
+  }
+
+  /// @brief Returns the y value of the given function at position x. Here the
+  /// Function dependent code should be implemented.
+  /// @param x -Value
+  /// @return function value.
+  virtual T operator()(T &x) = 0;
+
+ protected:
+  std::array<T, S> coeffs_;
+};
+
+template <typename T, size_t S>
 class PolynomialFunc {
  public:
   PolynomialFunc() = default;
-  PolynomialFunc(const std::array<T, S> &coefficients) {
-    // The coefficients need to be stored in reverse order
-    for (int i = 0; i < S; i++) {
-      coeffs_[i] = coefficients[S - i - 1];
+  /// @brief Constructs a polynomial function using the coefficients in the
+  /// given order.
+  /// @param coefficients The coefficients should be ordered like so [0]*x^0 [1]
+  /// * x^1 if not set reverse_order = false
+  /// @param reverse_order Set to true by default. If coefficients are ordered
+  /// like [0]*x^n [1]*x^n-1 set this to false.
+  PolynomialFunc(const std::array<T, S> &coefficients,
+                 bool reverse_order = true) {
+    if (reverse_order) {
+      // The coefficients need to be stored in reverse order
+      for (int i = 0; i < S; i++) {
+        coeffs_[i] = coefficients[S - i - 1];
+      }
+    } else {
+      coeffs_ = coefficients;
     }
   }
 
