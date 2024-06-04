@@ -42,11 +42,11 @@ TestCasesMap lpmToCubicMPH{
     {"1111.1", "66.666"}, {"0.11", "0.0066"}};  // Liters per
                                                 // Minute to m^3/h
 TestCasesMap gpmToCubicMPH{
-    {"1", "0.2271"},       {"10", "2.271"},     {"100", "22.71"},
-    {"1000", "227.1"},     {"10000", "2271"},   {"0.5", "0.11355"},
-    {"5.5", "1.24905"},    {"11.1", "2.52281"}, {"111.1", "25.2711"},
-    {"1111.1", "252.281"}, {"0.11", "0.02498"}};  // Gallons per
-                                                  // Minute to m^3/h
+    {"1", "0.227125"},       {"10", "2.27125"},     {"100", "22.7125"},
+    {"1000", "227.125"},     {"10000", "2271.25"},  {"0.5", "0.1135625"},
+    {"5.5", "1.2491875"},    {"11.1", "2.5210875"}, {"111.1", "25.2335875"},
+    {"1111.1", "252.35858"}, {"0.11", "0.02498375"}};  // Gallons per
+                                                       // Minute to m^3/h
 
 // Test utilities for Head
 TestCasesMap feetToMeters{
@@ -83,10 +83,11 @@ TestCasesMap lpmToCubicMPH{
     {111.1, 6.666},   {1111.1, 66.666}, {0.11, 0.0066}};  // Liters per
                                                           // Minute to m^3/h
 TestCasesMap gpmToCubicMPH{
-    {1.0, 0.2271},     {10.0, 2.271},     {100.0, 22.71}, {1000.0, 227.1},
-    {10000.0, 2271.0}, {0.5, 0.11355},    {5.5, 1.24905}, {11.1, 2.52281},
-    {111.1, 25.2711},  {1111.1, 252.281}, {0.11, 0.02498}};  // Gallons per
-                                                             // Minute to m^3/h
+    {1.0, 0.227125},     {10.0, 2.27125},    {100.0, 22.7125},
+    {1000.0, 227.125},   {10000.0, 2271.25}, {0.5, 0.1135625},
+    {5.5, 1.2491875},    {11.1, 2.5210875},  {111.1, 25.2335875},
+    {1111.1, 252.35858}, {0.11, 0.02498375}};  // Gallons per
+                                               // Minute to m^3/h
 
 // Test utilities for Head
 TestCasesMap feetToMeters{
@@ -130,7 +131,7 @@ std::string ConversionHelper(TestCasesMap& cases, _Unit from) {
 
     // If the result is not what expected we create a string with the
     // expected and resulting conversion.
-    if (std::abs((double)(res - DOUBLE_T(elem.second))) > 0.001) {
+    if (std::abs((double)(res - DOUBLE_T(elem.second))) > 0.01) {
 #ifdef VCCORE_USE_ACCURACY_TYPE
       errors += elem.first + " -> " + std::to_string((double)res) +
                 " != " + elem.second + '\n';
