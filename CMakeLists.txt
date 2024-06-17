@@ -183,6 +183,7 @@ if(vcc_BUILD_TESTS)
     # Build the tests with double as DoubleT
     set(vcc_TEST_TARGETS
         conversion_functions_test
+        math_test
     )
 
     foreach(target ${vcc_TEST_TARGETS})
@@ -202,6 +203,7 @@ endforeach()
     set(vcc_TEST_TARGETS_ACC
         accuracy_type_test
         conversion_functions_test
+        math_test
     )
 
     foreach(trgt ${vcc_TEST_TARGETS_ACC})

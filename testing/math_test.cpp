@@ -48,7 +48,33 @@ class FunctionTests : public testing::Test {
   std::array<DoubleT, 6> d_komplex_;
 };
 
-TEST_F(FunctionTests, Polynomical) {}
+TEST_F(FunctionTests, Polynomical) {
+  // Test the square function
+  PolynomialFunc<int, 3> square_func(square_);
+  EXPECT_EQ(square_func(0), 1);
+  EXPECT_EQ(square_func(1), 2);
+  EXPECT_EQ(square_func(2), 5);
+
+  // Test the linear function
+  PolynomialFunc<int, 2> linear_func(linear_);
+  EXPECT_EQ(linear_func(0), -1);
+  EXPECT_EQ(linear_func(1), 1);
+  EXPECT_EQ(linear_func(2), 3);
+
+  // Test the komplex function
+  PolynomialFunc<int, 6> komplex_func(komplex_);
+  EXPECT_EQ(komplex_func(0), 4);
+  EXPECT_EQ(komplex_func(1), 38);
+  EXPECT_EQ(komplex_func(2), 312);
+  EXPECT_EQ(komplex_func(3), 2224);
+
+  // Test the double komplex function
+  PolynomialFunc<DoubleT, 6> d_komplex_func(d_komplex_);
+  EXPECT_NEAR(d_komplex_func(0), 4, 1e-10);
+  EXPECT_NEAR(d_komplex_func(1), 38, 1e-10);
+  EXPECT_NEAR(d_komplex_func(2), 312, 1e-10);
+  EXPECT_NEAR(d_komplex_func(3), 2224, 1e-10);
+}
 
 }  // namespace
 

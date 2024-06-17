@@ -77,7 +77,7 @@ class PolynomialFunc {
     }
   }
 
-  T operator()(T &x) const {
+  T operator()(T x) const {
     T result = 0;
     for (size_t i = 0; i < coeffs_.size(); ++i) {
       result += coeffs_[i] * std::pow(x, i);
