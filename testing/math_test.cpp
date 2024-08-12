@@ -39,9 +39,8 @@ class FunctionTests : public testing::Test {
         DOUBLE_T(0.0039704102541411324),  DOUBLE_T(-1.1870337647376101),
         DOUBLE_T(176.52190832690891),     DOUBLE_T(-10276.558815133236)};
 
-    d_logistic_ = {DOUBLE_T(285.39113639063004),
-                   DOUBLE_T(-0.019515612319848788),
-                   DOUBLE_T(451.79876054847699)};  // 0.6
+    d_logistic_ = {285.39113639063004, -0.019515612319848788,
+                   451.79876054847699};  // 0.6
   }
 
  protected:
@@ -51,7 +50,7 @@ class FunctionTests : public testing::Test {
 
   std::array<DoubleT, 6> d_komplex_;
 
-  std::array<DoubleT, 3> d_logistic_;
+  std::array<double, 3> d_logistic_;
 };
 
 TEST_F(FunctionTests, PolynomialTest) {
@@ -83,10 +82,13 @@ TEST_F(FunctionTests, PolynomialTest) {
 }
 
 TEST_F(FunctionTests, LogisticTest) {
-  LogisticFunc<DoubleT> logistic_func(d_logistic_);
-  EXPECT_NEAR(logistic_func(0), 0.6, 1e-10);
-  EXPECT_NEAR(logistic_func(1), 0.6, 1e-10);
-  EXPECT_NEAR(logistic_func(2), 0.6, 1e-10);
+  LogisticalFunc lfunc(d_logistic_);
+  EXPECT_NEAR(lfunc(0), 0.6, 1e-10);
+  EXPECT_NEAR(lfunc(1), 0.6, 1e-10);
+  EXPECT_NEAR(lfunc(2), 0.6, 1e-10);
+
+  EXPECT_NEAR(lfunc<DOUBLE_T>(DOUBLE_T(2)), 0.6, 1e-10);
+}
 }  // namespace
 
 }  // namespace vccore_testing
