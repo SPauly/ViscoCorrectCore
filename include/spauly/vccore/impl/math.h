@@ -29,7 +29,11 @@ template <typename T, size_t S>
 class ParameterisedBaseFunc {
  public:
   /// @brief Default constructor initializes all coefficients to 0.
-  ParameterisedBaseFunc() : coeffs_(std::array<T, S>(0)) {}
+  ParameterisedBaseFunc() {
+    for (size_t i = 0; i < coeffs_.size(); ++i) {
+      coeffs_[i] = 0;
+    }
+  }
   /// @brief Initializes the coefficients in the correct order.
   /// @param coefficients The coefficients should be ordered like so [0]*x^0 [1]
   /// * x^1 ...
@@ -69,7 +73,7 @@ class PolynomialFunc : public ParameterisedBaseFunc<T, S> {
   virtual T operator()(T x) const override {
     T result = 0;
     for (size_t i = 0; i < coeffs_.size(); ++i) {
-      result += coeffs_[i] * std::pow(x, i);
+      result += coeffs_[i] * T(std::pow(static_cast<double>(x), i));
     }
     return result;
   }
@@ -98,19 +102,6 @@ class LogisticalFunc : public ParameterisedBaseFunc<double, 3> {
     // l / (1 + exp(-k * (x - x0)))
     return coeffs_[0] / (1 + std::exp(-coeffs_[1] * (x - coeffs_[2])));
   }
-
-  /// @brief Returns the y value of the given function at position x as a
-  /// double.
-  /// @param x Integer value of the position to evaluate the function at. Will
-  /// be casted via static_cast.
-  /// @return copy of the value of the function at x.
-  template <typename T>
-  double operator()(T x) const {
-    // coeffs_[0] = l, coeffs_[1] = k, coeffs_[2] = x0
-    // l / (1 + exp(-k * (x - x0)))
-    return coeffs_[0] /
-           (1 + std::exp(-coeffs_[1] * (static_cast<double>(x) - coeffs_[2])));
-  };
 };
 
 }  // namespace impl

@@ -44,8 +44,8 @@ Project::Project(const Project& other) : calculator_(other.ctx_) {
 }
 
 Project& Project::operator=(const Project& other) {
-  ReadLock lock(other.mtx_);
-  WriteLock lock2(mtx_);
+  ReadLock lock(other.mux_);
+  WriteLock lock2(mux_);
 
   ctx_ = other.ctx_;
   name_ = other.name_;
@@ -63,7 +63,7 @@ Project& Project::operator=(const Project& other) {
 }
 
 bool Project::Calculate() {
-  WriteLock lock(mtx_);
+  WriteLock lock(mux_);
 
   if (was_computed_) return has_error_;
 
@@ -93,56 +93,56 @@ const Project Project::ShowConverted() const {
 }
 
 double Project::q() {
-  ReadLock lock(mtx_);
+  ReadLock lock(mux_);
   if (!was_computed_) GetterCalcWrapper(lock);
 
   return res_.q;
 }
 
 double Project::eta() {
-  ReadLock lock(mtx_);
+  ReadLock lock(mux_);
   if (!was_computed_) GetterCalcWrapper(lock);
 
   return res_.eta;
 }
 
 const std::array<double, 4> Project::h() {
-  ReadLock lock(mtx_);
+  ReadLock lock(mux_);
   if (!was_computed_) GetterCalcWrapper(lock);
 
   return res_.h;
 }
 
 double Project::h_06() {
-  ReadLock lock(mtx_);
+  ReadLock lock(mux_);
   if (!was_computed_) GetterCalcWrapper(lock);
 
   return res_.h[0];
 }
 
 double Project::h_08() {
-  ReadLock lock(mtx_);
+  ReadLock lock(mux_);
   if (!was_computed_) GetterCalcWrapper(lock);
 
   return res_.h[1];
 }
 
 double Project::h_10() {
-  ReadLock lock(mtx_);
+  ReadLock lock(mux_);
   if (!was_computed_) GetterCalcWrapper(lock);
 
   return res_.h[2];
 }
 
 double Project::h_12() {
-  ReadLock lock(mtx_);
+  ReadLock lock(mux_);
   if (!was_computed_) GetterCalcWrapper(lock);
 
   return res_.h[3];
 }
 
 void Project::set_floating_point_precision(size_t _precision) {
-  WriteLock lock(mtx_);
+  WriteLock lock(mux_);
   floating_point_precision_ = _precision;
   IndicateChange();
 }
@@ -150,7 +150,7 @@ void Project::set_floating_point_precision(size_t _precision) {
 void Project::Set(InputT _flowrate, InputT _head, InputT _viscosity,
                   InputT _density, FlowrateUnit _f_unit, HeadUnit _h_unit,
                   ViscosityUnit _v_unit, DensityUnit _d_unit) {
-  WriteLock lock(mtx_);
+  WriteLock lock(mux_);
   input_flowrate_ = _flowrate;
   input_total_head_ = _head;
   input_viscosity_ = _viscosity;
@@ -166,7 +166,7 @@ void Project::Set(InputT _flowrate, InputT _head, InputT _viscosity,
 }
 
 void Project::set_flowrate(const InputT& _flowrate) {
-  WriteLock lock(mtx_);
+  WriteLock lock(mux_);
   input_flowrate_ = _flowrate;
   IndicateChange();
 
@@ -175,7 +175,7 @@ void Project::set_flowrate(const InputT& _flowrate) {
 }
 
 void Project::set_flowrate_unit(const FlowrateUnit& _unit) {
-  WriteLock lock(mtx_);
+  WriteLock lock(mux_);
   flowrate_unit_ = _unit;
   IndicateChange();
 
@@ -184,7 +184,7 @@ void Project::set_flowrate_unit(const FlowrateUnit& _unit) {
 }
 
 void Project::set_total_head(const InputT& _head) {
-  WriteLock lock(mtx_);
+  WriteLock lock(mux_);
   input_total_head_ = _head;
   IndicateChange();
 
@@ -193,7 +193,7 @@ void Project::set_total_head(const InputT& _head) {
 }
 
 void Project::set_head_unit(const HeadUnit& _unit) {
-  WriteLock lock(mtx_);
+  WriteLock lock(mux_);
   head_unit_ = _unit;
   IndicateChange();
 
@@ -202,7 +202,7 @@ void Project::set_head_unit(const HeadUnit& _unit) {
 }
 
 void Project::set_viscosity(const InputT& _viscosity) {
-  WriteLock lock(mtx_);
+  WriteLock lock(mux_);
   input_viscosity_ = _viscosity;
   IndicateChange();
 
@@ -211,7 +211,7 @@ void Project::set_viscosity(const InputT& _viscosity) {
 }
 
 void Project::set_viscosity_unit(const ViscosityUnit& _unit) {
-  WriteLock lock(mtx_);
+  WriteLock lock(mux_);
   viscosity_unit_ = _unit;
   IndicateChange();
 
@@ -220,7 +220,7 @@ void Project::set_viscosity_unit(const ViscosityUnit& _unit) {
 }
 
 void Project::set_density(const InputT& _density) {
-  WriteLock lock(mtx_);
+  WriteLock lock(mux_);
   input_density_cp_ = _density;
   IndicateChange();
 
@@ -229,7 +229,7 @@ void Project::set_density(const InputT& _density) {
 }
 
 void Project::set_density_unit(const DensityUnit& _unit) {
-  WriteLock lock(mtx_);
+  WriteLock lock(mux_);
   density_unit_ = _unit;
   IndicateChange();
 
@@ -238,7 +238,7 @@ void Project::set_density_unit(const DensityUnit& _unit) {
 }
 
 void Project::IndicateChange() {
-  // We assume that mtx_ is locked when this is called since this will only be
+  // We assume that mux_ is locked when this is called since this will only be
   // called after a change.
   has_error_ = false;
   was_computed_ = false;
@@ -281,7 +281,7 @@ bool Project::GetterCalcWrapper(ReadLock& lock) {
   // To avoid deadlock the Readlock must be released.
   lock.unlock();
 
-  WriteLock lock2(mtx_);
+  WriteLock lock2(mux_);
   bool res = CalcImpl();
 
   // Reacquire the Readlock before returning.

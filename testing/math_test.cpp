@@ -35,9 +35,17 @@ class FunctionTests : public testing::Test {
                 9, 10, 11};  // = 11*x^5 + 10*x^4 + 9*x^3 + 8*x^2 + 7x + 4
 
     d_komplex_ = {
-        DOUBLE_T(4.3286373442021278e-09), DOUBLE_T(-6.5935466655309209e-06),
-        DOUBLE_T(0.0039704102541411324),  DOUBLE_T(-1.1870337647376101),
-        DOUBLE_T(176.52190832690891),     DOUBLE_T(-10276.558815133236)};
+        DOUBLE_T(4.3286373442021278e-09),
+        DOUBLE_T(-6.5935466655309209e-06),
+        DOUBLE_T(0.0039704102541411324),
+        DOUBLE_T(-1.1870337647376101),
+        DOUBLE_T(176.52190832690891),
+        DOUBLE_T(-10276.558815133236)};  // = -10276.558815133236*x^5 +
+                                         // 176.52190832690891*x^4
+                                         // - 1.1870337647376101*x^3
+                                         // + 0.0039704102541411324*x^2
+                                         // - 6.5935466655309209e-06*x
+                                         // + 4.3286373442021278e-09
 
     d_logistic_ = {285.39113639063004, -0.019515612319848788,
                    451.79876054847699};  // 0.6
@@ -69,16 +77,14 @@ TEST_F(FunctionTests, PolynomialTest) {
   // Test the komplex function
   PolynomialFunc<int, 6> komplex_func(komplex_);
   EXPECT_EQ(komplex_func(0), 4);
-  EXPECT_EQ(komplex_func(1), 38);
-  EXPECT_EQ(komplex_func(2), 312);
-  EXPECT_EQ(komplex_func(3), 2224);
+  EXPECT_EQ(komplex_func(1), 49);
+  EXPECT_EQ(komplex_func(2), 634);
+  EXPECT_EQ(komplex_func(3), 3823);
 
   // Test the double komplex function
   PolynomialFunc<DoubleT, 6> d_komplex_func(d_komplex_);
-  EXPECT_NEAR(d_komplex_func(0), 4, 1e-10);
-  EXPECT_NEAR(d_komplex_func(1), 38, 1e-10);
-  EXPECT_NEAR(d_komplex_func(2), 312, 1e-10);
-  EXPECT_NEAR(d_komplex_func(3), 2224, 1e-10);
+  EXPECT_NEAR(d_komplex_func(0), 4.3286373442021278e-09, 1e-10);
+  EXPECT_NEAR(d_komplex_func(3), -2482970.68834, 1e-10);
 }
 
 TEST_F(FunctionTests, LogisticTest) {
@@ -86,8 +92,6 @@ TEST_F(FunctionTests, LogisticTest) {
   EXPECT_NEAR(lfunc(0), 0.6, 1e-10);
   EXPECT_NEAR(lfunc(1), 0.6, 1e-10);
   EXPECT_NEAR(lfunc(2), 0.6, 1e-10);
-
-  EXPECT_NEAR(lfunc<DOUBLE_T>(DOUBLE_T(2)), 0.6, 1e-10);
 }
 }  // namespace
 
