@@ -22,6 +22,7 @@
 
 #include "spauly/vccore/data.h"
 #include "spauly/vccore/impl/conversion_functions.h"
+#include "spauly/vccore/impl/math.h"
 
 namespace spauly {
 namespace vccore {
@@ -43,6 +44,13 @@ class Calculator {
   const double ConvertValueToBase(
       const DoubleT value, const _Unit from, const DoubleT density = 0,
       const DensityUnit d_unit = DensityUnit::kGramPerLiter) const noexcept;
+
+  /// @brief Converts the given Parameters to the base units. Usefull to get the
+  /// internal values.
+  /// @param p Parameters to be converted.
+  /// @param u Units of the Parameters.
+  /// @return Converted Parameters in the base units.
+  Parameters GetConverted(const Parameters& p, const Units& u) const noexcept;
 
  private:
   // The provided values here were calculated in the original code and must

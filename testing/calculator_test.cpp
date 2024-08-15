@@ -43,7 +43,21 @@ TEST_F(CalculatorTests, ConvertTBaseTest) {
   EXPECT_EQ(c_.ConvertValueToBase(1.0, HeadUnit::kFeet), 0.3048);
   EXPECT_EQ(c_.ConvertValueToBase(10.0, HeadUnit::kFeet), 3.048);
 
-  EXPECT_EQ(c_.ConvertValueToBase(1.0, DensityUnit::kGramPerLiter), 1.0);
+  EXPECT_EQ(c_.ConvertValueToBase(1.0, DensityUnit::kKilogramsPerCubicMeter),
+            0.001);
+};
+
+TEST_F(CalculatorTests, GetConvertedTest) {
+  Parameters p(1.0, 1.0, 1.0, 1.0);
+  Units u(FlowrateUnit::kLitersPerMinute, HeadUnit::kFeet, ViscosityUnit::kcSt,
+          DensityUnit::kKilogramsPerCubicMeter);
+
+  Parameters cf = c_.GetConverted(p, u);
+
+  EXPECT_EQ(cf.flowrate, 0.06);
+  EXPECT_EQ(cf.total_head, 0.3048);
+  EXPECT_EQ(cf.viscosity, 1.0);
+  EXPECT_EQ(cf.density, 0.001);
 };
 
 }  // namespace

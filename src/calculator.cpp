@@ -19,6 +19,24 @@
 
 namespace spauly {
 namespace vccore {
-namespace impl {}  // namespace impl
+
+Parameters Calculator::GetConverted(const Parameters& p,
+                                    const Units& u) const noexcept {
+  Parameters out;
+
+  // Set all converted values, the units can be left standard initialized.
+  out.flowrate = impl::ConvertToBaseUnit<FlowrateUnit>(
+      impl::DoubleT(p.flowrate), u.flowrate);
+  out.total_head = impl::ConvertToBaseUnit<HeadUnit>(
+      impl::DoubleT(p.total_head), u.total_head);
+  out.viscosity =
+      impl::ConvertViscosityTomm2s(impl::DoubleT(p.viscosity), u.viscosity,
+                                   impl::DoubleT(p.density), u.density);
+  out.density =
+      impl::ConvertToBaseUnit<DensityUnit>(impl::DoubleT(p.density), u.density);
+
+  return std::move(out);
+}
+
 }  // namespace vccore
 }  // namespace spauly

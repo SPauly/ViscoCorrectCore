@@ -47,7 +47,8 @@ const std::map<DensityUnit, const DoubleT> kDensityToGPL{
 /// Converts value to the specified base unit for _Unit. This function can be
 /// used to convert to: -> CubicMPH, -> Meters, -> GramPerLiter.
 template <typename _Unit>
-DoubleT ConvertToBaseUnit(const DoubleT& value, const _Unit from) noexcept {
+static DoubleT ConvertToBaseUnit(const DoubleT& value,
+                                 const _Unit from) noexcept {
   static_assert(std::is_same<FlowrateUnit, _Unit>::value ||
                     std::is_same<HeadUnit, _Unit>::value ||
                     std::is_same<DensityUnit, _Unit>::value,
@@ -63,8 +64,8 @@ DoubleT ConvertToBaseUnit(const DoubleT& value, const _Unit from) noexcept {
 }
 
 /// Converts the input value to the base viscosity unit of mm2/s
-DoubleT ConvertViscosityTomm2s(
-    const DoubleT& value, const ViscosityUnit from, const DoubleT density = 0,
+static DoubleT ConvertViscosityTomm2s(
+    const DoubleT& value, const ViscosityUnit from, const DoubleT& density,
     const DensityUnit d_unit = DensityUnit::kGramPerLiter) noexcept {
   DoubleT out = DoubleT(0.0);
 
