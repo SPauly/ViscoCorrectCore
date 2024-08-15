@@ -33,11 +33,17 @@ class CalculatorTests : public testing::Test {
 };
 
 TEST_F(CalculatorTests, ConvertTBaseTest) {
-#ifdef VCCORE_USE_ACCURACY_TYPE
-  EXPECT_EQ(c_.ConvertToBaseUnit("1.0", FlowrateUnit::kLitersPerMinute), 0.06);
-#else
+  EXPECT_EQ(c_.ConvertValueToBase(1.0, FlowrateUnit::kLitersPerMinute), 0.06);
+  EXPECT_EQ(c_.ConvertValueToBase(10.0, FlowrateUnit::kLitersPerMinute), 0.6);
+  EXPECT_EQ(c_.ConvertValueToBase(100.0, FlowrateUnit::kLitersPerMinute), 6.0);
 
-#endif
+  EXPECT_EQ(c_.ConvertValueToBase(1.0, FlowrateUnit::kGallonsPerMinute),
+            0.227125);
+
+  EXPECT_EQ(c_.ConvertValueToBase(1.0, HeadUnit::kFeet), 0.3048);
+  EXPECT_EQ(c_.ConvertValueToBase(10.0, HeadUnit::kFeet), 3.048);
+
+  EXPECT_EQ(c_.ConvertValueToBase(1.0, DensityUnit::kGramPerLiter), 1.0);
 };
 
 }  // namespace

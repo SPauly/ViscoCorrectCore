@@ -177,6 +177,7 @@ if(vcc_BUILD_TESTS)
     set(vcc_TEST_TARGETS
         conversion_functions_test
         math_test
+        calculator_test
     )
 
     foreach(target ${vcc_TEST_TARGETS})

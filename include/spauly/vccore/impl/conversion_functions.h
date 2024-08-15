@@ -64,7 +64,7 @@ DoubleT ConvertToBaseUnit(const DoubleT& value, const _Unit from) noexcept {
 
 /// Converts the input value to the base viscosity unit of mm2/s
 DoubleT ConvertViscosityTomm2s(
-    const DoubleT& value, const ViscosityUnit from, const DoubleT& density,
+    const DoubleT& value, const ViscosityUnit from, const DoubleT density = 0,
     const DensityUnit d_unit = DensityUnit::kGramPerLiter) noexcept {
   DoubleT out = DoubleT(0.0);
 

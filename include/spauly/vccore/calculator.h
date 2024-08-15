@@ -41,7 +41,7 @@ class Calculator {
   /// @return Converted value in the base unit according to the given unit.
   template <typename _Unit>
   const double ConvertValueToBase(
-      const DoubleT& value, const _Unit from, const DoubleT& density,
+      const DoubleT value, const _Unit from, const DoubleT density = 0,
       const DensityUnit d_unit = DensityUnit::kGramPerLiter) const noexcept;
 
  private:
@@ -65,19 +65,23 @@ class Calculator {
 // Template definitions
 template <typename _Unit>
 const double Calculator::ConvertValueToBase(
-    const DoubleT& value, const _Unit from, const DoubleT& density,
+    const DoubleT value, const _Unit from, const DoubleT density,
     const DensityUnit d_unit) const noexcept {
-  static_assert(!std::is_same<_Unit, FlowrateUnit>::value &&
-                    !std::is_same<_Unit, HeadUnit>::value &&
-                    !std::is_same<_Unit, DensityUnit>::value &&
-                    !std::is_same<_Unit, ViscosityUnit>::value,
-                "Invalid unit type. Must be either FlowrateUnit, HeadUnit, or "
+  // Correct static_assert to allow only the valid unit types
+  static_assert((std::is_same<FlowrateUnit, _Unit>::value ||
+                 std::is_same<_Unit, HeadUnit>::value ||
+                 std::is_same<_Unit, DensityUnit>::value ||
+                 std::is_same<_Unit, ViscosityUnit>::value),
+                "Invalid unit type. Must be either FlowrateUnit, HeadUnit, "
                 "DensityUnit, or ViscosityUnit");
 
-  if (!std::is_same<ViscosityUnit, _Unit>::value)
-    return (double)impl::ConvertToBaseUnit<_Unit>(value, from);
-  else
-    return (double)impl::ConvertViscosityTomm2s(value, from, density, d_unit);
+  // Handle the specific case for ViscosityUnit separately
+  if (std::is_same<ViscosityUnit, _Unit>::value) {
+    return static_cast<double>(impl::ConvertViscosityTomm2s(
+        value, static_cast<ViscosityUnit>(from), density, d_unit));
+  } else {
+    return static_cast<double>(impl::ConvertToBaseUnit<_Unit>(value, from));
+  }
 }
 
 }  // namespace vccore
