@@ -15,18 +15,10 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 // Contact via <https://github.com/SPauly/ViscoCorrectCore>
-#include "spauly/vccore/impl/calculator.h"
+#include "spauly/vccore/calculator.h"
 
 namespace spauly {
 namespace vccore {
-namespace impl {
-
-CorrectionFactors Calculator::Calculate(
-    const ParametersInternal& params) const {
-  CorrectionFactors out;
-  return out;
-}
-
-}  // namespace impl
+namespace impl {}  // namespace impl
 }  // namespace vccore
 }  // namespace spauly

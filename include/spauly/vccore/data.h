@@ -68,7 +68,6 @@ static const HeadUnit kStandardHeadUnit = HeadUnit::kMeters;
 static const ViscosityUnit kStandardViscosityUnit =
     ViscosityUnit::kSquareMilPerSecond;
 static const DensityUnit kStandardDensityUnit = DensityUnit::kGramPerLiter;
-static const Units kStandardUnits;
 
 /// @brief Parameters is a DTO used for the communicatio between the user and
 /// the Calculator.
@@ -105,6 +104,8 @@ struct Units {
         viscosity(viscosity),
         density(density) {}
 };
+
+static const Units kStandardUnits = Units();
 
 /// @brief CorrectionFactors is a DTO used for the communication between the
 /// Calculator and the user. It contains the correction factors based on a

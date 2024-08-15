@@ -22,6 +22,7 @@
 
 #include "spauly/vccore/data.h"
 #include "spauly/vccore/impl/accuracy_type.h"
+#include "spauly/vccore/impl/conversion_functions.h"
 
 namespace spauly {
 namespace vccore {

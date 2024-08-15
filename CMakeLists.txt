@@ -115,7 +115,10 @@ include(GNUInstallDirs)
 # Install the headers into the installation directory
 foreach(header 
     include/spauly/vccore/impl/accuracy_type.h
-    include/spauly/vccore/impl/calculator.h
+    include/spauly/vccore/impl/conversion_functions.h
+    include/spauly/vccore/impl/math.h
+    include/spauly/vccore/calculator.h
+    include/spauly/vccore/data.h
 )
     string(REPLACE "include/" "" _path ${header})
     get_filename_component(_path ${_path} PATH)
@@ -185,7 +188,8 @@ if(vcc_BUILD_TESTS)
     target_include_directories(${target} PRIVATE 
     ${PROJECT_SOURCE_DIR}/include
     )
-    target_link_libraries(${target} GTest::gtest_main)
+    target_link_libraries(${target} GTest::gtest_main ViscoCorrectCore)
+    add_dependencies(${target} ViscoCorrectCore)
     target_compile_definitions(ViscoCorrectCore PRIVATE VCCORE_USE_ACCURACY_TYPE=0)
     gtest_discover_tests(${target})
 endforeach()
@@ -205,7 +209,8 @@ endforeach()
         target_include_directories(${target} PRIVATE 
         ${PROJECT_SOURCE_DIR}/include
         )
-        target_link_libraries(${target} GTest::gtest_main)
+        target_link_libraries(${target} GTest::gtest_main ViscoCorrectCore)
+        add_dependencies(${target} ViscoCorrectCore)
         target_compile_definitions(ViscoCorrectCore PRIVATE VCCORE_USE_ACCURACY_TYPE=1)
         gtest_discover_tests(${target})
     endforeach()

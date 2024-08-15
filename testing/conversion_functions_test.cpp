@@ -20,8 +20,6 @@
 #include <string>
 #include <map>
 
-#include "spauly/vccore/input_types.h"
-
 #include <gtest/gtest.h>
 
 namespace spauly {

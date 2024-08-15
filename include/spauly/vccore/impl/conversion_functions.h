@@ -21,7 +21,7 @@
 #include <map>
 
 #include "spauly/vccore/impl/accuracy_type.h"
-#include "spauly/vccore/input_types.h"
+#include "spauly/vccore/data.h"
 
 namespace spauly {
 namespace vccore {
