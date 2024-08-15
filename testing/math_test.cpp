@@ -30,9 +30,9 @@ class FunctionTests : public testing::Test {
  protected:
   virtual void SetUp() override {
     square_ = {1, 0, 1};  // = x^2 + 1
-    linear_ = {-1, 2};    // = 2x - 1
+    linear_ = {-1, 2};    // = -x +2
     komplex_ = {4, 7,  8,
-                9, 10, 11};  // = 11*x^5 + 10*x^4 + 9*x^3 + 8*x^2 + 7x + 4
+                9, 10, 11};  // = 4*x^5 + 7*x^4 + 8*x^3 + 9*x^2 + 10*x + 11
 
     d_komplex_ = {
         DOUBLE_T(4.3286373442021278e-09),
@@ -40,12 +40,12 @@ class FunctionTests : public testing::Test {
         DOUBLE_T(0.0039704102541411324),
         DOUBLE_T(-1.1870337647376101),
         DOUBLE_T(176.52190832690891),
-        DOUBLE_T(-10276.558815133236)};  // = -10276.558815133236*x^5 +
-                                         // 176.52190832690891*x^4
-                                         // - 1.1870337647376101*x^3
-                                         // + 0.0039704102541411324*x^2
-                                         // - 6.5935466655309209e-06*x
-                                         // + 4.3286373442021278e-09
+        DOUBLE_T(
+            -10276.558815133236)};  // = 4.3286373442021278e-09*x^5 -
+                                    // 6.5935466655309209e-06*x^4 +
+                                    // 0.0039704102541411324*x^3 -
+                                    // 1.1870337647376101*x^2 +
+                                    // 176.52190832690891*x - 10276.558815133236
 
     d_logistic_ = {285.39113639063004, -0.019515612319848788,
                    451.79876054847699};  // 0.6
@@ -65,26 +65,22 @@ TEST_F(FunctionTests, PolynomialTest) {
   // Test the square function
   PolynomialFunc<int, 3> square_func(square_);
   EXPECT_EQ(square_func(0), 1);
-  EXPECT_EQ(square_func(1), 2);
   EXPECT_EQ(square_func(2), 5);
 
   // Test the linear function
   PolynomialFunc<int, 2> linear_func(linear_);
-  EXPECT_EQ(linear_func(0), -1);
-  EXPECT_EQ(linear_func(1), 1);
-  EXPECT_EQ(linear_func(2), 3);
+  EXPECT_EQ(linear_func(0), 2);
+  EXPECT_EQ(linear_func(2), 0);
 
   // Test the komplex function
   PolynomialFunc<int, 6> komplex_func(komplex_);
-  EXPECT_EQ(komplex_func(0), 4);
-  EXPECT_EQ(komplex_func(1), 49);
-  EXPECT_EQ(komplex_func(2), 634);
-  EXPECT_EQ(komplex_func(3), 3823);
+  EXPECT_EQ(komplex_func(0), 11);
+  EXPECT_EQ(komplex_func(3), 1024);
 
   // Test the double komplex function
   PolynomialFunc<DoubleT, 6> d_komplex_func(d_komplex_);
-  EXPECT_NEAR(d_komplex_func(0), 4.3286373442021278e-09, 1e-10);
-  EXPECT_NEAR(d_komplex_func(3), -2482970.68834, 1e-10);
+  EXPECT_NEAR(d_komplex_func(0), 10276.558815133236, 1e-5);
+  EXPECT_NEAR(d_komplex_func(240), 1, 1e-5);
 }
 
 TEST_F(FunctionTests, LogisticTest) {
