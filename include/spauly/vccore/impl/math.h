@@ -35,8 +35,9 @@ class ParameterisedBaseFunc {
     }
   }
   /// @brief Initializes the coefficients in the correct order.
-  /// @param coefficients The coefficients should be ordered like so [0]*x^0 [1]
-  /// * x^1 ...
+  /// @param coefficients The coefficients should be ordered like so [0]*x^n-1
+  /// [1]
+  /// * x^n-2 ... [n] * x^0
   ParameterisedBaseFunc(const std::array<T, S> &coefficients)
       : coeffs_(coefficients) {}
 
@@ -71,11 +72,17 @@ class PolynomialFunc : public ParameterisedBaseFunc<T, S> {
   /// @param x Position to evaluate the function at.
   /// @return Value of the function at x.
   virtual T operator()(T x) const override {
-    T result = 0;
-    for (size_t i = 0; i < coeffs_.size(); ++i) {
-      result += coeffs_[i] * T(std::pow(static_cast<double>(x), i));
+    T y = 0;
+    size_t inverse_iter = coeffs_.size() - 1;
+
+    for (size_t i = 0; i < coeffs_.size(); i++) {
+      y += static_cast<T>(
+          coeffs_.at(i) *
+          std::pow(static_cast<double>(x), static_cast<double>(inverse_iter)));
+      --inverse_iter;
     }
-    return result;
+
+    return std::move(y);
   }
 };
 

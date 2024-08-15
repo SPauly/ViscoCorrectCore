@@ -75,19 +75,18 @@ TEST_F(FunctionTests, PolynomialTest) {
   // Test the komplex function
   PolynomialFunc<int, 6> komplex_func(komplex_);
   EXPECT_EQ(komplex_func(0), 11);
-  EXPECT_EQ(komplex_func(3), 1024);
+  EXPECT_EQ(komplex_func(3), 1877);
 
   // Test the double komplex function
   PolynomialFunc<DoubleT, 6> d_komplex_func(d_komplex_);
-  EXPECT_NEAR(d_komplex_func(0), 10276.558815133236, 1e-5);
-  EXPECT_NEAR(d_komplex_func(240), 1, 1e-5);
+  EXPECT_NEAR(d_komplex_func(0), -10276.558815133236, 1e-5);
+  EXPECT_NEAR(d_komplex_func(242), 173.48327475572842, 1e-5);
 }
 
 TEST_F(FunctionTests, LogisticTest) {
   LogisticalFunc lfunc(d_logistic_);
-  EXPECT_NEAR(lfunc(0), 0.6, 1e-10);
-  EXPECT_NEAR(lfunc(1), 0.6, 1e-10);
-  EXPECT_NEAR(lfunc(2), 0.6, 1e-10);
+  EXPECT_NEAR(lfunc(146), 284.6624748102717, 1e-10);
+  EXPECT_NEAR(lfunc(382), 227.20314602110616, 1e-10);
 }
 }  // namespace
 
