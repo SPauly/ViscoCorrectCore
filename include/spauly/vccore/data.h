@@ -29,14 +29,8 @@ struct Parameters;
 struct Units;
 struct CorrectionFactors;
 
-#ifndef VCCORE_USE_ACCURACY_TYPE
-using InputT = double;
-#else
-// InputT is the type used for the input parameters. Since double may not be
-// accurate enough for the calculations, std::string is used instead. Internally
-// this will be converted to a more accurate representation.
-using InputT = std::string;
-#endif  // VCCORE_USE_ACCURACY_TYPE
+// Define the floatingpoint type used for all calculations.
+using DoubleT = double;
 
 /// FlowrateUnit determines the unit of the flowrate. Available units are: m³/h,
 /// l/min, gpm.
@@ -72,14 +66,14 @@ static const DensityUnit kStandardDensityUnit = DensityUnit::kGramPerLiter;
 /// @brief Parameters is a DTO used for the communicatio between the user and
 /// the Calculator.
 struct Parameters {
-  InputT flowrate;
-  InputT total_head;
-  InputT viscosity;
-  InputT density;
+  DoubleT flowrate;
+  DoubleT total_head;
+  DoubleT viscosity;
+  DoubleT density;
 
   Parameters() = default;
-  Parameters(InputT flowrate, InputT total_head, InputT viscosity,
-             InputT density)
+  Parameters(DoubleT flowrate, DoubleT total_head, DoubleT viscosity,
+             DoubleT density)
       : flowrate(flowrate),
         total_head(total_head),
         viscosity(viscosity),

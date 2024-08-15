@@ -28,52 +28,8 @@ namespace impl {
 namespace vccore_testing {
 namespace {
 // First param represents the test value the second one the expected conversion.
-using TestCasesMap = std::map<InputT, InputT>;
+using TestCasesMap = std::map<DoubleT, DoubleT>;
 
-#ifdef VCCORE_USE_ACCURACY_TYPE
-
-// Test utilities for Flowrate:
-TestCasesMap lpmToCubicMPH{
-    {"1", "0.06"},        {"10", "0.6"},     {"100", "6"},
-    {"1000", "60"},       {"10000", "600"},  {"0.5", "0.03"},
-    {"5.5", "0.33"},      {"11.1", "0.666"}, {"111.1", "6.666"},
-    {"1111.1", "66.666"}, {"0.11", "0.0066"}};  // Liters per
-                                                // Minute to m^3/h
-TestCasesMap gpmToCubicMPH{
-    {"1", "0.227125"},       {"10", "2.27125"},     {"100", "22.7125"},
-    {"1000", "227.125"},     {"10000", "2271.25"},  {"0.5", "0.1135625"},
-    {"5.5", "1.2491875"},    {"11.1", "2.5210875"}, {"111.1", "25.2335875"},
-    {"1111.1", "252.35858"}, {"0.11", "0.02498375"}};  // Gallons per
-                                                       // Minute to m^3/h
-
-// Test utilities for Head
-TestCasesMap feetToMeters{
-    {"1", "0.3048"},     {"10", "3.048"},   {"100", "30.48"},
-    {"1000", "304.8"},   {"10000", "3048"}, {"5.5", "1.6764"},
-    {"11.1", "3.38328"},
-};  // Feet to Meters
-
-// Test utilities for Density
-TestCasesMap kpcmToGPL{
-    {"1", "0.001"},      {"10", "0.01"},     {"100", "0.1"},
-    {"1000", "1"},       {"10000", "10"},    {"0.5", "0.0005"},
-    {"5.5", "0.0055"},   {"11.1", "0.0111"}, {"111.1", "0.111"},
-    {"1111.1", "1.111"}, {"0.11", "0.00011"}};  // KilogramsPerCubicMeter
-                                                // To GramPerLiter
-
-// Test utilities for Viscosity
-// The pair holds the following args: 1. Viscosity in cp/mpas, 2. Density in gPl
-std::map<std::pair<InputT, InputT>, InputT> cpmpasTomm2s{
-    {{"1", "1"}, "1"},    {{"1", "2"}, "0.5"},      {{"1", "3"}, "0.333333"},
-    {{"1", "4"}, "0.25"}, {{"1", "5"}, "0.2"},      {{"2", "1"}, "2"},
-    {{"2", "2"}, "1"},    {{"2", "3"}, "0.666667"}, {{"2", "4"}, "0.5"},
-    {{"2", "5"}, "0.4"},  {{"3", "1"}, "3"},        {{"3", "2"}, "1.5"},
-    {{"3", "3"}, "1"},    {{"3", "4"}, "0.75"},     {{"3", "5"}, "0.6"},
-    {{"4", "1"}, "4"},    {{"4", "2"}, "2"},        {{"4", "3"}, "1.333333"},
-    {{"4", "4"}, "1"},    {{"4", "5"}, "0.8"},      {{"5", "1"}, "5"},
-    {{"5", "2"}, "2.5"},  {{"5", "3"}, "1.666667"}, {{"5", "4"}, "1.25"},
-    {{"5", "5"}, "1"}};  // Centipoise and Millipascal Seconds to mm^2/s
-#else
 // Test utilities for Flowrate:
 TestCasesMap lpmToCubicMPH{
     {1.0, 0.06},      {10.0, 0.6},      {100.0, 6.0},  {1000.0, 60.0},
@@ -102,7 +58,7 @@ TestCasesMap kpcmToGPL{
 
 // Test utilities for Viscosity
 // The pair holds the following args: 1. Viscosity in cp/mpas, 2. Density in gPl
-std::map<std::pair<InputT, InputT>, InputT> cpmpasTomm2s{
+std::map<std::pair<DoubleT, DoubleT>, DoubleT> cpmpasTomm2s{
     {{1.0, 1.0}, 1.0},  {{1.0, 2.0}, 0.5},      {{1.0, 3.0}, 0.333333},
     {{1.0, 4.0}, 0.25}, {{1.0, 5.0}, 0.2},      {{2.0, 1.0}, 2.0},
     {{2.0, 2.0}, 1.0},  {{2.0, 3.0}, 0.666667}, {{2.0, 4.0}, 0.5},
@@ -112,7 +68,6 @@ std::map<std::pair<InputT, InputT>, InputT> cpmpasTomm2s{
     {{4.0, 4.0}, 1.0},  {{4.0, 5.0}, 0.8},      {{5.0, 1.0}, 5.0},
     {{5.0, 2.0}, 2.5},  {{5.0, 3.0}, 1.666667}, {{5.0, 4.0}, 1.25},
     {{5.0, 5.0}, 1.0}};  // Centipoise and Millipascal Seconds to mm^2/s
-#endif  // VCCORE_USE_ACCURACY_TYPE
 
 // Helper function to create a string with the differences in the calculated and
 // the expected conversions. _Unit must fullfill the same requirements as
@@ -125,19 +80,14 @@ std::string ConversionHelper(TestCasesMap& cases, _Unit from) {
   std::string errors = "";
 
   for (const auto& elem : cases) {
-    DoubleT res = ConvertToBaseUnit<_Unit>(DOUBLE_T(elem.first), from);
+    DoubleT res = ConvertToBaseUnit<_Unit>(DoubleT(elem.first), from);
 
     // If the result is not what expected we create a string with the
     // expected and resulting conversion.
-    if (std::abs((double)(res - DOUBLE_T(elem.second))) > 0.01) {
-#ifdef VCCORE_USE_ACCURACY_TYPE
-      errors += elem.first + " -> " + std::to_string((double)res) +
-                " != " + elem.second + '\n';
-#else
+    if (std::abs((double)(res - DoubleT(elem.second))) > 0.01) {
       errors += std::to_string(elem.first) + " -> " +
                 std::to_string((double)(res)) +
-                " != " + std::to_string((double)(DOUBLE_T(elem.second))) + '\n';
-#endif
+                " != " + std::to_string((double)(DoubleT(elem.second))) + '\n';
     }
   }
 
@@ -191,12 +141,12 @@ TEST(ConversionFunctions, viscosity_conversion) {
 
   for (const auto& [test_c, expect] : cpmpasTomm2s) {
     DoubleT res = ConvertViscosityTomm2s(
-        DOUBLE_T(test_c.first), ViscosityUnit::kcP, DOUBLE_T(test_c.second),
+        DoubleT(test_c.first), ViscosityUnit::kcP, DoubleT(test_c.second),
         DensityUnit::kGramPerLiter);
 
     // If the result is not what expected we create a string with the
     // expected and resulting conversion.
-    if (std::abs((double)(res - DOUBLE_T(expect))) > 0.001) {
+    if (std::abs((double)(res - DoubleT(expect))) > 0.001) {
 #ifdef VCCORE_USE_ACCURACY_TYPE
       errors += static_cast<std::string>(test_c.first) + " -> " +
                 std::to_string((double)(res)) +
@@ -204,7 +154,7 @@ TEST(ConversionFunctions, viscosity_conversion) {
 #else
       errors += std::to_string(test_c.first) + " -> " +
                 std::to_string((double)(res)) +
-                " != " + std::to_string((double)(DOUBLE_T(expect))) + '\n';
+                " != " + std::to_string((double)(DoubleT(expect))) + '\n';
 #endif
     }
   }

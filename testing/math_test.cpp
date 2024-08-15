@@ -18,7 +18,6 @@
 #include <gtest/gtest.h>
 
 #include "spauly/vccore/impl/math.h"
-#include "spauly/vccore/impl/accuracy_type.h"
 
 namespace spauly {
 namespace vccore {
@@ -35,12 +34,12 @@ class FunctionTests : public testing::Test {
                 9, 10, 11};  // = 4*x^5 + 7*x^4 + 8*x^3 + 9*x^2 + 10*x + 11
 
     d_komplex_ = {
-        DOUBLE_T(4.3286373442021278e-09),
-        DOUBLE_T(-6.5935466655309209e-06),
-        DOUBLE_T(0.0039704102541411324),
-        DOUBLE_T(-1.1870337647376101),
-        DOUBLE_T(176.52190832690891),
-        DOUBLE_T(
+        DoubleT(4.3286373442021278e-09),
+        DoubleT(-6.5935466655309209e-06),
+        DoubleT(0.0039704102541411324),
+        DoubleT(-1.1870337647376101),
+        DoubleT(176.52190832690891),
+        DoubleT(
             -10276.558815133236)};  // = 4.3286373442021278e-09*x^5 -
                                     // 6.5935466655309209e-06*x^4 +
                                     // 0.0039704102541411324*x^3 -

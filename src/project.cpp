@@ -24,8 +24,8 @@ namespace vccore {
 Project::Project(std::shared_ptr<CalculationCTX> ctx)
     : ctx_(ctx), calculator_(ctx) {}
 
-Project::Project(std::shared_ptr<CalculationCTX> ctx, InputT _flowrate,
-                 InputT _head, InputT _viscosity, InputT _density,
+Project::Project(std::shared_ptr<CalculationCTX> ctx, DoubleT _flowrate,
+                 DoubleT _head, DoubleT _viscosity, DoubleT _density,
                  FlowrateUnit _f_unit, HeadUnit _h_unit, ViscosityUnit _v_unit,
                  DensityUnit _d_unit)
     : ctx_(ctx),
@@ -147,8 +147,8 @@ void Project::set_floating_point_precision(size_t _precision) {
   IndicateChange();
 }
 
-void Project::Set(InputT _flowrate, InputT _head, InputT _viscosity,
-                  InputT _density, FlowrateUnit _f_unit, HeadUnit _h_unit,
+void Project::Set(DoubleT _flowrate, DoubleT _head, DoubleT _viscosity,
+                  DoubleT _density, FlowrateUnit _f_unit, HeadUnit _h_unit,
                   ViscosityUnit _v_unit, DensityUnit _d_unit) {
   WriteLock lock(mux_);
   input_flowrate_ = _flowrate;
@@ -165,7 +165,7 @@ void Project::Set(InputT _flowrate, InputT _head, InputT _viscosity,
   IndicateChange();
 }
 
-void Project::set_flowrate(const InputT& _flowrate) {
+void Project::set_flowrate(const DoubleT& _flowrate) {
   WriteLock lock(mux_);
   input_flowrate_ = _flowrate;
   IndicateChange();
@@ -183,7 +183,7 @@ void Project::set_flowrate_unit(const FlowrateUnit& _unit) {
   was_changed_[0] = true;
 }
 
-void Project::set_total_head(const InputT& _head) {
+void Project::set_total_head(const DoubleT& _head) {
   WriteLock lock(mux_);
   input_total_head_ = _head;
   IndicateChange();
@@ -201,7 +201,7 @@ void Project::set_head_unit(const HeadUnit& _unit) {
   was_changed_[1] = true;
 }
 
-void Project::set_viscosity(const InputT& _viscosity) {
+void Project::set_viscosity(const DoubleT& _viscosity) {
   WriteLock lock(mux_);
   input_viscosity_ = _viscosity;
   IndicateChange();
@@ -219,7 +219,7 @@ void Project::set_viscosity_unit(const ViscosityUnit& _unit) {
   was_changed_[2] = true;
 }
 
-void Project::set_density(const InputT& _density) {
+void Project::set_density(const DoubleT& _density) {
   WriteLock lock(mux_);
   input_density_cp_ = _density;
   IndicateChange();

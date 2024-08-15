@@ -59,7 +59,6 @@ find_package(Threads REQUIRED)
 
 # Build the library
 add_library(ViscoCorrectCore STATIC
-    src/accuracy_type.cpp
     src/calculator.cpp
 )
 
@@ -114,7 +113,6 @@ include(GNUInstallDirs)
 
 # Install the headers into the installation directory
 foreach(header 
-    include/spauly/vccore/impl/accuracy_type.h
     include/spauly/vccore/impl/conversion_functions.h
     include/spauly/vccore/impl/math.h
     include/spauly/vccore/calculator.h
@@ -176,7 +174,6 @@ endif() # vcc_BUILD_TESTS
 # Build the tests
 if(vcc_BUILD_TESTS)
 
-    # Build the tests with double as DoubleT
     set(vcc_TEST_TARGETS
         conversion_functions_test
         math_test
@@ -190,30 +187,9 @@ if(vcc_BUILD_TESTS)
     )
     target_link_libraries(${target} GTest::gtest_main ViscoCorrectCore)
     add_dependencies(${target} ViscoCorrectCore)
-    target_compile_definitions(ViscoCorrectCore PRIVATE VCCORE_USE_ACCURACY_TYPE=0)
     gtest_discover_tests(${target})
 endforeach()
 
-
-    # Build the tests with AccuracyType
-    set(vcc_TEST_TARGETS_ACC
-        accuracy_type_test
-        conversion_functions_test
-        math_test
-    )
-
-    foreach(trgt ${vcc_TEST_TARGETS_ACC})
-        set(target acc_${trgt})
-        add_executable(${target} ${CMAKE_CURRENT_SOURCE_DIR}/testing/${trgt}.cpp)
-        target_compile_features(${target} PUBLIC cxx_std_17)
-        target_include_directories(${target} PRIVATE 
-        ${PROJECT_SOURCE_DIR}/include
-        )
-        target_link_libraries(${target} GTest::gtest_main ViscoCorrectCore)
-        add_dependencies(${target} ViscoCorrectCore)
-        target_compile_definitions(ViscoCorrectCore PRIVATE VCCORE_USE_ACCURACY_TYPE=1)
-        gtest_discover_tests(${target})
-    endforeach()
 endif()
 
 #####################################################
