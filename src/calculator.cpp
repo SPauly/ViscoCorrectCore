@@ -38,5 +38,23 @@ Parameters Calculator::GetConverted(const Parameters& p,
   return std::move(out);
 }
 
+const size_t Calculator::ValidateInput(const Parameters& p) const noexcept {
+  size_t errors = 0;
+
+  if (p.flowrate < 6 || p.flowrate > 2000) {
+    errors |= ErrorFlag::kFlowrateError;
+  }
+
+  if (p.total_head < 5 || p.total_head > 200) {
+    errors |= ErrorFlag::kTotalHeadError;
+  }
+
+  if (p.viscosity < 10 || p.viscosity > 4000) {
+    errors |= ErrorFlag::kViscosityError;
+  }
+
+  return std::move(errors);
+}
+
 }  // namespace vccore
 }  // namespace spauly

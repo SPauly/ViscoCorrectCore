@@ -22,6 +22,7 @@
 namespace spauly {
 namespace vccore {
 namespace vccore_testing {
+
 namespace {
 
 class CalculatorTests : public testing::Test {

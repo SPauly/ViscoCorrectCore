@@ -63,6 +63,16 @@ static const ViscosityUnit kStandardViscosityUnit =
     ViscosityUnit::kSquareMilPerSecond;
 static const DensityUnit kStandardDensityUnit = DensityUnit::kGramPerLiter;
 
+/// @brief ErrorFlag is a bitfield used to determine the error type.
+enum ErrorFlag : size_t {
+  kNoError = 0,
+  kFlowrateError = 1 << 0,
+  kTotalHeadError = 1 << 1,
+  kViscosityError = 1 << 2,
+  kDensityError = 1 << 3,
+  kCalculationOOR = 1 << 4
+};
+
 /// @brief Parameters is a DTO used for the communicatio between the user and
 /// the Calculator.
 struct Parameters {
@@ -73,7 +83,7 @@ struct Parameters {
 
   Parameters() = default;
   Parameters(DoubleT flowrate, DoubleT total_head, DoubleT viscosity,
-             DoubleT density)
+             DoubleT density = 0)
       : flowrate(flowrate),
         total_head(total_head),
         viscosity(viscosity),
@@ -109,7 +119,7 @@ struct CorrectionFactors {
   double eta = 0;
   std::array<double, 4> h;
 
-  int error_flag = 0;
+  size_t error_flag = 0;
   std::string error_msg = "";
 };
 
