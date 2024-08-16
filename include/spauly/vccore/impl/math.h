@@ -55,6 +55,47 @@ class ParameterisedBaseFunc {
   std::array<T, S> coeffs_;
 };
 
+/// @brief Linearfunction y = m*x + b
+/// @tparam T Type of the function.
+template <typename T>
+class LinearFunc : public ParameterisedBaseFunc<T, 2> {
+ public:
+  /// @brief Default constructor initializes m and b to 0.
+  LinearFunc() : ParameterisedBaseFunc() {}
+
+  /// @brief Constructs a linear function using the coefficients in the given
+  /// order.
+  /// @param coefficients The coefficients should be ordered like so [0] = m
+  /// [1] = b
+  LinearFunc(const std::array<T, 2> &coefficients)
+      : ParameterisedBaseFunc(coefficients) {}
+
+  /// @brief Constructs a linear function based of the pitch and a point.
+  /// @param m Pitch of the function.
+  /// @param x x value of the point.
+  /// @param y y value of the point.
+  LinearFunc(T m, T x, T y)
+      : ParameterisedBaseFunc({m, static_cast<T>(y - (m * x))}) {}
+
+  virtual ~LinearFunc() = default;
+
+  /// @brief Returns the y value of the given function at position x.
+  /// @param x Position to evaluate the function at.
+  /// @return Value of the function at x.
+  virtual T operator()(T x) const override {
+    return coeffs_[0] * x + coeffs_[1];
+  }
+
+  /// @brief Returns the x value of the given function at position y.
+  /// @param y Position to evaluate the function at.
+  virtual T SolveForX(const T y) const {
+    if (coeffs_[0] == 0) {
+      return 0;
+    }
+    return (y - coeffs_[1]) / coeffs_[0];
+  }
+};
+
 template <typename T, size_t S>
 class PolynomialFunc : public ParameterisedBaseFunc<T, S> {
  public:
