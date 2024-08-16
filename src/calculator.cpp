@@ -33,6 +33,15 @@ CorrectionFactors Calculator::Calculate(const Parameters& p,
   if (!(out.error_flag & kNoError)) return std::move(out);
 
   // Map the input values to the scales.
+  double flow_pos = FitToScale(kFlowrateScale, p_base.flowrate, 0);
+  double head_pos =
+      FitToScale(kTotalHeadScale, p_base.total_head,
+                 kStartTotalH.at(1));  // head_pos is on the y-axis so we take
+                                       // this is start coordinate.
+  double visc_pos =
+      FitToScale(kViscoScale, p_base.viscosity,
+                 kStartVisco.at(0));  // visc_pos is on the x-axis so we take
+                                      // this is start coordinate.
 
   return std::move(out);
 }
