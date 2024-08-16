@@ -107,6 +107,13 @@ struct Units {
         total_head(total_head),
         viscosity(viscosity),
         density(density) {}
+
+  inline bool operator==(const Units& other) const {
+    return flowrate == other.flowrate && total_head == other.total_head &&
+           viscosity == other.viscosity && density == other.density;
+  }
+
+  inline bool operator!=(const Units& other) const { return !(*this == other); }
 };
 
 static const Units kStandardUnits = Units();

@@ -20,6 +20,23 @@
 namespace spauly {
 namespace vccore {
 
+CorrectionFactors Calculator::Calculate(const Parameters& p,
+                                        const Units& u) const noexcept {
+  CorrectionFactors out;
+  Parameters p_base = p;
+
+  // Check if we need to convert the input values to the base units.
+  if (u != kStandardUnits) p_base = GetConverted(p, u);
+
+  // Validate the Input
+  out.error_flag = ValidateInput(p_base);
+  if (!(out.error_flag & kNoError)) return std::move(out);
+
+  // Map the input values to the scales.
+
+  return std::move(out);
+}
+
 Parameters Calculator::GetConverted(const Parameters& p,
                                     const Units& u) const noexcept {
   Parameters out;
@@ -54,6 +71,41 @@ const size_t Calculator::ValidateInput(const Parameters& p) const noexcept {
   }
 
   return std::move(errors);
+}
+
+const double Calculator::FitToScale(
+    const std::map<const int, const int>& raw_scale, const double& input,
+    const int start_pos) const noexcept {
+  double absolute_position = static_cast<double>(start_pos);
+  double prev_value = 0;
+  double curr_value = 0;
+  bool bfound = false;
+
+  for (const auto& [key, distpixels] : raw_scale) {
+    curr_value = static_cast<double>(key);
+
+    if (curr_value == input) {
+      absolute_position += static_cast<double>(distpixels);
+      bfound = true;
+      break;
+    } else if (curr_value > input) {
+      double range = curr_value - prev_value;
+      double relative_value = input - prev_value;
+
+      absolute_position +=
+          (relative_value / range) * static_cast<double>(distpixels);
+      bfound = true;
+      break;
+    }
+
+    absolute_position += static_cast<double>(distpixels);
+    prev_value = curr_value;
+  }
+
+  if (bfound)
+    return absolute_position;
+  else
+    return -1.0f;
 }
 
 }  // namespace vccore
