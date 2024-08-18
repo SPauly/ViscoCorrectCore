@@ -43,6 +43,17 @@ CorrectionFactors Calculator::Calculate(const Parameters& p,
                  kStartVisco.at(0));  // visc_pos is on the x-axis so we take
                                       // this is start coordinate.
 
+  // Create linear functions for totalhead and viscosity.
+  impl::LinearFunc<DoubleT> head_func(
+      kPitchTotalH, static_cast<DoubleT>(kStartTotalH.at(0)), head_pos);
+  impl::LinearFunc<DoubleT> visc_func(kPitchVisco, visc_pos,
+                                      static_cast<DoubleT>(kStartVisco.at(1)));
+
+  // Calculate the correction x position.
+  DoubleT pos_main = visc_func.SolveForX(
+      head_func(flow_pos));  // Get the position of the intersection point of
+                             // the two lines.
+
   return std::move(out);
 }
 
