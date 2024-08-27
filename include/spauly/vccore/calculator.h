@@ -80,6 +80,24 @@ class Calculator {
                           const double& input,
                           const int startpos = 0) const noexcept;
 
+  /// @brief Validates the given x value for the Q correction factor.
+  /// @param x x value to be validated.
+  constexpr inline bool ValidateXQ(const double& x) const noexcept {
+    return (x >= 242.0 && x <= 384.0);
+  }
+
+  /// @brief Validates the given x value for the Eta correction factor.
+  /// @param x x value to be validated.
+  constexpr inline bool ValidateXEta(const double& x) const noexcept {
+    return (x >= 122.0 && x <= 363.0);
+  }
+
+  /// @brief Validates the given x value for the H correction factor.
+  /// @param x x value to be validated.
+  constexpr inline bool ValidateXH(const double& x) const noexcept {
+    return (x >= 146.0 && x <= 382.0);
+  }
+
  private:
   //------------------------------------------------
   // Constants for the correction factors calculation
@@ -100,6 +118,15 @@ class Calculator {
       {285.91175890816675, -0.015057232233799856, 436.03377039579027}   // 1.2
   }};
 
+  const impl::PolynomialFunc<DoubleT, 6> kFuncQ{kQ};
+  const impl::PolynomialFunc<DoubleT, 6> kFuncEta{kEta};
+  std::array<impl::LogisticalFunc, 4> kFuncH{
+      {impl::LogisticalFunc(kH.at(0)), impl::LogisticalFunc(kH.at(1)),
+       impl::LogisticalFunc(kH.at(2)), impl::LogisticalFunc(kH.at(3))}};
+
+  // Constants for the correction factors calculation
+  const DoubleT kPixelsCorrectionScale =
+      22;  // 22 pixels per unit in the original correction factors scale
   const std::array<const int, 2> kStartFlowrate{0, 0};
   const std::array<const int, 2> kStartTotalH{4, 1};
   const std::array<const int, 2> kStartVisco{105, 304};

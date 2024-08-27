@@ -54,6 +54,30 @@ CorrectionFactors Calculator::Calculate(const Parameters& p,
       head_func(flow_pos));  // Get the position of the intersection point of
                              // the two lines.
 
+  // Calculate the correction factors.
+  if (ValidateXQ(pos_main)) {
+    out.q = (kFuncQ(pos_main) / kPixelsCorrectionScale / 10.0) + 0.2;
+  } else {
+    out.q = (pos_main < 242) ? 1.0 : 0.0;  // 242 is the lower cutoff value.
+  }
+
+  if (ValidateXEta(pos_main)) {
+    out.eta = (kFuncEta(pos_main) / kPixelsCorrectionScale / 10.0) + 0.2;
+  } else {
+    out.eta = (pos_main < 122) ? 1.0 : 0.0;  // 122 is the lower cutoff value.
+  }
+
+  if (ValidateXH(pos_main)) {
+    for (int i = 0; i < kFuncH.size(); i++) {
+      out.h.at(i) =
+          (kFuncH.at(i)(pos_main) / kPixelsCorrectionScale / 10) - 0.3;
+    }
+  } else {
+    for (int i = 0; i < kFuncH.size(); i++) {
+      out.h.at(i) = (pos_main < 146.0) ? 1.0 : 0.0;
+    }
+  }
+
   return std::move(out);
 }
 
