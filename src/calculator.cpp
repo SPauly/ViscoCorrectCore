@@ -55,6 +55,9 @@ CorrectionFactors Calculator::Calculate(const Parameters& p,
                              // the two lines.
 
   // Calculate the correction factors.
+  // Take the function value  of the correction function at the calculated
+  // pos_main position. Get the relative value by deviding by the scale and add
+  // the offset.
   if (ValidateXQ(pos_main)) {
     out.q = (kFuncQ(pos_main) / kPixelsCorrectionScale / 10.0) + 0.2;
   } else {
