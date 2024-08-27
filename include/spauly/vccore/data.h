@@ -65,7 +65,6 @@ static const DensityUnit kStandardDensityUnit = DensityUnit::kGramPerLiter;
 
 /// @brief ErrorFlag is a bitfield used to determine the error type.
 enum ErrorFlag : size_t {
-  kNoError = 0,
   kFlowrateError = 1 << 0,
   kTotalHeadError = 1 << 1,
   kViscosityError = 1 << 2,
@@ -124,7 +123,7 @@ static const Units kStandardUnits = Units();
 struct CorrectionFactors {
   double q = 0;
   double eta = 0;
-  std::array<double, 4> h;
+  std::array<double, 4> h{};
 
   size_t error_flag = 0;
   std::string error_msg = "";

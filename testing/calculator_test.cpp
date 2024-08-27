@@ -61,6 +61,17 @@ TEST_F(CalculatorTests, GetConvertedTest) {
   EXPECT_EQ(cf.density, 0.001);
 };
 
+TEST_F(CalculatorTests, CalculateTest) {
+  Parameters p(100.0, 100.0, 100.0);
+
+  CorrectionFactors cf = c_.Calculate(p);
+
+  EXPECT_EQ(cf.error_flag, 0);
+  EXPECT_NEAR(cf.q, 0.98, 0.01);
+  EXPECT_NEAR(cf.eta, 0.75, 0.01);
+  EXPECT_NEAR(cf.h.at(0), 0.97, 0.01);
+};
+
 }  // namespace
 
 }  // namespace vccore_testing

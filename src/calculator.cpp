@@ -30,7 +30,7 @@ CorrectionFactors Calculator::Calculate(const Parameters& p,
 
   // Validate the Input
   out.error_flag = ValidateInput(p_base);
-  if (!(out.error_flag & kNoError)) return std::move(out);
+  if (out.error_flag != 0) return std::move(out);
 
   // Map the input values to the scales.
   double flow_pos = FitToScale(kFlowrateScale, p_base.flowrate, 0);
