@@ -31,16 +31,13 @@ template <typename T, size_t S>
 class ParameterisedBaseFunc {
  public:
   /// @brief Default constructor initializes all coefficients to 0.
-  ParameterisedBaseFunc() {
-    for (size_t i = 0; i < coeffs_.size(); ++i) {
-      coeffs_[i] = 0;
-    }
-  }
+  ParameterisedBaseFunc() = default;
+
   /// @brief Initializes the coefficients in the correct order.
   /// @param coefficients The coefficients should be ordered like so [0]*x^n-1
   /// [1]
   /// * x^n-2 ... [n] * x^0
-  ParameterisedBaseFunc(const std::array<const T, S> &coefficients)
+  ParameterisedBaseFunc(const std::array<T, S> &coefficients)
       : coeffs_(coefficients) {}
 
   virtual ~ParameterisedBaseFunc() = default;
@@ -52,7 +49,7 @@ class ParameterisedBaseFunc {
   virtual T operator()(T x) const = 0;
 
  protected:
-  std::array<const T, S> coeffs_;
+  std::array<T, S> coeffs_{};
 };
 
 /// @brief Linearfunction y = m*x + b
@@ -67,7 +64,7 @@ class LinearFunc : public ParameterisedBaseFunc<T, 2> {
   /// order.
   /// @param coefficients The coefficients should be ordered like so [0] = m
   /// [1] = b
-  LinearFunc(const std::array<const T, 2> &coefficients)
+  LinearFunc(const std::array<T, 2> &coefficients)
       : ParameterisedBaseFunc(coefficients) {}
 
   /// @brief Constructs a linear function based of the pitch and a point.
@@ -106,7 +103,7 @@ class PolynomialFunc : public ParameterisedBaseFunc<T, S> {
   /// given order.
   /// @param coefficients The coefficients should be ordered like so [0]*x^0 [1]
   /// * x^1 if not set reverse_order = false
-  PolynomialFunc(const std::array<const T, S> &coefficients)
+  PolynomialFunc(const std::array<T, S> &coefficients)
       : ParameterisedBaseFunc(coefficients) {}
 
   virtual ~PolynomialFunc() = default;
@@ -138,7 +135,7 @@ class LogisticalFunc : public ParameterisedBaseFunc<double, 3> {
   /// given order.
   /// @param coefficients The coefficients should be ordered like so [0] = l
   /// [1] = k [2] = x0
-  LogisticalFunc(const std::array<const double, 3> &coefficients)
+  LogisticalFunc(const std::array<double, 3> &coefficients)
       : ParameterisedBaseFunc(coefficients) {}
 
   virtual ~LogisticalFunc() = default;
