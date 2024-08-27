@@ -91,7 +91,7 @@ std::string ConversionHelper(TestCasesMap& cases, _Unit from) {
     }
   }
 
-  return std::move(errors);
+  return errors;
 }
 
 TEST(ConversionFunctions, liters_per_minute) {

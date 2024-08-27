@@ -30,7 +30,7 @@ CorrectionFactors Calculator::Calculate(const Parameters& p,
 
   // Validate the Input
   out.error_flag = ValidateInput(p_base);
-  if (out.error_flag != 0) return std::move(out);
+  if (out.error_flag != 0) return out;
 
   // Map the input values to the scales.
   double flow_pos = FitToScale(kFlowrateScale, p_base.flowrate, 0);
@@ -81,7 +81,7 @@ CorrectionFactors Calculator::Calculate(const Parameters& p,
     }
   }
 
-  return std::move(out);
+  return out;
 }
 
 Parameters Calculator::GetConverted(const Parameters& p,
@@ -99,7 +99,7 @@ Parameters Calculator::GetConverted(const Parameters& p,
   out.density =
       impl::ConvertToBaseUnit<DensityUnit>(impl::DoubleT(p.density), u.density);
 
-  return std::move(out);
+  return out;
 }
 
 const size_t Calculator::ValidateInput(const Parameters& p) const noexcept {
@@ -117,7 +117,7 @@ const size_t Calculator::ValidateInput(const Parameters& p) const noexcept {
     errors |= ErrorFlag::kViscosityError;
   }
 
-  return std::move(errors);
+  return errors;
 }
 
 const double Calculator::FitToScale(

@@ -122,7 +122,7 @@ class PolynomialFunc : public ParameterisedBaseFunc<T, S> {
       --inverse_iter;
     }
 
-    return std::move(y);
+    return y;
   }
 };
 
