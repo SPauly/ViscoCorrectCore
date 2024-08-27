@@ -20,8 +20,7 @@
 
 #include <map>
 
-#include "spauly/vccore/impl/accuracy_type.h"
-#include "spauly/vccore/input_types.h"
+#include "spauly/vccore/data.h"
 
 namespace spauly {
 namespace vccore {
@@ -29,26 +28,27 @@ namespace impl {
 
 /// Holds the factors by which to multiply the input parameters to convert them
 /// to m³/h.
-const std::map<FlowrateUnit, const AccType> kFlowrateToCubicMPH{
-    {FlowrateUnit::kLitersPerMinute, AccType("0.06")},
-    {FlowrateUnit::kGallonsPerMinute, AccType("0.227125")},
-    {FlowrateUnit::kCubicMetersPerHour, AccType("1.0")}};
+const std::map<FlowrateUnit, const DoubleT> kFlowrateToCubicMPH{
+    {FlowrateUnit::kLitersPerMinute, DoubleT(0.06)},
+    {FlowrateUnit::kGallonsPerMinute, DoubleT(0.227125)},
+    {FlowrateUnit::kCubicMetersPerHour, DoubleT(1.0)}};
 
 /// Holds the factors by which to multiply the input parameters to convert them
 /// to m.
-const std::map<HeadUnit, const AccType> kHeadToMeters{
-    {HeadUnit::kFeet, AccType("0.3048")}, {HeadUnit::kMeters, AccType("1.0")}};
+const std::map<HeadUnit, const DoubleT> kHeadToMeters{
+    {HeadUnit::kFeet, DoubleT(0.3048)}, {HeadUnit::kMeters, DoubleT(1.0)}};
 
 /// Holds the factors by which to multiply the input parameters to convert them
 /// to g/l.
-const std::map<DensityUnit, const AccType> kDensityToGPL{
-    {DensityUnit::kGramPerLiter, AccType("1.0")},
-    {DensityUnit::kKilogramsPerCubicMeter, AccType("0.001")}};
+const std::map<DensityUnit, const DoubleT> kDensityToGPL{
+    {DensityUnit::kGramPerLiter, DoubleT(1.0)},
+    {DensityUnit::kKilogramsPerCubicMeter, DoubleT(0.001)}};
 
 /// Converts value to the specified base unit for _Unit. This function can be
 /// used to convert to: -> CubicMPH, -> Meters, -> GramPerLiter.
 template <typename _Unit>
-AccType ConvertToBaseUnit(const AccType& value, const _Unit from) noexcept {
+static DoubleT ConvertToBaseUnit(const DoubleT& value,
+                                 const _Unit from) noexcept {
   static_assert(std::is_same<FlowrateUnit, _Unit>::value ||
                     std::is_same<HeadUnit, _Unit>::value ||
                     std::is_same<DensityUnit, _Unit>::value,
@@ -64,16 +64,15 @@ AccType ConvertToBaseUnit(const AccType& value, const _Unit from) noexcept {
 }
 
 /// Converts the input value to the base viscosity unit of mm2/s
-AccType ConvertViscosityTomm2s(
-    const AccType& value, const ViscosityUnit from,
-    const AccType& density = AccType(""),
+static DoubleT ConvertViscosityTomm2s(
+    const DoubleT& value, const ViscosityUnit from, const DoubleT& density,
     const DensityUnit d_unit = DensityUnit::kGramPerLiter) noexcept {
-  AccType out = AccType("0.0");
+  DoubleT out = DoubleT(0.0);
 
   switch (from) {
     case ViscosityUnit::kcP:
     case ViscosityUnit::kmPas:
-      if (density.get_int_value() != 0) {
+      if (density != 0) {
         out = value / (density * kDensityToGPL.at(d_unit));
       }
       break;
