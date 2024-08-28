@@ -61,7 +61,6 @@ jobs:
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
         echo "source-dir=${{ github.workspace }}" >> "$GITHUB_OUTPUT"
     
-<<<<<<< HEAD
     - name: Build ViscoCorrectCore
       run: |
         mkdir build && cd build
@@ -73,22 +72,6 @@ jobs:
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
       shell: bash
       run: ctest --output-on-failure --build-config ${{ matrix.config.build_type}}
-=======
-    - name: Configure CMake
-      run: |
-        cmake -B "${{ steps.strings.outputs.build-output-dir }}" \
-              -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
-              -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} \
-              -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
-              -S "${{ steps.strings.outputs.source-dir }}"
-
-    - name: Build
-      run: cmake --build "${{ steps.strings.outputs.build-output-dir }}" --config ${{ matrix.build_type }}
-
-    - name: Test
-      working-directory: ${{ steps.strings.outputs.build-output-dir }}
-      run: ctest --output-on-failure --build-config ${{ matrix.build_type }}
->>>>>>> a1171985e27aecdc872b7729c1c14b1eca78c714
 
     - name: Upload Artifacts
       if: success()
