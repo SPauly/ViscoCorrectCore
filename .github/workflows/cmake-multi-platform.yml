@@ -12,23 +12,47 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
-        build_type: [Release]
-        include:
-          - os: windows-latest
-            c_compiler: cl
-            cpp_compiler: cl
-          - os: ubuntu-latest
-            c_compiler: gcc
-            cpp_compiler: g++
-          - os: ubuntu-latest
-            c_compiler: clang
-            cpp_compiler: clang++
+        config:
+          - {
+            name: "Windows-x64",
+            WIN_ARCH: "x64",
+            os: windows-latest,
+            lib_dir: "C:\\Libraries",
+            generators: "Visual Studio 17 2022",
+            build_type: "Release"
+          }
+          - {
+            name: "Linux-x64",
+            os: ubuntu-latest,
+            lib_dir: "/usr/local/lib",
+            generators: "Unix Makefiles",
+            build_type: "Release"
+          }
     
     steps:
     - uses: actions/checkout@v4
       with:
         submodules: true # Ensures submodules are checked out
+
+    - name: Print env
+      run: |
+        echo github.event.action: ${{ github.event.action }}
+        echo github.event_name: ${{ github.event_name }}
+        echo github.ref: ${{ github.ref }}
+        echo github.workspace: ${{ github.workspace }}
+
+    - name: Print env
+      run: |
+        echo github.event.action: ${{ github.event.action }}
+        echo github.event_name: ${{ github.event_name }}
+        echo github.ref: ${{ github.ref }}
+        echo github.workspace: ${{ github.workspace }}
+
+    - name: Install MSVC on Windows
+      if: startsWith(matrix.config.os, 'windows')
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x64
 
     - name: Set reusable strings
       id: strings
@@ -36,48 +60,27 @@ jobs:
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
     
-    - name: Configure CMake
-      shell: bash
+    - name: Build ViscoCorrectCore
       run: |
-        cmake -B ${{ steps.strings.outputs.build-output-dir }} \
-              -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
-              -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} \
-              -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
-              -S ${{ github.workspace }}
+        mkdir build && cd build
+        cmake .. -G "${{ matrix.config.generators }}" -DCMAKE_BUILD_TYPE=Release
+        cmake --build . --config Release --target ALL_BUILD -j 6
 
-    - name: Build
-      shell: bash
-      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
 
     - name: Test
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
       shell: bash
-      run: ctest --output-on-failure --build-config ${{ matrix.build_type }}
+      run: ctest --output-on-failure --build-config ${{ matrix.config.build_type}}
 
     - name: Upload Artifacts
       if: success()
       uses: actions/upload-artifact@v3
       with:
-        name: my-library-${{ matrix.os }}-${{ matrix.build_type }}
+        name: VCCoreLib
         path: ${{ steps.strings.outputs.build-output-dir }}/
 
-    - name: Create Release
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      uses: actions/create-release@v1
+    - name: Upload release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v0.1.13
       with:
-        tag_name: v${{ github.run_number }}
-        release_name: Release ${{ github.run_number }}
-        draft: false
-        prerelease: false
-        generate_release_notes: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Upload Release Artifacts
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      uses: actions/upload-release-asset@v1
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ steps.strings.outputs.build-output-dir }}
-        asset_name: my-library-${{ matrix.os }}-${{ matrix.build_type }}.zip
-        asset_content_type: application/zip
+        files: ${{ github.workspace }}/build/*
