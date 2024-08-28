@@ -62,6 +62,7 @@ jobs:
         mkdir build && cd build
         cmake .. -G "${{ matrix.config.generators }}" -DCMAKE_BUILD_TYPE=Release
         cmake --build . --config Release -j 6
+        cmake --install . --config Release 
 
 
     - name: Test
@@ -75,7 +76,7 @@ jobs:
       id: upload-artifact
       with:
         name: ViscoCorrectCore-${{ matrix.config.name }}
-        path: ${{ steps.strings.outputs.build-output-dir }}/
+        path: ${{ steps.strings.outputs.build-output-dir }}/install/
 
     - name: Upload release
       if: startsWith(github.ref, 'refs/tags/')
