@@ -223,3 +223,15 @@ install(FILES "${configured_pc}"
     COMPONENT "${PROJECT_NAME}"
     DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig"
 )
+
+
+#####################################################
+### Install utility files
+#####################################################
+if(vcc_INSTALL)
+    install(FILES
+        LICENSE
+        README.md
+        DESTINATION ${CMAKE_INSTALL_PREFIX}
+    )
+endif()
