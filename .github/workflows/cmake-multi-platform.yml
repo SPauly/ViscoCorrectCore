@@ -74,11 +74,11 @@ jobs:
       if: success()
       uses: actions/upload-artifact@v3
       with:
-        name: ViscoCorrectCore-${{ matrix.config.name }}
+        name: ViscoCorrectCore-${{ steps.get_version.outputs.version }}-${{ matrix.config.name }}
         path: ${{ steps.strings.outputs.build-output-dir }}/install/
 
     - name: Upload release
       if: startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v0.1.13
       with:
-        files: ${{ steps.strings.outputs.build-output-dir }}/ViscoCorrectCore-${{ matrix.config.name }}.zip
+        files: ${{ steps.strings.outputs.build-output-dir }}/install/ViscoCorrectCore-${{ steps.get_version.outputs.version }}-${{ matrix.config.name }}.zip
