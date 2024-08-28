@@ -80,16 +80,16 @@ class LinearFunc : public ParameterisedBaseFunc<T, 2> {
   /// @param x Position to evaluate the function at.
   /// @return Value of the function at x.
   virtual T operator()(T x) const override {
-    return coeffs_[0] * x + coeffs_[1];
+    return this->coeffs_[0] * x + this->coeffs_[1];
   }
 
   /// @brief Returns the x value of the given function at position y.
   /// @param y Position to evaluate the function at.
   virtual T SolveForX(const T y) const {
-    if (coeffs_[0] == 0) {
+    if (this->coeffs_[0] == 0) {
       return 0;
     }
-    return (y - coeffs_[1]) / coeffs_[0];
+    return (y - this->coeffs_[1]) / this->coeffs_[0];
   }
 };
 
@@ -113,11 +113,11 @@ class PolynomialFunc : public ParameterisedBaseFunc<T, S> {
   /// @return Value of the function at x.
   virtual T operator()(T x) const override {
     T y = 0;
-    size_t inverse_iter = coeffs_.size() - 1;
+    size_t inverse_iter = this->coeffs_.size() - 1;
 
-    for (size_t i = 0; i < coeffs_.size(); i++) {
+    for (size_t i = 0; i < this->coeffs_.size(); i++) {
       y += static_cast<T>(
-          coeffs_.at(i) *
+          this->coeffs_.at(i) *
           std::pow(static_cast<double>(x), static_cast<double>(inverse_iter)));
       --inverse_iter;
     }
@@ -145,9 +145,10 @@ class LogisticalFunc : public ParameterisedBaseFunc<double, 3> {
   /// @param x Double value of the position to evaluate the function at.
   /// @return copy of the value of the function at x.
   virtual double operator()(double x) const override {
-    // coeffs_[0] = l, coeffs_[1] = k, coeffs_[2] = x0
+    // this->coeffs_[0] = l, this->coeffs_[1] = k, this->coeffs_[2] = x0
     // l / (1 + exp(-k * (x - x0)))
-    return coeffs_[0] / (1 + std::exp(-coeffs_[1] * (x - coeffs_[2])));
+    return this->coeffs_[0] /
+           (1 + std::exp(-this->coeffs_[1] * (x - this->coeffs_[2])));
   }
 };
 
