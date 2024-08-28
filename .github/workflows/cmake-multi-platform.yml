@@ -44,13 +44,6 @@ jobs:
         echo github.ref: ${{ github.ref }}
         echo github.workspace: ${{ github.workspace }}
 
-    - name: Print env
-      run: |
-        echo github.event.action: ${{ github.event.action }}
-        echo github.event_name: ${{ github.event_name }}
-        echo github.ref: ${{ github.ref }}
-        echo github.workspace: ${{ github.workspace }}
-
     - name: Install MSVC on Windows
       if: startsWith(matrix.config.os, 'windows')
       uses: ilammy/msvc-dev-cmd@v1
@@ -81,11 +74,11 @@ jobs:
       uses: actions/upload-artifact@v3
       id: upload-artifact
       with:
-        name: VCCoreLib
+        name: ViscoCorrectCore-${{ matrix.config.name }}
         path: ${{ steps.strings.outputs.build-output-dir }}/
 
     - name: Upload release
       if: startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v0.1.13
       with:
-        files: steps.upload-artifact.outputs.artifact-path 
+        files: ${{steps.upload-artifact.outputs.artifact-path}}/* 
