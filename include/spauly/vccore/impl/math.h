@@ -97,14 +97,14 @@ template <typename T, size_t S>
 class PolynomialFunc : public ParameterisedBaseFunc<T, S> {
  public:
   /// @brief Default constructor initializes all coefficients to 0.
-  PolynomialFunc() : ParameterisedBaseFunc() {};
+  PolynomialFunc() : ParameterisedBaseFunc<T, S>() {};
 
   /// @brief Constructs a polynomial function using the coefficients in the
   /// given order.
   /// @param coefficients The coefficients should be ordered like so [0]*x^0 [1]
   /// * x^1 if not set reverse_order = false
   PolynomialFunc(const std::array<T, S> &coefficients)
-      : ParameterisedBaseFunc(coefficients) {}
+      : ParameterisedBaseFunc<T, S>(coefficients) {}
 
   virtual ~PolynomialFunc() = default;
 
@@ -129,14 +129,14 @@ class PolynomialFunc : public ParameterisedBaseFunc<T, S> {
 class LogisticalFunc : public ParameterisedBaseFunc<double, 3> {
  public:
   /// @brief Default constructor initializes all coefficients to 0.
-  LogisticalFunc() : ParameterisedBaseFunc() {}
+  LogisticalFunc() : ParameterisedBaseFunc<double, 3>() {}
 
   /// @brief Constructs a logistical function using the coefficients in the
   /// given order.
   /// @param coefficients The coefficients should be ordered like so [0] = l
   /// [1] = k [2] = x0
   LogisticalFunc(const std::array<double, 3> &coefficients)
-      : ParameterisedBaseFunc(coefficients) {}
+      : ParameterisedBaseFunc<double, 3>(coefficients) {}
 
   virtual ~LogisticalFunc() = default;
 
