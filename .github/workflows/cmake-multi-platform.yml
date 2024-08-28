@@ -76,7 +76,7 @@ jobs:
 
     - name: Compress Install
       run: |
-        7z a -tzip ${{ steps.strings.outputs.build-output-dir }}/install/ViscoCorrectCore-${{ matrix.config.name }}.zip ${{ steps.strings.outputs.build-output-dir }}/install
+        7z a -tzip ${{ steps.strings.outputs.build-output-dir }}/install/ViscoCorrectCore-${{ matrix.config.name }}.zip ${{ steps.strings.outputs.build-output-dir }}/install/*
 
     - name: Upload Artifacts
       if: success()
