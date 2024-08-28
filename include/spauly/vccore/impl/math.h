@@ -58,21 +58,21 @@ template <typename T>
 class LinearFunc : public ParameterisedBaseFunc<T, 2> {
  public:
   /// @brief Default constructor initializes m and b to 0.
-  LinearFunc() : ParameterisedBaseFunc() {}
+  LinearFunc() : ParameterisedBaseFunc<T, 2>() {}
 
   /// @brief Constructs a linear function using the coefficients in the given
   /// order.
   /// @param coefficients The coefficients should be ordered like so [0] = m
   /// [1] = b
   LinearFunc(const std::array<T, 2> &coefficients)
-      : ParameterisedBaseFunc(coefficients) {}
+      : ParameterisedBaseFunc<T, 2>(coefficients) {}
 
   /// @brief Constructs a linear function based of the pitch and a point.
   /// @param m Pitch of the function.
   /// @param x x value of the point.
   /// @param y y value of the point.
   LinearFunc(T m, T x, T y)
-      : ParameterisedBaseFunc({m, static_cast<T>(y - (m * x))}) {}
+      : ParameterisedBaseFunc<T, 2>({m, static_cast<T>(y - (m * x))}) {}
 
   virtual ~LinearFunc() = default;
 
