@@ -8,27 +8,27 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
     strategy:
       fail-fast: false
       matrix:
         config:
-          - {
-            name: "Windows-x64",
-            WIN_ARCH: "x64",
-            os: windows-latest,
-            lib_dir: "C:\\Libraries",
-            generators: "Visual Studio 17 2022",
-            build_type: "Release"
+        - {
+          name: "Windows-x64",
+          WIN_ARCH: "x64",
+          os: windows-latest,
+          lib_dir: "C:\\Libraries",
+          generators: "Visual Studio 17 2022",
+          build_type: "Release"
           }
-          - {
-            name: "Linux-x64",
-            os: ubuntu-latest,
-            lib_dir: "/usr/local/lib",
-            generators: "Unix Makefiles",
-            build_type: "Release"
+        - {
+          name: "Linux-x64",
+          os: ubuntu-latest,
+          lib_dir: "/usr/local/lib",
+          generators: "Unix Makefiles",
+          build_type: "Release"
           }
-    
     steps:
     - uses: actions/checkout@v4
       with:
