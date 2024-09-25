@@ -109,6 +109,9 @@ add_library(ViscoCorrectCore::ViscoCorrectCore ALIAS ViscoCorrectCore)
 ### Install ViscoCorrectCore
 #####################################################
 
+# Install the library
+if(vcc_INSTALL)
+
 include(GNUInstallDirs)
 
 # Install the headers into the installation directory
@@ -125,8 +128,6 @@ foreach(header
     )        
 endforeach()
 
-# Install the library
-if(vcc_INSTALL)
     install(TARGETS ViscoCorrectCore EXPORT ViscoCorrectCoreTargets
         LIBRARY DESTINATION ${vcc_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${vcc_INSTALL_BINDIR}
@@ -198,6 +199,7 @@ endif()
 ### Add Config file for Library
 #####################################################
 
+if(vcc_INSTALL)
 # Create config files for the library
 include(CMakePackageConfigHelpers)
 
@@ -224,6 +226,8 @@ install(FILES "${configured_pc}"
     COMPONENT "${PROJECT_NAME}"
     DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig"
 )
+
+endif() # vcc_INSTALL
 
 
 #####################################################
