@@ -42,12 +42,12 @@ option(vcc_BUILD_TESTS "Build tests for ViscoCorrectCore" ON)
 option(vcc_BUILD_EXAMPLES "Build examples for ViscoCorrectCore" OFF)
 
 # Set the installation options (default to ON if building as a standalone project)
-set(vcc_INSTALL_default ON)
 if(NOT CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
   # Disable vcc_INSTALL by default if building as a submodule
-  set(vcc_INSTALL_default OFF)
+  set(vcc_BUILD_TESTS OFF)
 endif()
-set(vcc_INSTALL ${vcc_INSTALL_default} CACHE BOOL
+
+set(vcc_INSTALL ON CACHE BOOL
     "Generate installation target")
 
 #####################################################
