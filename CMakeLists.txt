@@ -73,9 +73,9 @@ set_target_properties(ViscoCorrectCore PROPERTIES
  # Set the output directory for build artifacts.
  set_target_properties(ViscoCorrectCore
     PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/$<CONFIG>"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/$<CONFIG>"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/$<CONFIG>"
     PDB_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
     COMPILE_PDB_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
  )
@@ -129,9 +129,10 @@ endforeach()
 if(vcc_INSTALL)
     install(TARGETS ViscoCorrectCore EXPORT ViscoCorrectCoreTargets
         LIBRARY DESTINATION ${vcc_INSTALL_LIBDIR}
-        ARCHIVE DESTINATION ${vcc_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${vcc_INSTALL_BINDIR}
         RUNTIME DESTINATION ${vcc_INSTALL_BINDIR}
         INCLUDES DESTINATION ${vcc_INSTALL_INCLUDEDIR}
+        CONFIGURATIONS Release 
     )
 
     install(EXPORT ViscoCorrectCoreTargets
